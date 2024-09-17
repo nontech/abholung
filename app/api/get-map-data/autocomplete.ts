@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 interface Feature {
   properties: {

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import axios, { AxiosError } from 'axios';
 import { MapContainer, TileLayer, Polyline, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -11,8 +11,13 @@ import AutocompleteInput from './AutocompleteInput';
 import { getDistance } from 'geolib';
 import 'leaflet/dist/leaflet.css';
 
+// Define a more specific type for the Leaflet icon prototype
+interface ExtendedIconOptions extends L.IconOptions {
+  _getIconUrl?: string;
+}
+
 // Fix Leaflet icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as Partial<ExtendedIconOptions>)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: '/leaflet/marker-icon-2x.png',
   iconUrl: '/leaflet/marker-icon.png',
