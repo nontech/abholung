@@ -1,27 +1,38 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { text } = req.query;
-  const apiKey = process.env.OPENROUTESERVICE_API_KEY;
+interface Feature {
+  properties: {
+    label: string;
+  };
+  geometry: {
+    coordinates: [number, number];
+  };
+}
+
+interface AutocompleteResponse {
+  features: Feature[];
+}
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const input = searchParams.get('input');
+
+  if (!input) {
+    return NextResponse.json({ error: 'Input is required' }, { status: 400 });
+  }
 
   try {
-    const response = await axios.get('https://api.openrouteservice.org/geocode/autocomplete', {
+    const response = await axios.get<AutocompleteResponse>('https://api.openrouteservice.org/geocode/autocomplete', {
       params: {
-        api_key: apiKey,
-        text: text,
-        'boundary.rect.min_lon': 13.088209,
-        'boundary.rect.min_lat': 52.339630,
-        'boundary.rect.max_lon': 13.761160,
-        'boundary.rect.max_lat': 52.675454,
+        api_key: process.env.OPENROUTE_API_KEY,
+        text: input,
       },
     });
 
-    res.status(200).json(response.data);
-  } catch (error: any) {
-    console.error('Error in autocomplete API:', error);
-    res.status(500).json({ error: 'Failed to fetch autocomplete suggestions' });
+    return NextResponse.json(response.data);
+  } catch (error) {
+    console.error('Error fetching autocomplete suggestions:', error);
+    return NextResponse.json({ error: 'Failed to fetch suggestions' }, { status: 500 });
   }
-};
-
-export default handler;
+}
