@@ -41,6 +41,14 @@ const customIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
+interface GeocodeResponse {
+  features: {
+    geometry: {
+      coordinates: [number, number];
+    };
+  }[];
+}
+
 function ChangeView({ coords }: { coords: [number, number][] }) {
   const map = useMap();
   useEffect(() => {
