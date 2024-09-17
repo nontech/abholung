@@ -49,6 +49,21 @@ interface GeocodeResponse {
   }[];
 }
 
+// Add this interface near the top of the file, with other interfaces
+interface RouteResponse {
+  features: [{
+    properties: {
+      segments: [{
+        distance: number;
+        duration: number;
+      }];
+    };
+    geometry: {
+      coordinates: [number, number][];
+    };
+  }];
+}
+
 function ChangeView({ coords }: { coords: [number, number][] }) {
   const map = useMap();
   useEffect(() => {
