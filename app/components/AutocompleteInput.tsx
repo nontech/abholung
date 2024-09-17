@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+interface Feature {
+  properties: {
+    label: string;
+  };
+  geometry: {
+    coordinates: [number, number];
+  };
+}
+
+interface Suggestion {
+  label: string;
+  coordinates: [number, number];
+}
+
 interface AutocompleteInputProps {
   value: string;
   onChange: (value: string, coords?: [number, number]) => void;
@@ -8,7 +22,7 @@ interface AutocompleteInputProps {
 }
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({ value, onChange, placeholder }) => {
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
@@ -21,9 +35,9 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({ value, onChange, 
         const response = await axios.get('/api/get-map-data/autocomplete', { params: { input: value } });
         const newSuggestions = response.data.features || [];
         setSuggestions(
-          newSuggestions.map((feature: any) => ({
-            label: feature.properties.label,
-            coordinates: feature.geometry.coordinates,
+          newSuggestions.map((feature: Feature) => ({
+            label: feature.properties?.label || 'Unknown',
+            coordinates: feature.geometry?.coordinates || [0, 0],
           }))
         );
       } catch (error) {
@@ -36,7 +50,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({ value, onChange, 
     return () => clearTimeout(timer);
   }, [value]);
 
-  const handleSelect = (suggestion: any) => {
+  const handleSelect = (suggestion: Suggestion) => {
     onChange(suggestion.label, suggestion.coordinates);
     setShowSuggestions(false);
   };

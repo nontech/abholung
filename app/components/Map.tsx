@@ -56,8 +56,8 @@ export default function Map() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const geocodeAddress = async (address: string) => {
-    const response = await axios.get('/api/get-map-data/geocode', {
+  const geocodeAddress = async (address: string): Promise<[number, number]> => {
+    const response = await axios.get<GeocodeResponse>('/api/get-map-data/geocode', {
       params: { address },
     });
     if (response.data.features && response.data.features.length > 0) {
@@ -86,7 +86,7 @@ export default function Map() {
         return;
       }
 
-      const response = await axios.get('/api/get-map-data/directions', {
+      const response = await axios.get<RouteResponse>('/api/get-map-data/directions', {
         params: {
           start: fromCoordinates.join(','),
           end: toCoordinates.join(','),
@@ -100,9 +100,10 @@ export default function Map() {
         duration: route.duration / 60, // Convert to minutes
         coordinates: coordinates,
       });
-    } catch (error: any) {
-      setError(`Failed to fetch route information: ${error.message}`);
-      console.error('Error:', error);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      setError(`Failed to fetch route information: ${axiosError.message}`);
+      console.error('Error:', axiosError);
     } finally {
       setLoading(false);
     }
@@ -116,7 +117,7 @@ export default function Map() {
             value={from}
             onChange={(value, coords) => {
               setFrom(value);
-              setFromCoords(coords);
+              setFromCoords(coords || null);
             }}
             placeholder="From"
           />
@@ -126,7 +127,7 @@ export default function Map() {
             value={to}
             onChange={(value, coords) => {
               setTo(value);
-              setToCoords(coords);
+              setToCoords(coords || null);
             }}
             placeholder="To"
           />
@@ -148,11 +149,11 @@ export default function Map() {
           <div className="space-y-2">
             <p className="text-xl">
               <span className="font-semibold text-blue-700">Distance:</span>{' '}
-              <span className="text-gray-800">{routeInfo.distance.toFixed(2)} km</span>
+              <span className="text-gray-900">{routeInfo.distance.toFixed(2)} km</span>
             </p>
             <p className="text-xl">
               <span className="font-semibold text-blue-700">Duration:</span>{' '}
-              <span className="text-gray-800">{routeInfo.duration.toFixed(2)} minutes</span>
+              <span className="text-gray-900">{routeInfo.duration.toFixed(2)} minutes</span>
             </p>
           </div>
         </div>
