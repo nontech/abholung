@@ -2,6 +2,7 @@
 import dynamic from 'next/dynamic';
 
 import ProductInfo from './components/ProductInfo'
+import DateInput from './components/DateInput';
 
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
 
@@ -10,6 +11,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <ProductInfo />
       <Map />
+      <DateInput value={new Date()} onChange={(date) => console.log(date)} />
     </div>
   )
 }
