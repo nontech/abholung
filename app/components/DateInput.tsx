@@ -3,8 +3,6 @@ import dynamic from 'next/dynamic';
 import 'flatpickr/dist/flatpickr.min.css';
 import flatpickr from "flatpickr";
 
-const Flatpickr = dynamic(() => import('react-flatpickr').then(mod => mod.default), { ssr: false });
-
 interface DateInputProps {
   options?: {
     dateFormat: string;
