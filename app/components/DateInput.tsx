@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
 import 'flatpickr/dist/flatpickr.min.css';
 import flatpickr from "flatpickr";
 
