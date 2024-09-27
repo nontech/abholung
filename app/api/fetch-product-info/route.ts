@@ -6,7 +6,9 @@ import * as cheerio from 'cheerio';
 interface ProductData {
   title: string;
   price: string;
-  description: string;
+  listedBy: string;
+  address: string;
+  imgSrc? : string;
 }
 
 export async function POST(request: NextRequest) {
@@ -29,11 +31,13 @@ export async function POST(request: NextRequest) {
     // Adjust selectors as needed based on actual HTML structure
     const title = $('h1#viewad-title').text().trim();
     const price = $('#viewad-price').text().trim();
-    const description = $('#viewad-description').text().trim();
+    const listedBy = $('#viewad-contact .userprofile-vip').text().trim();
+    const address = $('#viewad-locality').text().trim();
+    const imgSrc = $('#viewad-product img').attr('src');
 
-    console.log('Extracted data:', { title, price, description });
+    console.log('Extracted data:', { title, price, listedBy, address, imgSrc});
 
-    const productData: ProductData = { title, price, description };
+    const productData: ProductData = { title, price, listedBy, address, imgSrc};
     return NextResponse.json(productData, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {

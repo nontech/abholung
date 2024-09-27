@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, ChangeEvent } from 'react'
+import Image from 'next/image'
 
 interface ProductData {
   title: string
   price: string
-  description: string
+  listedBy: string
+  address: string
+  imgSrc?: string
   // Add other fields as needed
 }
 
@@ -71,8 +74,14 @@ export default function ProductInfo() {
       {product && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-2 text-gray-800">{product.title}</h2>
+          {product.imgSrc && (
+            <div className="flex justify-center items-center">
+              <Image src={product.imgSrc} alt={product.title} width={200} height={200} />
+            </div>
+          )}
           <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
-          <p className="text-gray-700">{product.description}</p>
+          <p className="text-gray-700">Listed by: {product.listedBy}</p>
+          <p className="text-gray-700">Pickup Address: {product.address}</p>
         </div>
       )}
     </div>
