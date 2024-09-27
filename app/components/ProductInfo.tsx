@@ -82,7 +82,6 @@ export default function ProductInfo() {
           <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
           <p className="text-gray-700">Listed by: {product.listedBy}</p>
           <p className="text-gray-700">Pickup Address: {product.address}</p>
-          <p className="text-gray-700">URL: {product.price}</p>
         </div>
       )}
     </div>
