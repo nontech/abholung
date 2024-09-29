@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
-
-interface TimeRangeProps {
-  selectedTime: string;
-  onTimeChange: (time: string) => void;
-}
+import React from 'react';
+import { TimeRangeProps } from '../../types/common';
 
 const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) => {
   const timeOptions = [
@@ -35,11 +31,10 @@ const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) => 
   );
 };
 
-const TimePicker: React.FC = () => {
-  const [selectedTime, setSelectedTime] = useState<string>('');
+const TimePicker: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) => {
 
   const handleTimeChange = (time: string) => {
-    setSelectedTime(time);
+    onTimeChange(time);
   };
 
   return (

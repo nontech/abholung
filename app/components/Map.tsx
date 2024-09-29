@@ -10,6 +10,7 @@ import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import AutocompleteInput from './AutocompleteInput';
 import { getDistance } from 'geolib';
 import 'leaflet/dist/leaflet.css';
+import { RouteInfo, MapData } from '../../types/common';
 
 // Define a more specific type for the Leaflet icon prototype
 interface ExtendedIconOptions extends L.IconOptions {
@@ -24,11 +25,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: '/leaflet/marker-shadow.png',
 });
 
-interface RouteInfo {
-  distance: number;
-  duration: number;
-  coordinates: [number, number][];
-}
 
 // Define custom icon using online image URLs
 const customIcon = new L.Icon({
@@ -75,7 +71,11 @@ function ChangeView({ coords }: { coords: [number, number][] }) {
   return null;
 }
 
-export default function Map() {
+interface MapProps {
+  onChange: (mapInfo: MapData) => void;
+}
+
+export default function Map({onChange}: MapProps) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [fromCoords, setFromCoords] = useState<[number, number] | null>(null);
@@ -99,6 +99,8 @@ export default function Map() {
     setLoading(true);
     setError('');
     setRouteInfo(null);
+    // call the callback function with the map data
+    onChange({ from, to });
 
     try {
       const fromCoordinates = fromCoords || await geocodeAddress(from);

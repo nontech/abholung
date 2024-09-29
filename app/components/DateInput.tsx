@@ -1,19 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import 'flatpickr/dist/flatpickr.min.css';
 import flatpickr from "flatpickr";
-
-interface DateInputProps {
-  options?: {
-    dateFormat: string;
-    minDate?: string | Date;
-    maxDate?: string | Date;
-    disable?: (string | Date)[];
-  };
-  value: Date | null;
-  onChange: ([selectedDate]: Date[]) => void;
-  className?: string;
-  placeholder?: string;
-}
+import { DateInputProps } from '../../types/common';
 
 const DateInput: React.FC<DateInputProps> = ({
   options = { dateFormat: 'd M D Y' },

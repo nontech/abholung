@@ -1,27 +1,24 @@
 'use client'
 
-import { useState, ChangeEvent } from 'react'
+import { useState, ChangeEvent} from 'react'
 import Image from 'next/image'
+import type { ProductData } from '../../types/common'
 
-interface ProductData {
-  title: string
-  price: string
-  listedBy: string
-  address: string
-  imgSrc?: string
-  // Add other fields as needed
+interface ProductInfoProps {
+  product: ProductData | null;
+  onProductFetched: (product: ProductData) => void;
 }
 
-export default function ProductInfo() {
+
+export default function ProductInfo({ product, onProductFetched }: ProductInfoProps) {
   const [url, setUrl] = useState<string>('')
-  const [product, setProduct] = useState<ProductData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
 
   const fetchProduct = async () => {
     setLoading(true)
     setError('')
-    setProduct(null)
 
     try {
       const response = await fetch('/api/fetch-product-info', {
@@ -31,7 +28,7 @@ export default function ProductInfo() {
       })
       const data = await response.json()
       if (response.ok) {
-        setProduct(data)
+        onProductFetched(data)
       } else {
         setError(data.error || 'Failed to fetch product info')
       }
