@@ -28,6 +28,7 @@ export default function Home() {
 
   }
 
+  const isContinueEnabled = productData && mapData && selectedDate && selectedTime;
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
@@ -35,7 +36,7 @@ export default function Home() {
       <Map onChange={setMapData} />
       <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
       <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
-      <button onClick={handleNavigate} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+      <button onClick={handleNavigate} className="mt-4 bg-green-500 text-white px-4 py-2 rounded" disabled = {!isContinueEnabled}>
         Continue
       </button>
     </div>
