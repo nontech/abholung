@@ -1,6 +1,6 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import type { ProductData, MapData } from '../../types/common';
 
 const Details = () => {
@@ -24,21 +24,23 @@ const Details = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="mt-4 p-4 bg-white rounded shadow-md w-full max-w-md">
-        <h2 className="text-lg font-bold mb-2">Details Page</h2>
-        <pre className="text-sm text-gray-700">
-          <strong>Product Data:</strong> {JSON.stringify(productData, null, 2)}
-        </pre>
-        <pre className="text-sm text-gray-700">
-          <strong>Map Data:</strong> {JSON.stringify(mapData, null, 2)}
-        </pre>
-        <pre className="text-sm text-gray-700">
-          <strong>Selected Date:</strong> {selectedDate || 'N/A'}
-        </pre>
-        <pre className="text-sm text-gray-700">
-          <strong>Selected Time:</strong> {selectedTime || 'N/A'}
-        </pre>
-      </div>
+        <Suspense fallback={<div>Loading...</div>}>
+            <div className="mt-4 p-4 bg-white rounded shadow-md w-full max-w-md">
+                <h2 className="text-lg font-bold mb-2">Details Page</h2>
+                <pre className="text-sm text-gray-700">
+                <strong>Product Data:</strong> {JSON.stringify(productData, null, 2)}
+                </pre>
+                <pre className="text-sm text-gray-700">
+                <strong>Map Data:</strong> {JSON.stringify(mapData, null, 2)}
+                </pre>
+                <pre className="text-sm text-gray-700">
+                <strong>Selected Date:</strong> {selectedDate || 'N/A'}
+                </pre>
+                <pre className="text-sm text-gray-700">
+                <strong>Selected Time:</strong> {selectedTime || 'N/A'}
+                </pre>
+            </div>
+      </Suspense>
     </div>
   );
 };
