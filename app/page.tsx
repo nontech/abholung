@@ -4,7 +4,7 @@ import ProductInfo from './components/ProductInfo';
 import DateInput from './components/DateInput';
 import TimePicker from './components/TimePicker';
 import type { ProductData, MapData } from '../types/common';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
@@ -16,17 +16,17 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
 
+
   const handleNavigate = () => {
-    router.push({
-      pathname: '/details',
-      query: {
-        productData: JSON.stringify(productData),
-        mapData: JSON.stringify(mapData),
-        selectedDate: selectedDate?.toISOString(),
-        selectedTime,
-      },
+    const query = new URLSearchParams({
+      productData: JSON.stringify(productData),
+      mapData: JSON.stringify(mapData),
+      selectedDate: selectedDate?.toISOString() || '',
+      selectedTime: selectedTime || '',
     });
-  };
+    router.push(`/details?${query.toString()}`);
+
+  }
 
 
   return (
