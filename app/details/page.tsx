@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/router';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { ProductData, MapData } from '../../types/common';
@@ -42,11 +43,21 @@ const DetailsContent = () => {
 };
 
 const Details = () => {
+  const router = useRouter();
+  const handleContinueToPayment = () => {
+    router.push('/payment');
+  }
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <Suspense fallback={<div>Loading...</div>}>
         <DetailsContent />
       </Suspense>
+      <button
+        onClick={handleContinueToPayment}
+        className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
+      >
+        Continue to Payment
+      </button>
     </div>
   );
 };
