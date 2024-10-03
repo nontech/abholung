@@ -2,13 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 
-type HandleBackFunction = (showPayment: boolean) => void;
-
-interface PaymentPageProps {
-  handleBack: HandleBackFunction;
-}
-
-export default function PaymentPage({handleBack}: PaymentPageProps){
+export default function PaymentPage(){
     const router = useRouter();
 
     const handlePayment = async () => {
@@ -38,18 +32,8 @@ export default function PaymentPage({handleBack}: PaymentPageProps){
         }
     }
 
-    function goBack() {
-        handleBack(false);
-    }
-
     return (
         <div>
-            {/* Back Button */}
-            <div className="mb-6">
-                    <button onClick={goBack} className="text-green-600 text-sm font-medium underline">
-                    Back
-                    </button>
-                </div>
             <button onClick={handlePayment} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
                 I paid via PayPal
             </button>
