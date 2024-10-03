@@ -38,7 +38,7 @@ export default function Home() {
       <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
       <button onClick={handleNavigate} 
               className="mt-4 bg-green-500 text-white px-4 py-2 rounded" 
-              // disabled = {!isContinueEnabled}
+              disabled = {!isContinueEnabled}
       >
         Continue
       </button>
