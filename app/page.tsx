@@ -185,7 +185,7 @@ export default function Home() {
       {stage === 4 && (
         <div>
           <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} />
-          <button onClick={() => setStage(1)} 
+          <button onClick={() => window.location.reload()} 
                     className="mt-4 bg-green-500 text-white px-4 py-2 rounded" 
                     // disabled = {!isContinueEnabled}
             >
