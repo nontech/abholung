@@ -1,65 +1,151 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import type { ProductData, MapData } from '../../types/common';
+import { useEffect, useState } from 'react';
+import { MapData, ProductData } from '../../types/common';
+import Payment from '../components/Payment';
 
-const DetailsContent = () => {
+export default function ConfirmPage() {
   const searchParams = useSearchParams();
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [pickupFrom, setPickupFrom] = useState<string>('Address N/A');
+  const [deliverTo, setDeliverTo] = useState<string>('Address N/A');
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedTime, setSelectedTime] = useState<string>('');
+  const [showPayment, setShowPayment] = useState(false);
+  
 
   useEffect(() => {
-    const productDataParam = searchParams.get('productData');
-    const mapDataParam = searchParams.get('mapData');
-    const selectedDateParam = searchParams.get('selectedDate');
-    const selectedTimeParam = searchParams.get('selectedTime');
+    const productData = searchParams.get('productData');
+    const selectedDate = searchParams.get('selectedDate');
+    const selectedTime = searchParams.get('selectedTime');
+    const mapDataString = searchParams.get('mapData');
+    const mapData = mapDataString ? JSON.parse(mapDataString) : null;
 
-    if (productDataParam) setProductData(JSON.parse(productDataParam));
-    if (mapDataParam) setMapData(JSON.parse(mapDataParam));
-    if (selectedDateParam) setSelectedDate(selectedDateParam);
-    if (selectedTimeParam) setSelectedTime(selectedTimeParam);
+    if (productData) setProductData(JSON.parse(productData));
+    if (selectedDate) setSelectedDate(selectedDate);
+    if (selectedTime) setSelectedTime(selectedTime);
+
+    if (mapData && mapData.from && mapData.to) {
+        setPickupFrom(mapData.from);
+        setDeliverTo(mapData.to);
+      } else {
+        setPickupFrom('Address N/A');
+        setDeliverTo('Address N/A');
+      }
   }, [searchParams]);
 
+  const handleContinueClick = () => {
+    setShowPayment(true);
+  };
+
+  
+
   return (
-    <div className="mt-4 p-4 bg-white rounded shadow-md w-full max-w-md">
-      <h2 className="text-lg font-bold mb-2">Details Page</h2>
-      <pre className="text-sm text-gray-700">
-        <strong>Product Data:</strong> {JSON.stringify(productData, null, 2)}
-      </pre>
-      <pre className="text-sm text-gray-700">
-        <strong>Map Data:</strong> {JSON.stringify(mapData, null, 2)}
-      </pre>
-      <pre className="text-sm text-gray-700">
-        <strong>Selected Date:</strong> {selectedDate || 'N/A'}
-      </pre>
-      <pre className="text-sm text-gray-700">
-        <strong>Selected Time:</strong> {selectedTime || 'N/A'}
-      </pre>
+    <div>
+        {showPayment ? (<Payment handleBack={setShowPayment} />) : (
+            <div className="min-h-screen bg-gray-50 py-8 px-4">
+                {/* Back Button */}
+                <div className="mb-6">
+                    <Link href="/" className="text-green-600 text-sm font-medium underline">
+                    Back
+                    </Link>
+                </div>
+
+                {/* Step Indicator */}
+                <div className="text-center text-sm text-gray-500 mb-6">STEP 2 of 2</div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Pickup From Section */}
+                    <div className="bg-white p-6 shadow rounded-md">
+                    <h2 className="text-lg font-semibold mb-4">Pickup From</h2>
+                    <p className="text-gray-700 mb-4">{pickupFrom}</p>
+                    <Link href="/edit-pickup" className="text-sm text-blue-600 underline">
+                        Edit
+                    </Link>
+
+                    <input
+                        type="text"
+                        placeholder="Name on the door"
+                        className="block w-full border border-gray-300 rounded mt-4 p-2"
+                    />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        className="block w-full border border-gray-300 rounded mt-4 p-2"
+                    />
+                    <input
+                        type="text"
+                        placeholder="+49 - Phone Number"
+                        className="block w-full border border-gray-300 rounded mt-4 p-2"
+                    />
+
+                    <p className="text-sm text-gray-500 mt-4">
+                        Please provide the number so we can call/text when picking up the item
+                    </p>
+                    <textarea
+                        placeholder="Extra details ...."
+                        className="block w-full border border-gray-300 rounded mt-4 p-2 h-24"
+                    />
+                    </div>
+
+                    {/* Deliver To Section */}
+                    <div className="bg-white p-6 shadow rounded-md">
+                    <h2 className="text-lg font-semibold mb-4">Deliver To</h2>
+                    <p className="text-gray-700 mb-4">{deliverTo}</p>
+                    <Link href="/edit-delivery" className="text-sm text-blue-600 underline">
+                        Edit
+                    </Link>
+
+                    <input
+                        type="text"
+                        placeholder="Name on the door"
+                        className="block w-full border border-gray-300 rounded mt-4 p-2"
+                    />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        className="block w-full border border-gray-300 rounded mt-4 p-2"
+                    />
+                    <input
+                        type="text"
+                        placeholder="+49 - Phone Number"
+                        className="block w-full border border-gray-300 rounded mt-4 p-2"
+                    />
+
+                    <p className="text-sm text-gray-500 mt-4">
+                        Number only for emergency purposes
+                    </p>
+                    <textarea
+                        placeholder="Extra details ...."
+                        className="block w-full border border-gray-300 rounded mt-4 p-2 h-24"
+                    />
+                    </div>
+                </div>
+
+                {/* Product and DateTime Selection */}
+                <div className="mt-8 flex justify-center">
+                    <div className="bg-white p-6 shadow rounded-md text-center w-full max-w-md">
+                    <p className="text-lg font-semibold">{deliverTo}</p>
+                    </div>
+                </div>
+
+                <div className="mt-8 flex justify-center">
+                    <div className="bg-white p-6 shadow rounded-md text-center w-full max-w-md">
+                    <p className="text-lg font-semibold">{selectedDate}</p>
+                    <p className="text-gray-500">{selectedTime}</p>
+                    </div>
+                </div>
+
+                {/* Continue Button */}
+                <div className="mt-8 flex justify-center">
+                    <button onClick={handleContinueClick}  className="bg-green-600 text-white px-6 py-3 rounded-md">
+                        CONTINUE →
+                    </button>
+                </div>
+            </div>
+        )}
     </div>
   );
-};
-
-const Details = () => {
-  const router = useRouter();
-  const handleContinueToPayment = () => {
-    router.push('/payment');
-  }
-  return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <Suspense fallback={<div>Loading...</div>}>
-        <DetailsContent />
-      </Suspense>
-      <button
-        onClick={handleContinueToPayment}
-        className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
-      >
-        Continue to Payment
-      </button>
-    </div>
-  );
-};
-
-export default Details;
+}
