@@ -1,11 +1,6 @@
 import React from 'react';
+import { DeliveryDetails } from '../../types/common';
 
-interface DeliveryDetails {
-  name: string;
-  address: string;
-  date: string;
-  time: string;
-}
 
 interface DeliveryInfoProps {
   pickupDetails: DeliveryDetails;
