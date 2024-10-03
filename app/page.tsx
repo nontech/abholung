@@ -10,8 +10,8 @@ import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
 import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
 import DeliveryPeople from './components/DeliveryPeople';
-import { supabase } from '@/app/supabaseClient';
 import PaymentPage from './components/Payment';
+import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
 
 
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
@@ -32,163 +32,46 @@ export default function Home() {
   const [pickupFromPhoneNumber, setPickupFromPhoneNumber] = useState<string>('');
   const [additionalPickupInstructions, setAdditionalPickupInstructions] = useState<string>('');
 
-  // Delive to details
+  // Deliver to details
   const [deliverToName, setdeliverToName] = useState<string>('');
   const [deliverToEmail, setdeliverToEmail] = useState<string>('');
   const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>('');
   const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] = useState<string>('');
 
+  const [stage, setStage]= useState<number>(1);
+
   useEffect(() => {
-    const fetchDeliveryPeople = async () => {
-      const { data, error } = await supabase.from('users')
-      .select('id, full_name')
-      .eq('type', 'Delivery Person');
-      if (error) {
-        console.error('Error fetching delivery people:', error);
-      } else {
-        console.log(data);
-        setDeliveryPeople(data);
-      }
+    const fetchData = async () => {
+      const data = await fetchDeliveryPeople();
+      setDeliveryPeople(data);
     };
 
-    fetchDeliveryPeople();
+    fetchData();
   }, []);
 
   useEffect(() => {
-    console.log('paymentDone', paymentDone);
-    console.log('blah blah')
     if (paymentDone) {
-      const savePickupUserToDatabase = async () => {
-        const {data, error} = await supabase
-          .from('users')
-          .insert([
-            {
-              full_name: pickupFromName,
-              email: pickupFromEmail,
-              phone_number: pickupFromPhoneNumber
-            }
-          ]).select();
-          if (error) {
-            console.error('Error saving to database:', error);
-            return null;
-          } else {
-            if (data && data.length > 0) {
-              const userId = data[0].id;
-              return userId;
-            }
-            return null;
-          }
-      };
-      const saveDeliverUserToDatabase = async () => {
-        const {data, error} = await supabase
-          .from('users')
-          .insert([
-            {
-              full_name: deliverToName,
-              email: deliverToEmail,
-              phone_number: deliverPhoneNumber
-            }
-          ]).select();
-        if (error) {
-          console.error('Error saving to database:', error);
-          return null;
-        } else {
-          if (data && data.length > 0) {
-            const userId = data[0].id;
-            return userId;
-          }
-          return null;
-        }
-      }
-
-      const saveProductToDatabase = async () => {
-        const {data, error} = await supabase
-          .from('product')
-          .insert([
-            {
-              url: productData?.url,
-              title: productData?.title,
-              price: productData?.price,
-              pic_url: productData?.pic_url,
-              listed_by: productData?.listed_by
-            }
-          ]).select();
-        if (error) {
-          console.error('Error saving to database:', error);
-          return null;
-        } else {
-          if (data && data.length > 0) {
-            const productId = data[0].id;
-            return productId;
-          }
-          return null;
-        }
-      }
-
-      const saveLogisticsToDatabase = async () => {
-        const {data, error} = await supabase
-          .from('logistics')
-          .insert([
-            {
-              from: mapData?.from,
-              to: mapData?.to,
-              from_additional_instructions: additionalPickupInstructions,
-              to_additional_instructions: additionalDeliveryInstructions
-            }
-          ]).select();
-        if (error) {
-          console.error('Error saving to database:', error);
-          return null;
-        } else {
-          if (data && data.length > 0) {
-            const logisticId = data[0].id;
-            return logisticId;
-          }
-          return null;
-        }
-      }
-      
-      const saveOrderToDatabase = async (pickupUserId: string, deliverUserId: string, productId: string, logisticId: string) => {
-        // insert data into user table
-        const { data, error } = await supabase
-          .from('order')
-          .insert([
-            {
-              product: productId,
-              logistics: logisticId,
-              delivered_by: selectedDeliveryPerson?.id,
-              pickup_from: pickupUserId,
-              type: 'test',
-              deliver_to: deliverUserId,
-              pickup_on: selectedDate,
-              pickup_between: selectedTime,
-              total: '999',
-            },
-          ]);
-
-        if (error) {
-          console.error('Error saving to database:', error);
-        } else {
-          console.log('Data saved successfully:', data);
-          setStage(4);
-        }
-      };
       const handleSaveOrder = async () => {
-        const pickupUserId = await savePickupUserToDatabase();
-        const deliverUserId = await saveDeliverUserToDatabase();
-        const productId = await saveProductToDatabase();
-        const logisticId = await saveLogisticsToDatabase();
+        const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
+        const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
+        const productId = await saveProductToDatabase(productData!);
+        const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
         if (pickupUserId && deliverUserId && productId && logisticId) {
-          await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId);
+          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime);
+          if (orderData) {
+            setStage(4);
+          }
         }
       };
+
       handleSaveOrder();
     }
-  }, [additionalDeliveryInstructions, additionalPickupInstructions, deliverPhoneNumber, deliverToEmail, deliverToName, mapData?.from, mapData?.to, paymentDone, pickupFromEmail, pickupFromName, pickupFromPhoneNumber, productData?.listed_by, productData?.pic_url, productData?.price, productData?.title, productData?.url, selectedDate, selectedDeliveryPerson?.id, selectedTime]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentDone]);
 
   
 
-  const [stage, setStage]= useState<number>(1);
+ 
 
   const pickupDetails: DeliveryDetails = {
     name: pickupFromName,
