@@ -36,7 +36,10 @@ export default function Home() {
       <Map onChange={setMapData} />
       <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
       <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
-      <button onClick={handleNavigate} className="mt-4 bg-green-500 text-white px-4 py-2 rounded" disabled = {!isContinueEnabled}>
+      <button onClick={handleNavigate} 
+              className="mt-4 bg-green-500 text-white px-4 py-2 rounded" 
+              // disabled = {!isContinueEnabled}
+      >
         Continue
       </button>
     </div>
