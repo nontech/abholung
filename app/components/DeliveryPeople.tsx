@@ -29,7 +29,7 @@ const DeliveryPeople: React.FC<DeliveryPeopleProps> = ({ deliveryPeople, onSelec
                 checked={selectedPersonId === person.id}
                 onChange={() => handleSelect(person)}
               />
-              {person.name}
+              {person.full_name}
             </label>
           </li>
         ))}

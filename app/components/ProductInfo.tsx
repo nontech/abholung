@@ -27,7 +27,9 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
         body: JSON.stringify({ url }),
       })
       const data = await response.json()
+
       if (response.ok) {
+        data.url = url
         onProductFetched(data)
       } else {
         setError(data.error || 'Failed to fetch product info')
@@ -71,13 +73,13 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
       {product && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-2 text-gray-800">{product.title}</h2>
-          {product.imgSrc && (
+          {product.pic_url && (
             <div className="flex justify-center items-center">
-              <Image src={product.imgSrc} alt={product.title} width={200} height={200} />
+              <Image src={product.pic_url} alt={product.title} width={200} height={200} />
             </div>
           )}
           <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
-          <p className="text-gray-700">Listed by: {product.listedBy}</p>
+          <p className="text-gray-700">Listed by: {product.listed_by}</p>
           <p className="text-gray-700">Pickup Address: {product.address}</p>
         </div>
       )}

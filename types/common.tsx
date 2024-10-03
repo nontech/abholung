@@ -1,9 +1,10 @@
 export interface ProductData {
+    url: string
     title: string
     price: string
-    listedBy: string
+    listed_by: string
     address: string
-    imgSrc?: string
+    pic_url?: string
     // Add other fields as needed
 }
 
@@ -71,5 +72,5 @@ export interface DetailsPageType {
 
 export interface DeliveryPerson {
     id: number;
-    name: string;
+    full_name: string;
 }
