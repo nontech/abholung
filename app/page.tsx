@@ -3,8 +3,10 @@ import dynamic from 'next/dynamic';
 import ProductInfo from './components/ProductInfo';
 import DateInput from './components/DateInput';
 import TimePicker from './components/TimePicker';
+import ContinueButton from './components/ContinueButton';
+import BackButton from './components/BackButton';
 import type { ProductData, MapData } from '../types/common';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PaymentPage from './components/Payment';
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
@@ -80,86 +82,82 @@ export default function Home() {
     onDeliverToPhoneNumberChange: setdeliverPhoneNumber,
     onAdditionalDeliveryInstructionsChange: setAdditionaldeliveryInstructions,
     productData: productData!,
+    onEdit: setStage
   };
 
-
-  const handleContinue = (stage: number) => {
-    setStage(stage+1);
-  }
+  const handleContinue = () => {
+    if (stage < 4) {
+      setStage(stage + 1);
+    } else {
+      setStage(1); // Reset to stage 1 if on the summary page
+    }
+  };
 
   const handleBack = () => {
-    setStage(stage-1);
-  }
+    if (stage > 1 && stage < 4) {
+      setStage(stage - 1);
+    }
+  };
 
-  const isContinueEnabled = productData && mapData && selectedDate && selectedTime;
+  // const [isContinueEnabled, setIsContinueEnabled] = useState<boolean>(false);
 
-  console.log('pickupFomName:', pickupFromName);
+  // const checkContinueEnabled = () => {
+  //   switch (stage) {
+  //     case 1:
+  //       // Check conditions for stage 1
+  //       setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime);
+  //       break;
+  //     case 2:
+  //       // Check conditions for stage 2
+  //       setIsContinueEnabled(!!pickupFromName && !!pickupFromEmail && !!pickupFromPhoneNumber);
+  //       break;
+  //     case 3:
+  //       // Check conditions for stage 3
+  //       setIsContinueEnabled(!!selectedDeliveryPerson);
+  //       break;
+  //     case 4:
+  //       // Check conditions for stage 4
+  //       setIsContinueEnabled(true); // Assuming you want to enable it if you're on the summary page
+  //       break;
+  //     default:
+  //       setIsContinueEnabled(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   checkContinueEnabled();
+  // }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson]);
+
+  // const isContinueEnabled = productData && mapData && selectedDate && selectedTime;
+  const isContinueEnabled = true;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      {/* Back Navigation Arrow */}
-      {stage !== 1 ? (
-            <div className='flex w-1/5 items-end justify-start'>
-              <button
-                className='group flex flex-col items-center justify-end rounded-full p-0 text-muted-foreground transition-all hover:text-foreground sm:flex-row sm:p-2'
-                onClick={handleBack}
-              >
-                <p className='order-2 ml-1 text-xs font-light sm:order-1 sm:mr-2 sm:text-sm sm:font-medium'>
-                  Back
-                </p>
-              </button>
-            </div>): (
-            <div className='w-1/5' /> // Placeholder to maintain spacing
-      )}
+    <div className="bg-gray-100 p-5">
+      {/* Back Navigation */}
+      {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
       {stage === 1 && (
-        <div>
+        <div className='w-full max-w-4xl mx-auto p-4'>
           <ProductInfo product={productData} onProductFetched={setProductData} />
           <Map onChange={setMapData} />
-          <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
-          <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
+          <div className="flex">
+            <div className="w-1/2">
+              <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
+            </div>
+            <div className="w-1/2">
+              <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
+            </div>
+          </div>
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
-          <button onClick={() => handleContinue(stage)} 
-                  className="mt-4 bg-green-500 text-white px-4 py-2 rounded" 
-                  // disabled = {!isContinueEnabled}
-          >
-            Continue
-          </button>
         </div>
       )}
-      {stage === 2 && (
-        <div>
-          <DetailsPage details={detailsPageProps} />
-          <button onClick={() => handleContinue(stage)} 
-                    className="mt-4 bg-green-500 text-white px-4 py-2 rounded" 
-                    // disabled = {!isContinueEnabled}
-            >
-              Continue
-          </button>
-        </div>
-      )}
-      {stage === 3 && (
-        <div>
-          <PaymentPage />
-          <button onClick={() => handleContinue(stage)} 
-                    className="mt-4 bg-green-500 text-white px-4 py-2 rounded" 
-                    // disabled = {!isContinueEnabled}
-            >
-              Continue
-          </button>
-        </div>
-      )}
-      {stage === 4 && (
-        <div>
-          <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} />
-          <button onClick={() => setStage(1)} 
-                    className="mt-4 bg-green-500 text-white px-4 py-2 rounded" 
-                    // disabled = {!isContinueEnabled}
-            >
-              Deliver another item
-          </button>
-        </div>
-      )}
+      {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
+      {stage === 3 && ( <PaymentPage /> )}
+      {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
+      {/* Conditionally render the Continue Button */}
+      {stage < 4 && (
+          <ContinueButton onClick={handleContinue} isEnabled={isContinueEnabled} />
+        )}
     </div>
   );
 }

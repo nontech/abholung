@@ -10,8 +10,8 @@ const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) => 
   ];
 
   return (
-    <div className="mb-4">
-      <label htmlFor="time" className="block text-sm font-medium text-gray-700">Select Time</label>
+    <div>
+      <label htmlFor="time" className="block text-gray-600 font-bold mb-2">Pickup Between</label>
       <select
         id="time"
         name="time"
@@ -39,7 +39,6 @@ const TimePicker: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) =>
 
   return (
     <div>
-      <h1>Select a Time Range</h1>
       <TimeRange selectedTime={selectedTime} onTimeChange={handleTimeChange} />
     </div>
   );
