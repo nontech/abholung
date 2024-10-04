@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
 import { MapContainer, TileLayer, Polyline, Marker, useMap } from 'react-leaflet';
@@ -9,15 +7,12 @@ import 'leaflet-defaulticon-compatibility';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import AutocompleteInput from './AutocompleteInput';
 import { getDistance } from 'geolib';
-import 'leaflet/dist/leaflet.css';
 import { RouteInfo, MapData } from '../../types/common';
 
-// Define a more specific type for the Leaflet icon prototype
 interface ExtendedIconOptions extends L.IconOptions {
   _getIconUrl?: string;
 }
 
-// Fix Leaflet icon issue
 delete (L.Icon.Default.prototype as Partial<ExtendedIconOptions>)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: '/leaflet/marker-icon-2x.png',
@@ -25,8 +20,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: '/leaflet/marker-shadow.png',
 });
 
-
-// Define custom icon using online image URLs
 const customIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -45,19 +38,22 @@ interface GeocodeResponse {
   }[];
 }
 
-// Add this interface near the top of the file, with other interfaces
 interface RouteResponse {
-  features: [{
-    properties: {
-      segments: [{
-        distance: number;
-        duration: number;
-      }];
-    };
-    geometry: {
-      coordinates: [number, number][];
-    };
-  }];
+  features: [
+    {
+      properties: {
+        segments: [
+          {
+            distance: number;
+            duration: number;
+          }
+        ];
+      };
+      geometry: {
+        coordinates: [number, number][];
+      };
+    }
+  ];
 }
 
 function ChangeView({ coords }: { coords: [number, number][] }) {
@@ -75,7 +71,7 @@ interface MapProps {
   onChange: (mapInfo: MapData) => void;
 }
 
-export default function Map({onChange}: MapProps) {
+export default function Map({ onChange }: MapProps) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [fromCoords, setFromCoords] = useState<[number, number] | null>(null);
@@ -94,17 +90,15 @@ export default function Map({onChange}: MapProps) {
     throw new Error('Address not found');
   };
 
-  const handleRouteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const calculateRoute = async () => {
     setLoading(true);
     setError('');
     setRouteInfo(null);
-    // call the callback function with the map data
     onChange({ from, to });
 
     try {
-      const fromCoordinates = fromCoords || await geocodeAddress(from);
-      const toCoordinates = toCoords || await geocodeAddress(to);
+      const fromCoordinates = fromCoords || (await geocodeAddress(from));
+      const toCoordinates = toCoords || (await geocodeAddress(to));
 
       const distanceInMeters = getDistance(
         { latitude: fromCoordinates[1], longitude: fromCoordinates[0] },
@@ -139,71 +133,87 @@ export default function Map({onChange}: MapProps) {
     }
   };
 
-  return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <form onSubmit={handleRouteSubmit} className="mb-4">
-        <div className="mb-4">
-          <AutocompleteInput
-            value={from}
-            onChange={(value, coords) => {
-              setFrom(value);
-              setFromCoords(coords || null);
-            }}
-            placeholder="From"
-          />
-        </div>
-        <div className="mb-4">
-          <AutocompleteInput
-            value={to}
-            onChange={(value, coords) => {
-              setTo(value);
-              setToCoords(coords || null);
-            }}
-            placeholder="To"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded"
-          disabled={loading}
-        >
-          {loading ? 'Calculating...' : 'Get Route'}
-        </button>
-      </form>
+  useEffect(() => {
+    const fetchRoute = async () => {
+      if (from && to && fromCoords && toCoords) {
+        await calculateRoute();
+      } else {
+        setRouteInfo(null);
+      }
+    };
+    fetchRoute();
+  }, [from, to, fromCoords, toCoords]);
 
+  return (
+    <div>
+      <div className="mb-4">
+        <label className="block text-gray-700 font-bold mb-2">Pickup From</label>
+        <AutocompleteInput
+          value={from}
+          onChange={(value, coords) => {
+            setFrom(value);
+            setFromCoords(coords || null);
+          }}
+          placeholder="From"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 font-bold mb-2">Deliver To</label>
+        <AutocompleteInput
+          value={to}
+          onChange={(value, coords) => {
+            setTo(value);
+            setToCoords(coords || null);
+          }}
+          placeholder="To"
+        />
+      </div>
+      {loading && <p>Calculating route...</p>}
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {routeInfo && (
-        <div className="mb-6 p-6 bg-blue-50 rounded-lg shadow-md border border-blue-200">
-          <h2 className="text-2xl font-bold mb-4 text-blue-800">Route Information</h2>
-          <div className="space-y-2">
-            <p className="text-xl">
-              <span className="font-semibold text-blue-700">Distance:</span>{' '}
-              <span className="text-gray-900">{routeInfo.distance.toFixed(2)} km</span>
-            </p>
-            <p className="text-xl">
-              <span className="font-semibold text-blue-700">Duration:</span>{' '}
-              <span className="text-gray-900">{routeInfo.duration.toFixed(2)} minutes</span>
-            </p>
+        <div className="flex w-full">
+          <div className="w-1/3 p-4">
+            <h2 className="text-xl font-bold mb-4 text-blue-800">Route Information</h2>
+            <div className="space-y-4">
+              <p className="text-xl">
+                <span className="text-blue-700">Distance:</span>{' '}
+                <span className="text-gray-900">{routeInfo.distance.toFixed(2)} km</span>
+              </p>
+              <p className="text-xl">
+                <span className="text-blue-700">Duration:</span>{' '}
+                <span className="text-gray-900">{routeInfo.duration.toFixed(2)} minutes</span>
+              </p>
+            </div>
+          </div>
+          <div className="w-2/3 p-4">
+            <MapContainer
+              center={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]}
+              zoom={6}
+              style={{ height: '400px', width: '100%' }}
+            >
+              <ChangeView coords={routeInfo.coordinates} />
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Polyline
+                positions={routeInfo.coordinates.map(coord => [coord[1], coord[0]] as [number, number])}
+              />
+              <Marker
+                position={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]}
+                icon={customIcon}
+              />
+              <Marker
+                position={[
+                  routeInfo.coordinates[routeInfo.coordinates.length - 1][1],
+                  routeInfo.coordinates[routeInfo.coordinates.length - 1][0],
+                ]}
+                icon={customIcon}
+              />
+            </MapContainer>
           </div>
         </div>
-      )}
-
-      {routeInfo && (
-        <MapContainer
-          center={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]}
-          zoom={6}
-          style={{ height: '400px', width: '100%' }}
-        >
-          <ChangeView coords={routeInfo.coordinates} />
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <Polyline positions={routeInfo.coordinates.map(coord => [coord[1], coord[0]] as [number, number])} />
-          <Marker position={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]} icon={customIcon} />
-          <Marker position={[routeInfo.coordinates[routeInfo.coordinates.length - 1][1], routeInfo.coordinates[routeInfo.coordinates.length - 1][0]]} icon={customIcon} />
-        </MapContainer>
       )}
     </div>
   );
