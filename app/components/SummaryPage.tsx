@@ -54,4 +54,3 @@ const SummaryPage: React.FC<DeliveryInfoProps> = ({ pickupDetails, deliveryDetai
   };
   
   export default SummaryPage;
-  

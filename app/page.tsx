@@ -7,39 +7,72 @@ import ContinueButton from './components/ContinueButton';
 import BackButton from './components/BackButton';
 import type { ProductData, MapData } from '../types/common';
 import { useState, useEffect } from 'react';
-import PaymentPage from './components/Payment';
+//import PaymentPage from './components/Payment';
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
 import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
 import DeliveryPeople from './components/DeliveryPeople';
+import PaymentPage from './components/Payment';
+import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+
 
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
-const deliveryPeople = [
-  {id: 1, name: 'Aman Jaiswal'},
-  {id: 2, name: 'Philip Tapiwa'},
-  {id: 3, name: 'Mukesh Jaiswal'},
-];
+
 
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [deliveryPeople, setDeliveryPeople] = useState<DeliveryPerson[]>([]);
   const [selectedDeliveryPerson, setSelectedDeliveryPerson] = useState<DeliveryPerson | null>(null);
-
+  const [paymentDone, setPaymentDone] = useState<boolean>(false);
   // Pickup from details
   const [pickupFromName, setPickupFromName] = useState<string>('');
   const [pickupFromEmail, setPickupFromEmail] = useState<string>('');
   const [pickupFromPhoneNumber, setPickupFromPhoneNumber] = useState<string>('');
   const [additionalPickupInstructions, setAdditionalPickupInstructions] = useState<string>('');
 
-  // Delive to details
+  // Deliver to details
   const [deliverToName, setdeliverToName] = useState<string>('');
   const [deliverToEmail, setdeliverToEmail] = useState<string>('');
   const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>('');
   const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] = useState<string>('');
 
   const [stage, setStage]= useState<number>(1);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchDeliveryPeople();
+      setDeliveryPeople(data);
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (paymentDone) {
+      const handleSaveOrder = async () => {
+        const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
+        const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
+        const productId = await saveProductToDatabase(productData!);
+        const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
+        if (pickupUserId && deliverUserId && productId && logisticId) {
+          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime);
+          if (orderData) {
+            setStage(4);
+          }
+        }
+      };
+
+      handleSaveOrder();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentDone]);
+
+  
+
+ 
 
   const pickupDetails: DeliveryDetails = {
     name: pickupFromName,
@@ -84,7 +117,7 @@ export default function Home() {
     productData: productData!,
     onEdit: setStage
   };
-
+ 
   const handleContinue = () => {
     if (stage < 4) {
       setStage(stage + 1);
@@ -151,7 +184,7 @@ export default function Home() {
         </div>
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage /> )}
+      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone}/> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       {/* Conditionally render the Continue Button */}

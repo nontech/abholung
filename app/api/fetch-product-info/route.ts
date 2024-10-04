@@ -2,14 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { ProductData } from '@/types/common';
 
-interface ProductData {
-  title: string;
-  price: string;
-  listedBy: string;
-  address: string;
-  imgSrc? : string;
-}
+// interface ProductData {
+//   title: string;
+//   price: string;
+//   listedBy: string;
+//   address: string;
+//   imgSrc? : string;
+// }
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,13 +32,13 @@ export async function POST(request: NextRequest) {
     // Adjust selectors as needed based on actual HTML structure
     const title = $('h1#viewad-title').text().trim();
     const price = $('#viewad-price').text().trim();
-    const listedBy = $('#viewad-contact .userprofile-vip').text().trim();
+    const listed_by = $('#viewad-contact .userprofile-vip').text().trim();
     const address = $('#viewad-locality').text().trim();
-    const imgSrc = $('#viewad-product img').attr('src');
+    const pic_url = $('#viewad-product img').attr('src');
 
-    console.log('Extracted data:', { title, price, listedBy, address, imgSrc});
+    console.log('Extracted data:', { url, title, price, listed_by, address, pic_url});
 
-    const productData: ProductData = { title, price, listedBy, address, imgSrc};
+    const productData: ProductData = { url, title, price, listed_by, address, pic_url};
     return NextResponse.json(productData, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {

@@ -1,9 +1,9 @@
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
+interface PaymentProps {
+    handlePaymentDone: (paymentDone: boolean) => void;
+}
 
-export default function PaymentPage(){
-    const router = useRouter();
+export default function PaymentPage({handlePaymentDone}: PaymentProps){
 
     const handlePayment = async () => {
         try {
@@ -24,7 +24,7 @@ export default function PaymentPage(){
           if (!response.ok) {
             throw new Error('Failed to send emails');
           }
-    
+          handlePaymentDone(true);
           alert('Emails sent successfully');
         } catch (error) {
           console.error('Error sending emails:', error);
