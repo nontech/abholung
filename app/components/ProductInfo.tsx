@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, ChangeEvent} from 'react'
+import { useState, ChangeEvent, KeyboardEvent } from 'react'
 import Image from 'next/image'
 import type { ProductData } from '../../types/common'
 
@@ -9,12 +9,10 @@ interface ProductInfoProps {
   onProductFetched: (product: ProductData) => void;
 }
 
-
 export default function ProductInfo({ product, onProductFetched }: ProductInfoProps) {
   const [url, setUrl] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
 
   const fetchProduct = async () => {
     setLoading(true)
@@ -46,30 +44,45 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
     setUrl(e.target.value)
   }
 
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !loading) {
+      fetchProduct()
+    }
+  }
+
+  const clearUrl = () => {
+    setUrl('')
+  }
+
   return (
     <div>
       <h1 className="text-xl font-bold mb-4 text-gray-800">eBay Kleinanzeigen Product Link</h1>
 
-      <div className="mb-4 flex">
+      <div className="mb-4 relative">
         <input
           type="text"
-          placeholder="Enter Kleinanzeigen URL"
+          placeholder="Enter Kleinanzeigen URL and press Enter"
           value={url}
           onChange={handleUrlChange}
-          className={`w-3/4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          onKeyDown={handleKeyPress}
+          className={`w-full px-4 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             url ? 'text-black font-medium' : 'text-gray-500'
           }`}
-        />
-        <button
-          onClick={fetchProduct}
-          className="w-1/4 ml-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
           disabled={loading}
-        >
-          {loading ? 'Fetching...' : 'Fetch Product'}
-        </button>
+        />
+        {url && (
+          <button
+            onClick={clearUrl}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        )}
       </div>
 
-
+      {loading && <p className="text-blue-500 mt-4 pl-4">Fetching product information...</p>}
       {error && <p className="text-red-500 mt-4 pl-4">{error}</p>}
 
       {product && (

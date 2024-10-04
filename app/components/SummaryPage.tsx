@@ -7,9 +7,18 @@ interface DeliveryInfoProps {
   deliveryDetails: DeliveryDetails;
 }
 
+const confetti = '/images/confetti.png';
+
 const SummaryPage: React.FC<DeliveryInfoProps> = ({ pickupDetails, deliveryDetails }) => {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 py-8">
+      <div className="flex flex-col justify-center items-center">
+        <div className='flex justify-center mb-10'>
+          <img
+            src={confetti}
+            alt="Celebration"
+            className="h-20 w-20" 
+          />
+        </div>
         {/* Header */}
         <h1 className="text-2xl font-bold text-green-600 mb-8 text-center">
           Your Kleinanzeigen item delivery is being processed!

@@ -4,12 +4,14 @@ import ProductInfo from './components/ProductInfo';
 import DateInput from './components/DateInput';
 import TimePicker from './components/TimePicker';
 import ContinueButton from './components/ContinueButton';
+import Header from './components/Header';
 import BackButton from './components/BackButton';
 import type { ProductData, MapData } from '../types/common';
 import { useState, useEffect } from 'react';
 //import PaymentPage from './components/Payment';
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
+import ProgressBar from './components/ProgressBar';
 import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
 import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
@@ -69,10 +71,6 @@ export default function Home() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentDone]);
-
-  
-
- 
 
   const pickupDetails: DeliveryDetails = {
     name: pickupFromName,
@@ -165,18 +163,29 @@ export default function Home() {
   const isContinueEnabled = true;
 
   return (
-    <div className="bg-gray-100 p-5">
-      {/* Back Navigation */}
-      {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
+    <div className="bg-gray-100 p-5 min-h-screen">
+      <Header />
+      <div className='ml-64 mb-5'>
+            {/* Back Navigation */}
+            {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
+          </div>
+
+      {/* Progress Bar */}
+      {stage <=3 && (
+        <div className='w-full h-full max-w-4xl mx-auto p-4 mb-10'>
+          <ProgressBar currentStep={stage} />
+        </div>
+      )}
+      
       {stage === 1 && (
-        <div className='w-full max-w-4xl mx-auto p-4'>
+        <div className='w-full h-full max-w-4xl mx-auto p-4'>
           <ProductInfo product={productData} onProductFetched={setProductData} />
           <Map onChange={setMapData} />
           <div className="flex">
-            <div className="w-1/2">
+            <div className="w-1/2 p-2">
               <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
             </div>
-            <div className="w-1/2">
+            <div className="w-1/2 p-2">
               <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
             </div>
           </div>
@@ -189,8 +198,11 @@ export default function Home() {
       
       {/* Conditionally render the Continue Button */}
       {stage < 4 && (
+        <div className='flex justify-center mb-10'>
           <ContinueButton onClick={handleContinue} isEnabled={isContinueEnabled} />
+          </div>
         )}
+      
     </div>
   );
 }

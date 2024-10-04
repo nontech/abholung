@@ -5,6 +5,9 @@ interface PaymentProps {
 
 export default function PaymentPage({handlePaymentDone}: PaymentProps){
 
+    const paypal_logo = '/images/paypal_logo.png';
+    const mukesh_paypal = '/images/mukesh_paypal.png';
+
     const handlePayment = async () => {
         try {
           const response = await fetch('/api/send-email', {
@@ -33,10 +36,27 @@ export default function PaymentPage({handlePaymentDone}: PaymentProps){
     }
 
     return (
-        <div>
-            <button onClick={handlePayment} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+        <div className="mt-16">
+          <div className='flex justify-center mb-10'>
+            <img
+              src={mukesh_paypal}
+              alt="Mukesh Paypal link"
+              className="h-80 w-80" 
+            />
+          </div>
+          <div className='flex justify-center mb-10'>
+            <img
+              src={paypal_logo}
+              alt="Paypal Logo"
+              className="h-16 w-25" 
+            />
+          </div>
+          <div className='flex justify-center mb-10'>
+            <button onClick={handlePayment} className="mt-4 bg-green-500 text-white px-4 py-2 rounded w-48">
                 I paid via PayPal
             </button>
+          </div>
+          
         </div>
     )
 }
