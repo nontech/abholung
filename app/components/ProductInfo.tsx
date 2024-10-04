@@ -45,40 +45,44 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
   }
 
   return (
-    <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 mb-8">
-      <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">Product Search</h1>
-      <div className="mb-4">
+    <div>
+      <h1 className="text-xl font-bold mb-4 text-gray-800">eBay Kleinanzeigen Product Link</h1>
+
+      <div className="mb-4 flex">
         <input
           type="text"
           placeholder="Enter Kleinanzeigen URL"
           value={url}
           onChange={handleUrlChange}
-          className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          className={`w-3/4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             url ? 'text-black font-medium' : 'text-gray-500'
           }`}
         />
+        <button
+          onClick={fetchProduct}
+          className="w-1/4 ml-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+          disabled={loading}
+        >
+          {loading ? 'Fetching...' : 'Fetch Product'}
+        </button>
       </div>
-      <button
-        onClick={fetchProduct}
-        className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
-        disabled={loading}
-      >
-        {loading ? 'Fetching...' : 'Fetch Product'}
-      </button>
 
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+
+      {error && <p className="text-red-500 mt-4 pl-4">{error}</p>}
 
       {product && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2 text-gray-800">{product.title}</h2>
-          {product.imgSrc && (
-            <div className="flex justify-center items-center">
-              <Image src={product.imgSrc} alt={product.title} width={200} height={200} />
-            </div>
-          )}
-          <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
-          <p className="text-gray-700">Listed by: {product.listedBy}</p>
-          <p className="text-gray-700">Pickup Address: {product.address}</p>
+        <div className="mt-6 max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className="px-6 py-4">
+            <h2 className="text-xl font-semibold mb-2 text-gray-800">{product.title}</h2>
+            {product.imgSrc && (
+              <div className="flex justify-center items-center mb-4">
+                <Image src={product.imgSrc} alt={product.title} width={200} height={200} className="rounded-md" />
+              </div>
+            )}
+            <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
+            <p className="text-gray-700 mb-1">Listed by: {product.listedBy}</p>
+            <p className="text-gray-700">Pickup Address: {product.address}</p>
+          </div>
         </div>
       )}
     </div>

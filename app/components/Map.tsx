@@ -140,9 +140,12 @@ export default function Map({onChange}: MapProps) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
+    <div>
       <form onSubmit={handleRouteSubmit} className="mb-4">
         <div className="mb-4">
+        <label className="block text-gray-700 font-bold mb-2">
+          Pickup From
+        </label>
           <AutocompleteInput
             value={from}
             onChange={(value, coords) => {
@@ -153,6 +156,9 @@ export default function Map({onChange}: MapProps) {
           />
         </div>
         <div className="mb-4">
+          <label className="block text-gray-700 font-bold mb-2">
+            Deliver To
+          </label>
           <AutocompleteInput
             value={to}
             onChange={(value, coords) => {
@@ -164,7 +170,7 @@ export default function Map({onChange}: MapProps) {
         </div>
         <button
           type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded"
+          className="w-1/4 p-2 bg-blue-500 text-white rounded"
           disabled={loading}
         >
           {loading ? 'Calculating...' : 'Get Route'}
@@ -174,36 +180,37 @@ export default function Map({onChange}: MapProps) {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {routeInfo && (
-        <div className="mb-6 p-6 bg-blue-50 rounded-lg shadow-md border border-blue-200">
-          <h2 className="text-2xl font-bold mb-4 text-blue-800">Route Information</h2>
-          <div className="space-y-2">
-            <p className="text-xl">
-              <span className="font-semibold text-blue-700">Distance:</span>{' '}
-              <span className="text-gray-900">{routeInfo.distance.toFixed(2)} km</span>
-            </p>
-            <p className="text-xl">
-              <span className="font-semibold text-blue-700">Duration:</span>{' '}
-              <span className="text-gray-900">{routeInfo.duration.toFixed(2)} minutes</span>
-            </p>
+        <div className="flex w-full">
+           <div className="w-1/3 p-4">
+              <h2 className="text-xl font-bold mb-4 text-blue-800">Route Information</h2>
+              <div className="space-y-4">
+                <p className="text-xl">
+                  <span className="text-blue-700">Distance:</span>{' '}
+                  <span className="text-gray-900">{routeInfo.distance.toFixed(2)} km</span>
+                </p>
+                <p className="text-xl">
+                  <span className="text-blue-700">Duration:</span>{' '}
+                  <span className="text-gray-900">{routeInfo.duration.toFixed(2)} minutes</span>
+                </p>
+            </div>
+          </div>
+          <div className="w-2/3 p-4">
+            <MapContainer
+              center={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]}
+              zoom={6}
+              style={{ height: '400px', width: '100%' }}
+            >
+              <ChangeView coords={routeInfo.coordinates} />
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Polyline positions={routeInfo.coordinates.map(coord => [coord[1], coord[0]] as [number, number])} />
+              <Marker position={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]} icon={customIcon} />
+              <Marker position={[routeInfo.coordinates[routeInfo.coordinates.length - 1][1], routeInfo.coordinates[routeInfo.coordinates.length - 1][0]]} icon={customIcon} />
+            </MapContainer>
           </div>
         </div>
-      )}
-
-      {routeInfo && (
-        <MapContainer
-          center={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]}
-          zoom={6}
-          style={{ height: '400px', width: '100%' }}
-        >
-          <ChangeView coords={routeInfo.coordinates} />
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <Polyline positions={routeInfo.coordinates.map(coord => [coord[1], coord[0]] as [number, number])} />
-          <Marker position={[routeInfo.coordinates[0][1], routeInfo.coordinates[0][0]]} icon={customIcon} />
-          <Marker position={[routeInfo.coordinates[routeInfo.coordinates.length - 1][1], routeInfo.coordinates[routeInfo.coordinates.length - 1][0]]} icon={customIcon} />
-        </MapContainer>
       )}
     </div>
   );

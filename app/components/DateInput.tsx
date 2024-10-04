@@ -49,8 +49,8 @@ const DateInput: React.FC<DateInputProps> = ({
   }, [value, tomorrow]);
 
   return (
-    <div className="mb-4">
-      <label htmlFor="date" className="block text-sm font-medium text-gray-700">Select Date:</label>
+    <div>
+      <label htmlFor="date" className="block text-gray-600 font-bold mb-2">Pickup On</label>
       <input
         ref={inputRef}
         data-id="date"
