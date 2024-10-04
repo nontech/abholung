@@ -1,5 +1,6 @@
 import React from 'react';
 import { DeliveryDetails } from '../../types/common';
+import Image from 'next/image';
 
 
 interface DeliveryInfoProps {
@@ -13,10 +14,11 @@ const SummaryPage: React.FC<DeliveryInfoProps> = ({ pickupDetails, deliveryDetai
     return (
       <div className="flex flex-col justify-center items-center">
         <div className='flex justify-center mb-10'>
-          <img
+          <Image
             src={confetti}
             alt="Celebration"
-            className="h-20 w-20" 
+            width={130}  
+            height={130} 
           />
         </div>
         {/* Header */}

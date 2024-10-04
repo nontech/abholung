@@ -37,8 +37,8 @@ const DeliveryPeople: React.FC<DeliveryPeopleProps> = ({ deliveryPeople, onSelec
               <div>
                 <span className="text-lg font-semibold text-gray-800">{person.full_name}</span> {/* Name */}
                 <div className="text-yellow-500"> {/* Rating */}
-                  {'★'.repeat(person.rating)} {/* Assuming person.rating is a number */}
-                  {'☆'.repeat(5 - person.rating)} {/* Fill to 5 stars */}
+                  {/* {'★'.repeat(person.rating)} 
+                  {'☆'.repeat(5 - person.rating)}  */}
                 </div>
               </div>
             </div>

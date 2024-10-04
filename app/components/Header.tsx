@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const Header: React.FC = () => {
   const logoPath = '/images/Logo.svg';
@@ -7,10 +8,11 @@ const Header: React.FC = () => {
   return (
     <header className="w-full py-4">
         <div className='pl-20'>
-          <img
+          <Image
             src={logoPath}
             alt="Logo"
-            className="h-50 w-50" // Increased size
+            width={120}  
+            height={120} 
           />
         </div>
     </header>

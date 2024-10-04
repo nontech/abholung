@@ -1,6 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { MapData, DetailsPageType } from '../../types/common';
+import { useState } from 'react';
+import { DetailsPageType } from '../../types/common';
 
 interface DetailsPageProps {
     details: DetailsPageType
@@ -9,7 +9,7 @@ interface DetailsPageProps {
 const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
 
     // From & To Addresses
-    let mapData = details.mapData
+    const mapData = details.mapData
     let pickupAddress = 'Address N/A';
     let deliveryAddress = 'Address N/A';
 
@@ -19,36 +19,36 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
       } 
 
     // Date & Time
-    let selectedDate = details.selectedDate
-    let selectedTime = details.selectedTime
+    const selectedDate = details.selectedDate
+    const selectedTime = details.selectedTime
 
     // Pickup from Form details
-    let pickupFromName = details.pickupFromName
-    let pickupFromEmail = details.pickupFromEmail
-    let pickupFromPhoneNumber = details.pickupFromPhoneNumber
-    let additionalPickupInstructions = details.additionalPickupInstructions
-    let onPickupFromNameChange = details.onPickupFromNameChange
-    let onPickupFromEmailChange = details.onPickupFromEmailChange  
-    let onPickupFromPhoneNumberChange = details.onPickupFromPhoneNumberChange
-    let onAdditionalPickupInstructionsChange = details.onAdditionalPickupInstructionsChange
+    const pickupFromName = details.pickupFromName
+    const pickupFromEmail = details.pickupFromEmail
+    const pickupFromPhoneNumber = details.pickupFromPhoneNumber
+    const additionalPickupInstructions = details.additionalPickupInstructions
+    const onPickupFromNameChange = details.onPickupFromNameChange
+    const onPickupFromEmailChange = details.onPickupFromEmailChange  
+    const onPickupFromPhoneNumberChange = details.onPickupFromPhoneNumberChange
+    const onAdditionalPickupInstructionsChange = details.onAdditionalPickupInstructionsChange
 
     // Delivery to Form details
-    let deliverToName = details.deliverToName
-    let deliverToEmail = details.deliverToEmail
-    let deliverToPhoneNumber = details.deliverToPhoneNumber
-    let additionalDeliveryInstructions = details.additionalDeliveryInstructions
-    let onDeliverToNameChange = details.onDeliverToNameChange
-    let onDeliverToEmailChange = details.onDeliverToEmailChange
-    let onDeliverToPhoneNumberChange = details.onDeliverToPhoneNumberChange
-    let onAdditionalDeliveryInstructionsChange = details.onAdditionalDeliveryInstructionsChange
+    const deliverToName = details.deliverToName
+    const deliverToEmail = details.deliverToEmail
+    const deliverToPhoneNumber = details.deliverToPhoneNumber
+    const additionalDeliveryInstructions = details.additionalDeliveryInstructions
+    const onDeliverToNameChange = details.onDeliverToNameChange
+    const onDeliverToEmailChange = details.onDeliverToEmailChange
+    const onDeliverToPhoneNumberChange = details.onDeliverToPhoneNumberChange
+    const onAdditionalDeliveryInstructionsChange = details.onAdditionalDeliveryInstructionsChange
 
            
     // Product Info
     let productTitle = 'Product Title N/A'
-    let productData = details.productData
+    const productData = details.productData
     if (productData) productTitle = productData.title
   
-    let setStage = details.onEdit
+    const setStage = details.onEdit
     const handleEdit = () => {
         setStage(1);
     }
