@@ -3,7 +3,7 @@ import {supabase} from './supabaseClient';
 
 export const fetchDeliveryPeople = async () => {
     const { data, error } = await supabase.from('users')
-      .select('id, full_name')
+      .select('id, full_name, ratings')
       .eq('type', 'Delivery Person');
     if (error) {
       console.error('Error fetching delivery people:', error);

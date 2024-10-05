@@ -74,4 +74,5 @@ export interface DetailsPageType {
 export interface DeliveryPerson {
     id: number;
     full_name: string;
+    ratings: number;
 }
