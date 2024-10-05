@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleMap, LoadScript, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
+import { MapData } from '@/types/common';
 
 const mapContainerStyle = {
   width: '100%',
@@ -25,7 +26,11 @@ interface Place {
   latLng: google.maps.LatLng | null;
 }
 
-const TransportRoute: React.FC = () => {
+interface TransportRouteProps {
+  onMapDataChange: (mapData: MapData) => void;
+}
+
+const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
   const [origin, setOrigin] = useState<Place>({ address: '', latLng: null });
   const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
@@ -82,37 +87,31 @@ const TransportRoute: React.FC = () => {
 
   const onOriginLoad = (autocomplete: google.maps.places.Autocomplete) => {
     originRef.current = autocomplete;
-    setupPlaceChangedListener(autocomplete, setOrigin);
   };
 
   const onDestinationLoad = (autocomplete: google.maps.places.Autocomplete) => {
     destinationRef.current = autocomplete;
-    setupPlaceChangedListener(autocomplete, setDestination);
   };
 
-  const setupPlaceChangedListener = (
-    autocomplete: google.maps.places.Autocomplete,
+  const handlePlaceSelect = (
+    autocompleteRef: React.MutableRefObject<google.maps.places.Autocomplete | null>,
     setPlace: React.Dispatch<React.SetStateAction<Place>>
   ) => {
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (place.geometry && place.geometry.location) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        
-        // Check if the selected place is within Berlin bounds
-        if (lat >= berlinBounds.south && lat <= berlinBounds.north &&
-            lng >= berlinBounds.west && lng <= berlinBounds.east) {
-          setPlace({
-            address: place.formatted_address || place.name || '',
-            latLng: place.geometry.location,
-          });
-        } else {
-          setError('Please select a location within Berlin.');
-          setPlace({ address: '', latLng: null });
-        }
-      }
-    });
+    const place = autocompleteRef.current?.getPlace();
+    if (place && place.geometry && place.geometry.location) {
+      setPlace({
+        address: place.formatted_address || place.name || '',
+        latLng: place.geometry.location,
+      });
+    }
+  };
+
+  const onOriginPlaceChanged = () => {
+    handlePlaceSelect(originRef, setOrigin);
+  };
+
+  const onDestinationPlaceChanged = () => {
+    handlePlaceSelect(destinationRef, setDestination);
   };
 
   useEffect(() => {
@@ -145,6 +144,9 @@ const TransportRoute: React.FC = () => {
       if (zoom && zoom > MAX_ZOOM) {
         mapRef.current.setZoom(MAX_ZOOM);
       }
+
+      // update mapData
+      onMapDataChange({ from: origin.address, to: destination.address });
     }
   }, [origin.latLng, destination.latLng, fetchDirections]);
 
@@ -159,6 +161,7 @@ const TransportRoute: React.FC = () => {
             <label className="block text-gray-700 font-bold mb-2">Pickup From</label>
             <Autocomplete
               onLoad={onOriginLoad}
+              onPlaceChanged={onOriginPlaceChanged}
               options={autocompleteOptions}
             >
               <input
@@ -174,6 +177,7 @@ const TransportRoute: React.FC = () => {
             <label className="block text-gray-700 font-bold mb-2">Deliver To</label>
             <Autocomplete
               onLoad={onDestinationLoad}
+              onPlaceChanged={onDestinationPlaceChanged}
               options={autocompleteOptions}
             >
               <input
@@ -206,7 +210,7 @@ const TransportRoute: React.FC = () => {
             <DirectionsRenderer
               options={{
                 directions: directions,
-                suppressMarkers: false, // Changed to false to show markers
+                suppressMarkers: false,
                 preserveViewport: true,
                 polylineOptions: {
                   strokeColor: "#3366FF",
@@ -218,22 +222,22 @@ const TransportRoute: React.FC = () => {
         </GoogleMap>
 
         {duration && distance && (
-        <div>
-          <div className="flex justify-between items-center mt-4">
-            <div className="flex-1 text-center p-2">
-              <p className="text-sm text-gray-600 mb-1 font-bold mb-2">Distance</p>
-              <div className="bg-white rounded-full py-2 px-4 shadow-md">
-                <span className="text-xl font-bold text-blue-600">{distance || '—'}</span>
+          <div className="mb-4 mt-4">
+            <div className="flex justify-between items-center">
+              <div className="flex-1 text-center p-2">
+                <p className="text-sm text-gray-600 mb-1 font-bold mb-2">Distance</p>
+                <div className="bg-white rounded-full py-2 px-4 shadow-md">
+                  <span className="text-xl font-bold text-blue-600">{distance || '—'}</span>
+                </div>
+              </div>
+              <div className="flex-1 text-center p-2">
+                <p className="text-sm text-gray-600 mb-1 font-bold mb-2">Duration</p>
+                <div className="bg-white rounded-full py-2 px-4 shadow-md">
+                  <span className="text-xl font-bold text-green-600">{duration || '—'}</span>
+                </div>
               </div>
             </div>
-            <div className="flex-1 text-center p-2">
-              <p className="text-sm text-gray-600 mb-1 font-bold mb-2">Duration</p>
-              <div className="bg-white rounded-full py-2 px-4 shadow-md">
-                <span className="text-xl font-bold text-green-600">{duration || '—'}</span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 shadow-lg text-white overflow-hidden relative">
+            <div className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 shadow-lg text-white overflow-hidden relative">
                 <div className="flex items-center justify-between">
                 <div>
                     <h3 className="text-lg font-semibold mb-1">Time Saved</h3>
@@ -251,8 +255,10 @@ const TransportRoute: React.FC = () => {
                 Compared to traditional methods, you're saving valuable time!
                 </p>
             </div>
-        </div>
+          </div>
         )}
+
+        
       </LoadScript>
     </div>
   );

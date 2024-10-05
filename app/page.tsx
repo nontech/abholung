@@ -181,7 +181,7 @@ export default function Home() {
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
           <ProductInfo product={productData} onProductFetched={setProductData} />
-          <Map onChange={setMapData} />
+          {/* <Map onChange={setMapData} /> */}
           <div className="flex">
             <div className="w-1/2 p-2">
               <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
@@ -191,7 +191,7 @@ export default function Home() {
             </div>
           </div>
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
-          <TransportRoute />
+          <TransportRoute onMapDataChange={setMapData}/>
         </div>
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
