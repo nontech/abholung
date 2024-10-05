@@ -15,6 +15,7 @@ import ProgressBar from './components/ProgressBar';
 import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
 import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
+import TransportRoute from './components/TransportRoute';
 import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
 
 
@@ -190,6 +191,7 @@ export default function Home() {
             </div>
           </div>
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
+          <TransportRoute />
         </div>
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
