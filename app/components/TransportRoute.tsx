@@ -38,6 +38,10 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
   const [distance, setDistance] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showMap, setShowMap] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [mapCenter, setMapCenter] = useState(berlinCenter);
+  const [mapBounds, setMapBounds] = useState<google.maps.LatLngBounds | null>(null);
 
   const originRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destinationRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -45,6 +49,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
+    setIsMapLoaded(true);
   }, []);
 
   const fetchDirections = useCallback(() => {
@@ -115,7 +120,8 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
   };
 
   useEffect(() => {
-    if (origin.latLng && destination.latLng && mapRef.current) {
+    if (origin.latLng && destination.latLng) {
+      setShowMap(true);
       fetchDirections();
       
       const bounds = new google.maps.LatLngBounds();
@@ -134,21 +140,28 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
       bounds.extend(new google.maps.LatLng(ne.lat() + latPadding, ne.lng() + lngPadding));
       bounds.extend(new google.maps.LatLng(sw.lat() - latPadding, sw.lng() - lngPadding));
 
-      // Set center and bounds
-      mapRef.current.setCenter(center);
-      mapRef.current.fitBounds(bounds);
+      setMapCenter(center);
+      setMapBounds(bounds);
 
-      // Optionally, limit the zoom level
+      // update mapData
+      onMapDataChange({ from: origin.address, to: destination.address });
+    } else {
+      setShowMap(false);
+    }
+  }, [origin.latLng, destination.latLng, fetchDirections, onMapDataChange]);
+
+  useEffect(() => {
+    if (isMapLoaded && mapRef.current && mapBounds) {
+      mapRef.current.setCenter(mapCenter);
+      mapRef.current.fitBounds(mapBounds);
+
       const MAX_ZOOM = 15;
       const zoom = mapRef.current.getZoom();
       if (zoom && zoom > MAX_ZOOM) {
         mapRef.current.setZoom(MAX_ZOOM);
       }
-
-      // update mapData
-      onMapDataChange({ from: origin.address, to: destination.address });
     }
-  }, [origin.latLng, destination.latLng, fetchDirections]);
+  }, [isMapLoaded, mapCenter, mapBounds]);
 
   return (
     <div>
@@ -194,34 +207,36 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
         {loading && <p className="text-gray-600">Calculating route...</p>}
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          center={berlinCenter}
-          zoom={11}
-          onLoad={onMapLoad}
-          options={{
-            restriction: {
-              latLngBounds: berlinBounds,
-              strictBounds: false,
-            },
-          }}
-        >
-          {directions && (
-            <DirectionsRenderer
-              options={{
-                directions: directions,
-                suppressMarkers: false,
-                preserveViewport: true,
-                polylineOptions: {
-                  strokeColor: "#3366FF",
-                  strokeWeight: 5,
-                },
-              }}
-            />
-          )}
-        </GoogleMap>
+        {showMap && (
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={mapCenter}
+            zoom={11}
+            onLoad={onMapLoad}
+            options={{
+              restriction: {
+                latLngBounds: berlinBounds,
+                strictBounds: false,
+              },
+            }}
+          >
+            {directions && (
+              <DirectionsRenderer
+                options={{
+                  directions: directions,
+                  suppressMarkers: false,
+                  preserveViewport: true,
+                  polylineOptions: {
+                    strokeColor: "#3366FF",
+                    strokeWeight: 5,
+                  },
+                }}
+              />
+            )}
+          </GoogleMap>
+        )}
 
-        {duration && distance && (
+        {showMap && duration && distance && (
           <div className="mb-4 mt-4">
             <div className="flex justify-between items-center">
               <div className="flex-1 text-center p-2">
