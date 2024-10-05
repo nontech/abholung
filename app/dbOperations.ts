@@ -14,6 +14,24 @@ export const fetchDeliveryPeople = async () => {
 };
 
 export const savePickupUserToDatabase = async (pickupFromName: string, pickupFromEmail: string, pickupFromPhoneNumber: string) => {
+    
+    //check whether the user email already exists
+    const { data: existingUser, error: fetchError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', pickupFromEmail)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is the code for "No rows found"
+      console.error('Error fetching user from database:', fetchError);
+      return null;
+    }
+
+    if (existingUser) {
+      // Email already exists, return the user ID
+      return existingUser.id;
+    }
+
     const {data, error} = await supabase
       .from('users')
       .insert([
@@ -36,6 +54,24 @@ export const savePickupUserToDatabase = async (pickupFromName: string, pickupFro
 };
 
 export const saveDeliverUserToDatabase = async (deliverToName: string, deliverToEmail: string, deliverToPhoneNumber: string) => {
+
+    //check whether the user email already exists
+    const { data: existingUser, error: fetchError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', deliverToEmail)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is the code for "No rows found"
+      console.error('Error fetching user from database:', fetchError);
+      return null;
+    }
+
+    if (existingUser) {
+      // Email already exists, return the user ID
+      return existingUser.id;
+    }
+
     const {data, error} = await supabase
       .from('users')
       .insert([
