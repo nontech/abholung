@@ -1,10 +1,11 @@
 import Image from 'next/image';
 
 interface PaymentProps {
+    emailSend: string;
     handlePaymentDone: (paymentDone: boolean) => void;
 }
 
-export default function PaymentPage({handlePaymentDone}: PaymentProps){
+export default function PaymentPage({handlePaymentDone, emailSend}: PaymentProps){
 
     const paypal_logo = '/images/paypal_logo.png';
     const mukesh_paypal = '/images/mukesh_paypal.png';
@@ -16,8 +17,11 @@ export default function PaymentPage({handlePaymentDone}: PaymentProps){
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               emails: [
-                { to: 'jais.aman03@gmail.com', subject: 'Order Confirmation', text: 'Your order has been placed' },
+                { to: emailSend, subject: 'Order Confirmation', text: 'Your order has been placed' },
                 { to: 'kleinanzeigenkurier@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
+                { to: 'jais.aman03@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
+                { to: 'jais.mukesh@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
+                { to: 'tapiwaphilip@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' }
               ],
             }),
           });

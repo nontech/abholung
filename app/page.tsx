@@ -195,7 +195,7 @@ export default function Home() {
         </div>
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone}/> )}
+      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} emailSend={serviceType === 'buying' ? deliverToEmail : pickupFromEmail}/> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       {/* Conditionally render the Continue Button */}
