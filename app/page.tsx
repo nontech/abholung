@@ -41,6 +41,8 @@ export default function Home() {
   const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>('');
   const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] = useState<string>('');
 
+  const [serviceType, setServiceType] = useState<'buying' | 'selling'>('buying');
+
   const [stage, setStage]= useState<number>(1);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function Home() {
         const productId = await saveProductToDatabase(productData!);
         const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
         if (pickupUserId && deliverUserId && productId && logisticId) {
-          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime);
+          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
           if (orderData) {
             setStage(4);
           }
@@ -179,7 +181,7 @@ export default function Home() {
       
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
-          <ProductInfo product={productData} onProductFetched={setProductData} />
+          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} />
           <Map onChange={setMapData} />
           <div className="flex">
             <div className="w-1/2 p-2">

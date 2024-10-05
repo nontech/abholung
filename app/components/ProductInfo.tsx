@@ -3,13 +3,16 @@
 import { useState, ChangeEvent } from 'react'
 import Image from 'next/image'
 import type { ProductData } from '../../types/common'
+import TypeOfService from './TypeOfService';
 
 interface ProductInfoProps {
   product: ProductData | null;
   onProductFetched: (product: ProductData) => void;
+  serviceType: 'buying' | 'selling';
+  onServiceChange: (serviceType: 'buying' | 'selling') => void;
 }
 
-export default function ProductInfo({ product, onProductFetched }: ProductInfoProps) {
+export default function ProductInfo({ product, serviceType, onProductFetched, onServiceChange }: ProductInfoProps) {
   const [url, setUrl] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -119,9 +122,11 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
               </div>
             )}
             <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
-            <p className="text-gray-700 mb-1">Listed by: {product.listed_by}</p>
-            <p className="text-gray-700">Pickup Address: {product.address}</p>
+            <p className="text-gray-700 mb-1"> <strong className="text-black-600">Listed by: </strong>{product.listed_by}</p>
+            <p className="text-gray-700"><strong className="text-black-600">Pickup Address: </strong>{product.address}</p>
           </div>
+          <hr className="my-4 border-2 border-grey-300" />
+          <TypeOfService onServiceChange={onServiceChange} serviceType={serviceType} />
         </div>
       )}
     </div>

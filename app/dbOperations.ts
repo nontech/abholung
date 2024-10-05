@@ -140,7 +140,7 @@ export const saveLogisticsToDatabase = async (mapData: MapData, additionalPickup
     }
 };
 
-export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string) => {
+export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling') => {
   
     // Insert data into orders table
     const { data, error } = await supabase
@@ -148,6 +148,7 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
       .insert([
         {
           product: productId,
+          service_type: serviceType,
           logistics: logisticId,
           delivered_by: selectedDeliveryPerson?.id,
           pickup_from: pickupUserId,
