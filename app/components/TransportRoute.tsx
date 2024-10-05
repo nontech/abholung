@@ -190,22 +190,6 @@ const TransportRoute: React.FC = () => {
         {loading && <p className="text-gray-600">Calculating route...</p>}
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        {duration && distance && (
-          <div className="mb-4">
-            <h2 className="text-xl font-bold mb-4 text-blue-800">Route Information</h2>
-            <div className="space-y-4">
-              <p className="text-xl">
-                <span className="text-blue-700">Distance:</span>{' '}
-                <span className="text-gray-900">{distance}</span>
-              </p>
-              <p className="text-xl">
-                <span className="text-blue-700">Duration:</span>{' '}
-                <span className="text-gray-900">{duration}</span>
-              </p>
-            </div>
-          </div>
-        )}
-
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={berlinCenter}
@@ -232,6 +216,43 @@ const TransportRoute: React.FC = () => {
             />
           )}
         </GoogleMap>
+
+        {duration && distance && (
+        <div>
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex-1 text-center p-2">
+              <p className="text-sm text-gray-600 mb-1 font-bold mb-2">Distance</p>
+              <div className="bg-white rounded-full py-2 px-4 shadow-md">
+                <span className="text-xl font-bold text-blue-600">{distance || '—'}</span>
+              </div>
+            </div>
+            <div className="flex-1 text-center p-2">
+              <p className="text-sm text-gray-600 mb-1 font-bold mb-2">Duration</p>
+              <div className="bg-white rounded-full py-2 px-4 shadow-md">
+                <span className="text-xl font-bold text-green-600">{duration || '—'}</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 shadow-lg text-white overflow-hidden relative">
+                <div className="flex items-center justify-between">
+                <div>
+                    <h3 className="text-lg font-semibold mb-1">Time Saved</h3>
+                    <p className="text-3xl font-bold">
+                    {parseInt(duration.replace(/\D/g, '')) * 2} {duration.replace(/[^a-zA-Z]+/g, '')}
+                    </p>
+                </div>
+                <div className="text-right">
+                    <svg className="w-16 h-16 opacity-20 absolute top-0 right-0 transform translate-x-4 -translate-y-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                </div>
+                </div>
+                <p className="mt-2 text-sm opacity-80">
+                Compared to traditional methods, you're saving valuable time!
+                </p>
+            </div>
+        </div>
+        )}
       </LoadScript>
     </div>
   );
