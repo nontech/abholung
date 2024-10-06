@@ -30,6 +30,11 @@ interface TransportRouteProps {
   onMapDataChange: (mapData: MapData) => void;
 }
 
+interface LatLngLiteral {
+  lat: number;
+  lng: number;
+}
+
 const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
   const [origin, setOrigin] = useState<Place>({ address: '', latLng: null });
   const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
@@ -40,7 +45,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
   const [error, setError] = useState('');
   const [showMap, setShowMap] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [mapCenter, setMapCenter] = useState(berlinCenter);
+  const [mapCenter, setMapCenter] = useState<LatLngLiteral>(berlinCenter);
   const [mapBounds, setMapBounds] = useState<google.maps.LatLngBounds | null>(null);
 
   const originRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -140,7 +145,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
       bounds.extend(new google.maps.LatLng(ne.lat() + latPadding, ne.lng() + lngPadding));
       bounds.extend(new google.maps.LatLng(sw.lat() - latPadding, sw.lng() - lngPadding));
 
-      setMapCenter(center);
+      setMapCenter({ lat: center.lat(), lng: center.lng() });
       setMapBounds(bounds);
 
       // update mapData
@@ -148,7 +153,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
     } else {
       setShowMap(false);
     }
-  }, [origin.latLng, destination.latLng, fetchDirections, onMapDataChange]);
+  }, [origin.latLng, destination.latLng, origin.address, destination.address, fetchDirections, onMapDataChange]);
 
   useEffect(() => {
     if (isMapLoaded && mapRef.current && mapBounds) {
@@ -165,10 +170,6 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
 
   return (
     <div>
-      <LoadScript
-        googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}
-        libraries={libraries}
-      >
         <div className="mb-4">
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">Pickup From</label>
@@ -267,14 +268,11 @@ const TransportRoute: React.FC<TransportRouteProps> = ({ onMapDataChange }) => {
                 </div>
                 </div>
                 <p className="mt-2 text-sm opacity-80">
-                Compared to traditional methods, you're saving valuable time!
+                Compared to traditional methods, you&apos;re saving valuable time!
                 </p>
             </div>
           </div>
         )}
-
-        
-      </LoadScript>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 'use client';
-import dynamic from 'next/dynamic';
 import ProductInfo from './components/ProductInfo';
 import DateInput from './components/DateInput';
 import TimePicker from './components/TimePicker';
