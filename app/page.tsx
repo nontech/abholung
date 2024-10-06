@@ -16,6 +16,7 @@ import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/commo
 import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
 import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+import PriceInfo from './components/PriceInfo';
 const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
 
 
@@ -206,6 +207,7 @@ export default function Home() {
             </div>
           </div>
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
+          <PriceInfo />
         </div>
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
