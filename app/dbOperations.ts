@@ -3,7 +3,7 @@ import {supabase} from './supabaseClient';
 
 export const fetchDeliveryPeople = async () => {
     const { data, error } = await supabase.from('users')
-      .select('id, full_name')
+      .select('id, full_name, ratings')
       .eq('type', 'Delivery Person');
     if (error) {
       console.error('Error fetching delivery people:', error);
@@ -13,48 +13,68 @@ export const fetchDeliveryPeople = async () => {
     }
 };
 
-export const savePickupUserToDatabase = async (pickupFromName: string, pickupFromEmail: string, pickupFromPhoneNumber: string) => {
-    const {data, error} = await supabase
+const upsertUser = async (name: string, email: string, phoneNumber: string) => {
+    // Check whether the user email already exists
+    const { data: existingUser, error: fetchError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is the code for "No rows found"
+      console.error('Error fetching user from database:', fetchError);
+      return null;
+    }
+
+    if (existingUser) {
+      // Email already exists, update the user info and return the user ID
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update({
+          full_name: name,
+          phone_number: phoneNumber
+        })
+        .eq('email', email)
+        .select();
+
+      if (updateError) {
+        console.error('Error updating user in database:', updateError);
+        return null;
+      }
+
+      return updatedUser[0].id;
+    }
+
+    // Insert new user
+    const { data, error } = await supabase
       .from('users')
       .insert([
         {
-          full_name: pickupFromName,
-          email: pickupFromEmail,
-          phone_number: pickupFromPhoneNumber
+          full_name: name,
+          email: email,
+          phone_number: phoneNumber
         }
-      ]).select();
-      if (error) {
-        console.error('Error saving to database:', error);
-        return null;
-      } else {
-        if (data && data.length > 0) {
-          const userId = data[0].id;
-          return userId;
-        }
-        return null;
+      ])
+      .select();
+
+    if (error) {
+      console.error('Error saving to database:', error);
+      return null;
+    } else {
+      if (data && data.length > 0) {
+        const userId = data[0].id;
+        return userId;
       }
+      return null;
+    }
+};
+
+export const savePickupUserToDatabase = async (pickupFromName: string, pickupFromEmail: string, pickupFromPhoneNumber: string) => {
+    return await upsertUser(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
 };
 
 export const saveDeliverUserToDatabase = async (deliverToName: string, deliverToEmail: string, deliverToPhoneNumber: string) => {
-    const {data, error} = await supabase
-      .from('users')
-      .insert([
-        {
-          full_name: deliverToName,
-          email: deliverToEmail,
-          phone_number: deliverToPhoneNumber
-        }
-      ]).select();
-      if (error) {
-        console.error('Error saving to database:', error);
-        return null;
-      } else {
-        if (data && data.length > 0) {
-          const userId = data[0].id;
-          return userId;
-        }
-        return null;
-      }
+    return await upsertUser(deliverToName, deliverToEmail, deliverToPhoneNumber);
 };
 
 export const saveProductToDatabase = async (productData: ProductData) => {
@@ -62,7 +82,7 @@ export const saveProductToDatabase = async (productData: ProductData) => {
       .from('product')
       .insert([
         {
-          url: productData?.url,
+          url: productData?.newUrl,
           title: productData?.title,
           price: productData?.price,
           pic_url: productData?.pic_url,
@@ -104,7 +124,7 @@ export const saveLogisticsToDatabase = async (mapData: MapData, additionalPickup
     }
 };
 
-export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string) => {
+export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling') => {
   
     // Insert data into orders table
     const { data, error } = await supabase
@@ -112,10 +132,11 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
       .insert([
         {
           product: productId,
+          service_type: serviceType,
           logistics: logisticId,
           delivered_by: selectedDeliveryPerson?.id,
           pickup_from: pickupUserId,
-          type: 'test',
+          type: serviceType,
           deliver_to: deliverUserId,
           pickup_on: selectedDate,
           pickup_between: selectedTime,

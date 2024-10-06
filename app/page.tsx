@@ -16,10 +16,14 @@ import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
 import TransportRoute from './components/TransportRoute';
 import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+import PriceInfo from './components/PriceInfo';
+import dynamic from 'next/dynamic';
+const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
 
 
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
+  const [url, setUrl] = useState<string>('');
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -42,6 +46,8 @@ export default function Home() {
   // Transport route details
   const [origin, setOrigin] = useState<Place>({ address: '', latLng: null });
   const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
+  const [serviceType, setServiceType] = useState<'buying' | 'selling'>('buying');
+  const [isConfettiActive, setIsConfettiActive] = useState(false);
 
   const [stage, setStage]= useState<number>(1);
 
@@ -56,13 +62,14 @@ export default function Home() {
 
   useEffect(() => {
     if (paymentDone) {
+      setIsConfettiActive(true);
       const handleSaveOrder = async () => {
         const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
         const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
         const productId = await saveProductToDatabase(productData!);
         const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
         if (pickupUserId && deliverUserId && productId && logisticId) {
-          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime);
+          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
           if (orderData) {
             setStage(4);
           }
@@ -121,8 +128,12 @@ export default function Home() {
   const handleContinue = () => {
     if (stage < 4) {
       setStage(stage + 1);
-    } else {
+    }
+    else {
       setStage(1); // Reset to stage 1 if on the summary page
+    }
+    if (stage === 3) {
+      setIsConfettiActive(true);
     }
   };
 
@@ -134,32 +145,38 @@ export default function Home() {
 
   // const [isContinueEnabled, setIsContinueEnabled] = useState<boolean>(false);
 
-  // const checkContinueEnabled = () => {
-  //   switch (stage) {
-  //     case 1:
-  //       // Check conditions for stage 1
-  //       setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime);
-  //       break;
-  //     case 2:
-  //       // Check conditions for stage 2
-  //       setIsContinueEnabled(!!pickupFromName && !!pickupFromEmail && !!pickupFromPhoneNumber);
-  //       break;
-  //     case 3:
-  //       // Check conditions for stage 3
-  //       setIsContinueEnabled(!!selectedDeliveryPerson);
-  //       break;
-  //     case 4:
-  //       // Check conditions for stage 4
-  //       setIsContinueEnabled(true); // Assuming you want to enable it if you're on the summary page
-  //       break;
-  //     default:
-  //       setIsContinueEnabled(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   checkContinueEnabled();
-  // }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson]);
+  
+  // const checkContinueEnabled = useCallback(() => {
+  //     switch (stage) {
+  //       case 1:
+  //         // Check conditions for stage 1
+  //         setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime);
+  //         break;
+  //       case 2:
+  //         // Check conditions for stage 2
+  //         if (serviceType === 'buying') {
+  //           setIsContinueEnabled(!!pickupFromName && !!pickupFromEmail && !!deliverToName);
+  //         }
+  //         else {
+  //           setIsContinueEnabled(!!deliverToName && !!deliverToEmail && !!pickupFromName);
+  //         }
+  //         break;
+  //       case 3:
+  //         // Check conditions for stage 3
+  //         setIsContinueEnabled(!!selectedDeliveryPerson);
+  //         break;
+  //       case 4:
+  //         // Check conditions for stage 4
+  //         setIsContinueEnabled(true); // Assuming you want to enable it if you're on the summary page
+  //         break;
+  //       default:
+  //         setIsContinueEnabled(false);
+  //     }
+  //   }, [stage, productData, mapData, selectedDate, selectedTime, serviceType, selectedDeliveryPerson, pickupFromName, pickupFromEmail, deliverToName, deliverToEmail]);
+  
+  //   useEffect(() => {
+  //     checkContinueEnabled();
+  //   }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson, checkContinueEnabled]);
 
   // const isContinueEnabled = productData && mapData && selectedDate && selectedTime;
   const isContinueEnabled = true;
@@ -181,7 +198,7 @@ export default function Home() {
       
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
-          <ProductInfo product={productData} onProductFetched={setProductData} />
+          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} url={url} onUrlChange={setUrl} />
           <TransportRoute
             origin={origin}
             destination={destination}
@@ -198,11 +215,11 @@ export default function Home() {
             </div>
           </div>
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
-          
+          <PriceInfo />
         </div>
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone}/> )}
+      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} emailSend={serviceType === 'buying' ? deliverToEmail : pickupFromEmail}/> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       {/* Conditionally render the Continue Button */}
@@ -210,6 +227,15 @@ export default function Home() {
         <div className='flex justify-center mb-10'>
           <ContinueButton onClick={handleContinue} isEnabled={isContinueEnabled} />
           </div>
+        )}
+      {/* Confetti Animation */}
+      {isConfettiActive && (
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+            numberOfPieces={200}
+          />
         )}
       
     </div>

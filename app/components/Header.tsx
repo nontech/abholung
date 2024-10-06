@@ -8,12 +8,14 @@ const Header: React.FC = () => {
   return (
     <header className="w-full py-4">
         <div className='pl-20'>
+          <a href="/">
           <Image
             src={logoPath}
             alt="Logo"
             width={120}  
             height={120} 
           />
+          </a>
         </div>
     </header>
   );

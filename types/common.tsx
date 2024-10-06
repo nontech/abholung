@@ -1,5 +1,5 @@
 export interface ProductData {
-    url: string
+    newUrl: string
     title: string
     price: string
     listed_by: string
@@ -74,9 +74,10 @@ export interface DetailsPageType {
 export interface DeliveryPerson {
     id: number;
     full_name: string;
+    ratings: number;
 }
 
 export interface Place {
     address: string;
     latLng: google.maps.LatLng | null;
-  }
+}
