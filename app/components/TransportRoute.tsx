@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleMap, DirectionsRenderer, Autocomplete } from '@react-google-maps/api';
-import { MapData } from '@/types/common';
+import { MapData, Place } from '@/types/common';
 
 const mapContainerStyle = {
   width: '100%',
@@ -18,11 +18,6 @@ const berlinBounds = {
   west: 13.088345,
   east: 13.7611609
 };
-
-export interface Place {
-  address: string;
-  latLng: google.maps.LatLng | null;
-}
 
 interface TransportRouteProps {
   origin: Place;

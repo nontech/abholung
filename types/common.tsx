@@ -75,3 +75,8 @@ export interface DeliveryPerson {
     id: number;
     full_name: string;
 }
+
+export interface Place {
+    address: string;
+    latLng: google.maps.LatLng | null;
+  }

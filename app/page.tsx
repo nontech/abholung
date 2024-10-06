@@ -5,7 +5,7 @@ import TimePicker from './components/TimePicker';
 import ContinueButton from './components/ContinueButton';
 import Header from './components/Header';
 import BackButton from './components/BackButton';
-import type { ProductData, MapData } from '../types/common';
+import type { ProductData, MapData, Place } from '../types/common';
 import { useState, useEffect } from 'react';
 //import PaymentPage from './components/Payment';
 import SummaryPage from './components/SummaryPage';
