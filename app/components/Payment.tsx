@@ -19,9 +19,9 @@ export default function PaymentPage({handlePaymentDone, emailSend}: PaymentProps
               emails: [
                 { to: emailSend, subject: 'Order Confirmation', text: 'Your order has been placed' },
                 { to: 'kleinanzeigenkurier@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
-                { to: 'jais.aman03@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
-                { to: 'jais.mukesh@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
-                { to: 'tapiwaphilip@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' }
+                //{ to: 'jais.aman03@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
+                //{ to: 'jais.mukesh@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' },
+                //{ to: 'tapiwaphilip@gmail.com', subject: 'Order Confirmation', text: 'A new order has been placed' }
               ],
             }),
           });

@@ -16,6 +16,7 @@ import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/commo
 import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
 import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
 
 
 const Map = dynamic(() => import('./components/Map'), { ssr: false });
@@ -43,6 +44,7 @@ export default function Home() {
   const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] = useState<string>('');
 
   const [serviceType, setServiceType] = useState<'buying' | 'selling'>('buying');
+  const [isConfettiActive, setIsConfettiActive] = useState(false);
 
   const [stage, setStage]= useState<number>(1);
 
@@ -57,6 +59,7 @@ export default function Home() {
 
   useEffect(() => {
     if (paymentDone) {
+      setIsConfettiActive(true);
       const handleSaveOrder = async () => {
         const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
         const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
@@ -122,8 +125,12 @@ export default function Home() {
   const handleContinue = () => {
     if (stage < 4) {
       setStage(stage + 1);
-    } else {
+    }
+    else {
       setStage(1); // Reset to stage 1 if on the summary page
+    }
+    if (stage === 3) {
+      setIsConfettiActive(true);
     }
   };
 
@@ -210,6 +217,15 @@ export default function Home() {
         <div className='flex justify-center mb-10'>
           <ContinueButton onClick={handleContinue} isEnabled={isContinueEnabled} />
           </div>
+        )}
+      {/* Confetti Animation */}
+      {isConfettiActive && (
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+            numberOfPieces={200}
+          />
         )}
       
     </div>
