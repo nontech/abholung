@@ -10,10 +10,11 @@ interface ProductInfoProps {
   onProductFetched: (product: ProductData) => void;
   serviceType: 'buying' | 'selling';
   onServiceChange: (serviceType: 'buying' | 'selling') => void;
+  url: string;
+  onUrlChange: (url: string) => void;
 }
 
-export default function ProductInfo({ product, serviceType, onProductFetched, onServiceChange }: ProductInfoProps) {
-  const [url, setUrl] = useState<string>('')
+export default function ProductInfo({ product, serviceType, onProductFetched, onServiceChange, url, onUrlChange }: ProductInfoProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -47,7 +48,7 @@ export default function ProductInfo({ product, serviceType, onProductFetched, on
 
   const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
-    setUrl(newUrl);
+    onUrlChange(newUrl);
   
     // Simple URL validation using the newly updated URL
     const isValidUrl = (url: string) => {
@@ -78,7 +79,7 @@ export default function ProductInfo({ product, serviceType, onProductFetched, on
   // }
 
   const clearUrl = () => {
-    setUrl('')
+    onUrlChange('')
   }
 
   return (

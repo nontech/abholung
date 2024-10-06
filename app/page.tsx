@@ -23,6 +23,7 @@ const Map = dynamic(() => import('./components/Map'), { ssr: false });
 
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
+  const [url, setUrl] = useState<string>('');
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -187,7 +188,7 @@ export default function Home() {
       
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
-          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} />
+          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} url={url} onUrlChange={setUrl} />
           <Map onChange={setMapData} />
           <div className="flex">
             <div className="w-1/2 p-2">
