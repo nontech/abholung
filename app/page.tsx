@@ -26,6 +26,7 @@ export default function Home() {
   const [deliveryPeople, setDeliveryPeople] = useState<DeliveryPerson[]>([]);
   const [selectedDeliveryPerson, setSelectedDeliveryPerson] = useState<DeliveryPerson | null>(null);
   const [paymentDone, setPaymentDone] = useState<boolean>(false);
+  
   // Pickup from details
   const [pickupFromName, setPickupFromName] = useState<string>('');
   const [pickupFromEmail, setPickupFromEmail] = useState<string>('');
@@ -37,6 +38,10 @@ export default function Home() {
   const [deliverToEmail, setdeliverToEmail] = useState<string>('');
   const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>('');
   const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] = useState<string>('');
+
+  // Transport route details
+  const [origin, setOrigin] = useState<Place>({ address: '', latLng: null });
+  const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
 
   const [stage, setStage]= useState<number>(1);
 
@@ -177,7 +182,13 @@ export default function Home() {
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
           <ProductInfo product={productData} onProductFetched={setProductData} />
-          <TransportRoute onMapDataChange={setMapData}/>
+          <TransportRoute
+            origin={origin}
+            destination={destination}
+            setOrigin={setOrigin}
+            setDestination={setDestination}
+            onMapDataChange={setMapData}
+          />
           <div className="flex">
             <div className="w-1/2 p-2">
               <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
