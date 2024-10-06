@@ -1,28 +1,34 @@
 'use client'
 
-import { useState, ChangeEvent, KeyboardEvent } from 'react'
+import { useState, ChangeEvent } from 'react'
 import Image from 'next/image'
 import type { ProductData } from '../../types/common'
+import TypeOfService from './TypeOfService';
 
 interface ProductInfoProps {
   product: ProductData | null;
   onProductFetched: (product: ProductData) => void;
+  serviceType: 'buying' | 'selling';
+  onServiceChange: (serviceType: 'buying' | 'selling') => void;
+  url: string;
+  onUrlChange: (url: string) => void;
 }
 
-export default function ProductInfo({ product, onProductFetched }: ProductInfoProps) {
-  const [url, setUrl] = useState<string>('')
+export default function ProductInfo({ product, serviceType, onProductFetched, onServiceChange, url, onUrlChange }: ProductInfoProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const fetchProduct = async () => {
+  const fetchProduct = async (newUrl: string) => {
     setLoading(true)
     setError('')
+    console.log("fetchProduct $url", newUrl);
+    console.log(JSON.stringify({ newUrl }));
 
     try {
       const response = await fetch('/api/fetch-product-info', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ newUrl }),
       })
       const data = await response.json()
 
@@ -41,17 +47,39 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
   }
 
   const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUrl(e.target.value)
-  }
-
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !loading) {
-      fetchProduct()
+    const newUrl = e.target.value;
+    onUrlChange(newUrl);
+  
+    // Simple URL validation using the newly updated URL
+    const isValidUrl = (url: string) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+  
+    // Check if the URL is a "kleinanzeigen" link
+    const isKleinanzeigenUrl = (url: string) => {
+      return url.includes("kleinanzeigen");
+    };
+  
+    if (isValidUrl(newUrl) && isKleinanzeigenUrl(newUrl)) {
+      console.log("validated_url", newUrl);
+      fetchProduct(newUrl);
     }
   }
+  
+
+  // const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === 'Enter' && !loading) {
+  //     fetchProduct()
+  //   }
+  // }
 
   const clearUrl = () => {
-    setUrl('')
+    onUrlChange('')
   }
 
   return (
@@ -61,10 +89,10 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
       <div className="mb-4 relative">
         <input
           type="text"
-          placeholder="Enter Kleinanzeigen URL and press Enter"
+          placeholder="Paste eBay Kleinanzeigen product link here"
           value={url}
           onChange={handleUrlChange}
-          onKeyDown={handleKeyPress}
+          //onKeyDown={handleKeyPress}
           className={`w-full px-4 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             url ? 'text-black font-medium' : 'text-gray-500'
           }`}
@@ -95,9 +123,11 @@ export default function ProductInfo({ product, onProductFetched }: ProductInfoPr
               </div>
             )}
             <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
-            <p className="text-gray-700 mb-1">Listed by: {product.listed_by}</p>
-            <p className="text-gray-700">Pickup Address: {product.address}</p>
+            <p className="text-gray-700 mb-1"> <strong className="text-black-600">Listed by: </strong>{product.listed_by}</p>
+            <p className="text-gray-700"><strong className="text-black-600">Pickup Address: </strong>{product.address}</p>
           </div>
+          <hr className="my-4 border-2 border-grey-300" />
+          <TypeOfService onServiceChange={onServiceChange} serviceType={serviceType} />
         </div>
       )}
     </div>

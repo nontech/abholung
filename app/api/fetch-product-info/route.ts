@@ -14,10 +14,10 @@ import { ProductData } from '@/types/common';
 
 export async function POST(request: NextRequest) {
   try {
-    const { url }: { url: string } = await request.json();
-    console.log('Received URL:', url);
+    const { newUrl }: { newUrl: string } = await request.json();
+    console.log('Received URL:', newUrl);
 
-    const response = await axios.get<string>(url, {
+    const response = await axios.get<string>(newUrl, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)',
@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
     const address = $('#viewad-locality').text().trim();
     const pic_url = $('#viewad-product img').attr('src');
 
-    console.log('Extracted data:', { url, title, price, listed_by, address, pic_url});
+    console.log('Extracted data:', { newUrl, title, price, listed_by, address, pic_url});
 
-    const productData: ProductData = { url, title, price, listed_by, address, pic_url};
+    const productData: ProductData = { newUrl, title, price, listed_by, address, pic_url};
     return NextResponse.json(productData, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {
