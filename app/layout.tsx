@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from 'next/script'
 import localFont from "next/font/local";
 import "./globals.css";
+import { CSPostHogProvider } from './providers'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,11 +33,13 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <CSPostHogProvider>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          {children}
+        </body>
+      </CSPostHogProvider>
     </html>
   );
 }
