@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import 'flatpickr/dist/flatpickr.min.css';
 import flatpickr from "flatpickr";
 import { DateInputProps } from '../../types/common';
@@ -13,25 +13,25 @@ const DateInput: React.FC<DateInputProps> = ({
   const flatpickrRef = useRef<flatpickr.Instance | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Calculate today's date
-  const today = new Date();
-
-  // Calculate tomorrow's date
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-
-  // Calculate the date 3 days from tomorrow
-  const maxDate = new Date(tomorrow);
-  maxDate.setDate(tomorrow.getDate() + 2);
+  const { minDate, maxDate } = useMemo(() => {
+    const now = new Date();
+    const minDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const maxDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3);
+    
+    // Remove time component
+    minDate.setHours(0, 0, 0, 0);
+    maxDate.setHours(23, 59, 59, 999);
+    
+    return { minDate, maxDate };
+  }, []);
 
   useEffect(() => {
     if (inputRef.current) {
       flatpickrRef.current = flatpickr(inputRef.current, {
         ...options,
-        minDate: tomorrow,
+        minDate: minDate,
         maxDate: maxDate,
-        disable: [today],
-        onChange: (selectedDates: Date[]) => onChange(selectedDates),
+        onChange: (selectedDates: Date[]) => { onChange(selectedDates) }
       });
     }
 
@@ -40,13 +40,13 @@ const DateInput: React.FC<DateInputProps> = ({
         flatpickrRef.current.destroy();
       }
     };
-  }, [options, onChange, today, tomorrow, maxDate]);
+  }, [options, onChange, minDate, maxDate]);
 
   useEffect(() => {
     if (flatpickrRef.current) {
-      flatpickrRef.current.setDate(value || tomorrow, false);
+      flatpickrRef.current.setDate(value || minDate, false);
     }
-  }, [value, tomorrow]);
+  }, [value, minDate]);
 
   return (
     <div>
