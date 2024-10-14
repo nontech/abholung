@@ -96,6 +96,16 @@ export default function Home() {
     fetchData();
   }, []);
 
+  // Using localStorage to store the last stage and redirect to the summary page after successful payment
+  useEffect(() => {
+    const lastStage = localStorage.getItem('lastStage');
+    if (lastStage === '3') {
+      setStage(4);
+      setIsConfettiActive(true);
+      localStorage.removeItem('lastStage'); // Clear the stored stage
+    }
+  }, []);
+
   useEffect(() => {
     if (paymentDone) {
       setIsConfettiActive(true);

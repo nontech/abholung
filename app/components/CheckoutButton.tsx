@@ -24,13 +24,20 @@ export default function CheckoutButton({ amount }: { amount: number }) {
       const stripe = await stripePromise;
 
       if (stripe) {
+        // Set the lastStage in localStorage before redirecting
+        localStorage.setItem('lastStage', '3');
+        
         const { error } = await stripe.redirectToCheckout({ sessionId });
         if (error) {
           console.error('Stripe checkout error:', error);
+          // If there's an error, remove the lastStage from localStorage
+          localStorage.removeItem('lastStage');
         }
       }
     } catch (error) {
       console.error('Error during checkout:', error);
+      // If there's an error, remove the lastStage from localStorage
+      localStorage.removeItem('lastStage');
     } finally {
       setLoading(false);
     }
