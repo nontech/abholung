@@ -72,16 +72,27 @@ const AdminPanel = () => {
     return <div className="flex items-center justify-center h-screen">Authenticating...</div>;
   }
 
-  async function sendEmail(emailTo: string, emailType: string) {
+  async function sendEmail(emailTo: string, emailType: string, orderData: OrderAll) {
   try {
-    console.log(emailType);
+    let subject = '';
+    if (emailType === 'order_processed_success'){
+      subject = `Order processed - #[${orderData.id}]`;
+    }
+    else if (emailType === 'order_processed_failure'){
+      subject = `Order unsuccessful - Refund Issued #[${orderData.id}]`;
+    }
+    else if (emailType === 'order_completed_success'){
+      subject = `Order completed successfully - #[${orderData.id}]`;
+    }
+    else if (emailType === 'order_completed_failure'){
+      subject = `Delivery Successfully Completed - #[${orderData.id}]`;
+    }
     const response = await fetch('/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         emails: [
-          { to: emailTo, subject: 'Order Confirmation', text: 'Your order has been placed' },
-          { to: 'info@kleinzeigenkurier.de', subject: 'Order Confirmation', text: 'A new order has been placed' },
+          { to: emailTo, subject: subject, type: emailType, orderData: orderData },
         ],
       }),
     });
@@ -98,27 +109,27 @@ const AdminPanel = () => {
   }
 }
 
-  const handleConfirmOrder = async (orderId: number, status: string, email_to: string) => {
+  const handleConfirmOrder = async (email_to: string, order: OrderAll) => {
     if (confirm('Are you sure you want to confirm this order?')) {
-      if (status == 'order_processing') {
-        await updateOrderStatus(orderId, 'order_processed_success');
-        sendEmail(email_to, 'order_processed_success');
-      } else if (status == 'order_processed_success') {
-        await updateOrderStatus(orderId, 'order_completed_success');
-        sendEmail(email_to, 'order_completed_success');
+      if (order.status == 'order_processing') {
+        await updateOrderStatus(order.id, 'order_processed_success');
+        sendEmail(email_to, 'order_processed_success', order);
+      } else if (order.status == 'order_processed_success') {
+        await updateOrderStatus(order.id, 'order_completed_success');
+        sendEmail(email_to, 'order_completed_success', order);
       }
       fetchOrders();
     }
   };
 
-  const handleDeclineOrder = async (orderId: number, status: string, email_to: string) => {
+  const handleDeclineOrder = async (email_to: string, order: OrderAll) => {
     if (confirm('Are you sure you want to decline this order?')) {
-      if (status == 'order_processing') {
-        await updateOrderStatus(orderId, 'order_processed_failure');
-        sendEmail(email_to, 'order_processed_failure');
-      } else if (status == 'order_processed_success') {
-        await updateOrderStatus(orderId, 'order_completed_failure');
-        sendEmail(email_to, 'order_completed_failure');
+      if (order.status == 'order_processing') {
+        await updateOrderStatus(order.id, 'order_processed_failure');
+        sendEmail(email_to, 'order_processed_failure', order);
+      } else if (order.status == 'order_processed_success') {
+        await updateOrderStatus(order.id, 'order_completed_failure');
+        sendEmail(email_to, 'order_completed_failure', order);
       }
       fetchOrders();
     }
@@ -188,8 +199,8 @@ const AdminPanel = () => {
                     <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">
                       {order.status === 'order_processing' || order.status === 'order_processed_success' ? (
                       <div className="flex flex-col justify-between">
-                        <button onClick={() => handleConfirmOrder(order.id, order.status!, order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email! )} className="mx-2 my-2 bg-green-500 text-white px-2 py-1 rounded">Confirm</button>
-                        <button onClick={() => handleDeclineOrder(order.id, order.status!, order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email! )} className="bg-red-500 text-white px-2 py-1 rounded">Decline</button>
+                        <button onClick={() => handleConfirmOrder( order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email!, order )} className="mx-2 my-2 bg-green-500 text-white px-2 py-1 rounded">Confirm</button>
+                        <button onClick={() => handleDeclineOrder( order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email!, order )} className="bg-red-500 text-white px-2 py-1 rounded">Decline</button>
                       </div>
                       ) : (
                       <button onClick={() => handleRevertOrder(order.id, order.status!)} className="mx-2 my-2 bg-blue-500 text-white px-2 py-1 rounded">Revert back</button>

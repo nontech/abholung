@@ -18,6 +18,27 @@ import TransportRoute from './components/TransportRoute';
 import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
 import PriceInfo from './components/PriceInfo';
 import dynamic from 'next/dynamic';
+import { Database } from '@/types/supabase-types';
+// Define the Order type using the Database type
+type Order = Database['public']['Tables']['order']['Row'];
+
+// Define the Product type using the Database type
+type Product = Database['public']['Tables']['product']['Row'];
+
+type Logistics = Database['public']['Tables']['logistics']['Row'];
+
+type Users = Database['public']['Tables']['users']['Row'];
+
+// Extend the Order type to include the related Product fields
+type OrderAll = Order & {
+  product: Product;
+  logistics: Logistics;
+  delivered_by: Users;
+  pickup_from: Users;
+  deliver_to: Users;
+  placed_by: Users;
+};
+
 const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
 
 
@@ -63,19 +84,37 @@ export default function Home() {
   useEffect(() => {
     if (paymentDone) {
       setIsConfettiActive(true);
+      const sendEmail = async (orderData: OrderAll) => {
+        try {
+          const emailSend = serviceType === 'buying' ? deliverToEmail : pickupFromEmail;
+          await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              emails: [
+                { to: emailSend, subject: `Order being processed - #[${orderData.id}]`, type: 'order_processing_customer', orderData: orderData },
+                { to: 'info@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
+              ],
+            }),
+          });
+        } catch (error) {
+          console.error('Error sending emails:', error);
+          alert('Error sending emails');
+        }
+      };
       const handleSaveOrder = async () => {
         const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
         const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
         const productId = await saveProductToDatabase(productData!);
         const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
         if (pickupUserId && deliverUserId && productId && logisticId) {
-          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
+          const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
           if (orderData) {
+            await sendEmail(orderData);
             setStage(4);
           }
         }
       };
-
       handleSaveOrder();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -219,7 +258,7 @@ export default function Home() {
         </div>
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} emailSend={serviceType === 'buying' ? deliverToEmail : pickupFromEmail}/> )}
+      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} /> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       {/* Conditionally render the Continue Button */}

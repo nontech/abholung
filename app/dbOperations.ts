@@ -146,13 +146,21 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
           status: 'order_processing',
           total: '999',
         },
-      ]).select();
+      ]).select(`
+        *,
+        product: product (*),
+        logistics: logistics (*),
+        delivered_by: delivered_by (*),
+        pickup_from: pickup_from (*),
+        deliver_to: deliver_to (*),
+        placed_by: placed_by (*)
+      `);
   
     if (error) {
       console.error('Error saving to database:', error);
     } else {
       console.log('Data saved successfully:', data);
-      return data;
+      return data[0];
     }
 };
 
