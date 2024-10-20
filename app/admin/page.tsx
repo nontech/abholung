@@ -85,7 +85,7 @@ const AdminPanel = () => {
       subject = `Order completed successfully - #[${orderData.id}]`;
     }
     else if (emailType === 'order_completed_failure'){
-      subject = `Delivery Successfully Completed - #[${orderData.id}]`;
+      subject = `Delivery Unsuccessful - Action Required for Order #[${orderData.id}]`;
     }
     const response = await fetch('/api/send-email', {
       method: 'POST',

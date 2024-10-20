@@ -1,5 +1,5 @@
 export interface ProductData {
-    url: string
+    newUrl: string
     title: string
     price: string
     listed_by: string

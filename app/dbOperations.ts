@@ -82,7 +82,7 @@ export const saveProductToDatabase = async (productData: ProductData) => {
       .from('product')
       .insert([
         {
-          url: productData?.url,
+          url: productData?.newUrl,
           title: productData?.title,
           price: productData?.price,
           pic_url: productData?.pic_url,
