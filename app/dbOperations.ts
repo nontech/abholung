@@ -82,7 +82,7 @@ export const saveProductToDatabase = async (productData: ProductData) => {
       .from('product')
       .insert([
         {
-          url: productData?.newUrl,
+          url: productData?.url,
           title: productData?.title,
           price: productData?.price,
           pic_url: productData?.pic_url,
@@ -140,6 +140,7 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
           deliver_to: deliverUserId,
           pickup_on: selectedDate,
           pickup_between: selectedTime,
+          status: 'order_processing',
           total: '999',
         },
       ]).select();
@@ -149,5 +150,19 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
     } else {
       console.log('Data saved successfully:', data);
       return data;
+    }
+};
+
+export const updateOrderStatus = async (orderId: number, status: string) => {
+    console.log('Updating order status:', orderId, status);
+    const { data, error } = await supabase
+      .from('order')
+      .update({ status: status })
+      .eq('id', orderId)
+      .select();
+    if (error) {
+      console.error('Error updating order status:', error);
+    } else {
+      console.log('Order status updated successfully:', data);
     }
 };
