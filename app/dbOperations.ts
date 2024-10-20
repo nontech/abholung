@@ -125,12 +125,15 @@ export const saveLogisticsToDatabase = async (mapData: MapData, additionalPickup
 };
 
 export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling') => {
+    //Determine placed_by based on the service type
+    const placedBy = serviceType === 'buying' ? deliverUserId : pickupUserId;
   
     // Insert data into orders table
     const { data, error } = await supabase
       .from('order')
       .insert([
         {
+          placed_by: placedBy,
           product: productId,
           service_type: serviceType,
           logistics: logisticId,

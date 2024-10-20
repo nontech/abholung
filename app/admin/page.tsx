@@ -34,26 +34,26 @@ const AdminPanel = () => {
   const [auth, setAuth] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      const { data, error } = await supabase.from('order')
-        .select(`
-          *,
-          product: product (*),
-          logistics: logistics (*),
-          delivered_by: delivered_by (*),
-          pickup_from: pickup_from (*),
-          deliver_to: deliver_to (*),
-          placed_by: placed_by (*)
-        `);
-      if (error) {
-        console.error('Error fetching orders:', error);
-      } else {
-        console.log(data);
-        setOrders(data);
-      }
-    };
+  const fetchOrders = async () => {
+    const { data, error } = await supabase.from('order')
+      .select(`
+        *,
+        product: product (*),
+        logistics: logistics (*),
+        delivered_by: delivered_by (*),
+        pickup_from: pickup_from (*),
+        deliver_to: deliver_to (*),
+        placed_by: placed_by (*)
+      `);
+    if (error) {
+      console.error('Error fetching orders:', error);
+    } else {
+      console.log(data);
+      setOrders(data);
+    }
+  };
 
+  useEffect(() => {
     if (auth) {
       fetchOrders();
     } else {
@@ -72,32 +72,69 @@ const AdminPanel = () => {
     return <div className="flex items-center justify-center h-screen">Authenticating...</div>;
   }
 
-  const handleConfirmOrder = async (orderId: number, status: string) => {
-    if (status == 'order_processing') {
-      await updateOrderStatus(orderId, 'order_processed_success');
-    }
-    else if (status == 'order_processed_success') {
-      await updateOrderStatus(orderId, 'order_completed_success');
-    };
+  async function sendEmail(emailTo: string, emailType: string) {
+  try {
+    console.log(emailType);
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        emails: [
+          { to: emailTo, subject: 'Order Confirmation', text: 'Your order has been placed' },
+          { to: 'info@kleinzeigenkurier.de', subject: 'Order Confirmation', text: 'A new order has been placed' },
+        ],
+      }),
+    });
 
-  };
-  
-  const handleDeclineOrder = async (orderId: number, status: string) => {
-    if (status == 'order_processing') {
-      await updateOrderStatus(orderId, 'order_processed_failure');
+    if (response.ok) {
+      // router.push('/summary');
     }
-    else if (status == 'order_processed_success') {
-      await updateOrderStatus(orderId, 'order_completed_failure');
-    };
+    if (!response.ok) {
+      throw new Error('Failed to send emails');
+    }
+  } catch (error) {
+    console.error('Error sending emails:', error);
+    alert('Error sending emails');
+  }
+}
+
+  const handleConfirmOrder = async (orderId: number, status: string, email_to: string) => {
+    if (confirm('Are you sure you want to confirm this order?')) {
+      if (status == 'order_processing') {
+        await updateOrderStatus(orderId, 'order_processed_success');
+        sendEmail(email_to, 'order_processed_success');
+      } else if (status == 'order_processed_success') {
+        await updateOrderStatus(orderId, 'order_completed_success');
+        sendEmail(email_to, 'order_completed_success');
+      }
+      fetchOrders();
+    }
   };
 
-  const handleResetOrder = (orderId: number, status: string) => {
-    if (status == 'order_processed_failure') {
-      updateOrderStatus(orderId, 'order_processing');
+  const handleDeclineOrder = async (orderId: number, status: string, email_to: string) => {
+    if (confirm('Are you sure you want to decline this order?')) {
+      if (status == 'order_processing') {
+        await updateOrderStatus(orderId, 'order_processed_failure');
+        sendEmail(email_to, 'order_processed_failure');
+      } else if (status == 'order_processed_success') {
+        await updateOrderStatus(orderId, 'order_completed_failure');
+        sendEmail(email_to, 'order_completed_failure');
+      }
+      fetchOrders();
     }
-    else if (status == 'order_completed_failure') {
-      updateOrderStatus(orderId, 'order_processed_success');
-    };
+  };
+
+  const handleRevertOrder = async (orderId: number, status: string) => {
+    if (confirm('Are you sure you want to revert this order?')) {
+      if (status == 'order_processed_failure') {
+        await updateOrderStatus(orderId, 'order_processing');
+      } else if (status == 'order_completed_failure') {
+        await updateOrderStatus(orderId, 'order_processed_success');
+      } else if (status == 'order_completed_success') {
+        await updateOrderStatus(orderId, 'order_processed_success');
+      }
+      fetchOrders();
+    }
   };
 
   return (
@@ -117,6 +154,9 @@ const AdminPanel = () => {
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
                     Status
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
+                    Action
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
                     Customer Name
@@ -143,21 +183,16 @@ const AdminPanel = () => {
                   <tr key={order.id}>
                     <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">{order.id}</td>
                     <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">
+                      {order.status}
+                    </td>
+                    <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">
                       {order.status === 'order_processing' || order.status === 'order_processed_success' ? (
                       <div className="flex flex-col justify-between">
-                        <span className="px-2 py-1 rounded bg-yellow-500 text-white">
-                        Status: {order.status}
-                        </span>
-                        <button onClick={() => handleConfirmOrder(order.id, order.status!)} className="mx-2 my-2 bg-green-500 text-white px-2 py-1 rounded">Confirm</button>
-                        <button onClick={() => handleDeclineOrder(order.id, order.status!)} className="bg-red-500 text-white px-2 py-1 rounded">Decline</button>
+                        <button onClick={() => handleConfirmOrder(order.id, order.status!, order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email! )} className="mx-2 my-2 bg-green-500 text-white px-2 py-1 rounded">Confirm</button>
+                        <button onClick={() => handleDeclineOrder(order.id, order.status!, order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email! )} className="bg-red-500 text-white px-2 py-1 rounded">Decline</button>
                       </div>
                       ) : (
-                      <span className="px-2 py-1 rounded bg-orange-500 text-white">
-                        Status: {order.status}
-                        </span>
-                      )}
-                      {order.status !== 'order_processing' && order.status !== 'order_processed_success' && order.status !== 'order_completed_success' && (
-                      <button onClick={() => handleResetOrder(order.id, order.status!)} className="mx-2 my-2 bg-blue-500 text-white px-2 py-1 rounded">Revert back</button>
+                      <button onClick={() => handleRevertOrder(order.id, order.status!)} className="mx-2 my-2 bg-blue-500 text-white px-2 py-1 rounded">Revert back</button>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 max-w-xs break-words">{order.placed_by?.full_name}</td>
