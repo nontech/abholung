@@ -6,7 +6,7 @@ import ContinueButton from './components/ContinueButton';
 import Header from './components/Header';
 import BackButton from './components/BackButton';
 import type { ProductData, MapData, Place } from '../types/common';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 //import PaymentPage from './components/Payment';
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
@@ -69,6 +69,8 @@ export default function Home() {
   const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
   const [serviceType, setServiceType] = useState<'buying' | 'selling'>('buying');
   const [isConfettiActive, setIsConfettiActive] = useState(false);
+
+  const [isContinueEnabled, setIsContinueEnabled] = useState<boolean>(false);
 
   const [stage, setStage]= useState<number>(1);
 
@@ -182,43 +184,34 @@ export default function Home() {
     }
   };
 
-  // const [isContinueEnabled, setIsContinueEnabled] = useState<boolean>(false);
-
   
-  // const checkContinueEnabled = useCallback(() => {
-  //     switch (stage) {
-  //       case 1:
-  //         // Check conditions for stage 1
-  //         setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime);
-  //         break;
-  //       case 2:
-  //         // Check conditions for stage 2
-  //         if (serviceType === 'buying') {
-  //           setIsContinueEnabled(!!pickupFromName && !!pickupFromEmail && !!deliverToName);
-  //         }
-  //         else {
-  //           setIsContinueEnabled(!!deliverToName && !!deliverToEmail && !!pickupFromName);
-  //         }
-  //         break;
-  //       case 3:
-  //         // Check conditions for stage 3
-  //         setIsContinueEnabled(!!selectedDeliveryPerson);
-  //         break;
-  //       case 4:
-  //         // Check conditions for stage 4
-  //         setIsContinueEnabled(true); // Assuming you want to enable it if you're on the summary page
-  //         break;
-  //       default:
-  //         setIsContinueEnabled(false);
-  //     }
-  //   }, [stage, productData, mapData, selectedDate, selectedTime, serviceType, selectedDeliveryPerson, pickupFromName, pickupFromEmail, deliverToName, deliverToEmail]);
-  
-  //   useEffect(() => {
-  //     checkContinueEnabled();
-  //   }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson, checkContinueEnabled]);
 
-  // const isContinueEnabled = productData && mapData && selectedDate && selectedTime;
-  const isContinueEnabled = true;
+// COMMENT THIS OUT WHEN YOU WANT TO TEST THE PRODUCT WITHOUT FILLING OUT THE FORM
+  const checkContinueEnabled = useCallback(() => {
+    switch (stage) {
+      case 1:
+        // Check conditions for stage 1
+        setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime && !!selectedDeliveryPerson);
+        break;
+      case 2:
+        // Check conditions for stage 2
+        if (serviceType === 'buying') {
+          setIsContinueEnabled(!!pickupFromName && !!deliverToEmail && !!deliverToName);
+        }
+        else {
+          setIsContinueEnabled(!!deliverToName && !!pickupFromEmail && !!pickupFromName);
+        }
+        break;
+      default:
+        setIsContinueEnabled(false);
+    }
+  }, [stage, productData, mapData, selectedDate, selectedTime, serviceType, selectedDeliveryPerson, pickupFromName, pickupFromEmail, deliverToName, deliverToEmail]);
+  
+  useEffect(() => {
+    checkContinueEnabled();
+  }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson, checkContinueEnabled]);
+
+// UNTIL HERE
 
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
