@@ -92,12 +92,12 @@ export default function ProductInfo({ product, serviceType, onProductFetched, on
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
           </svg>
         </div>
-        <Tooltip id="product-link-help" place="right" effect="solid">
-          <div className="max-w-xs">
+        <Tooltip id="product-link-help" place="top" float={true}>
+          <div>
             <p>To get the product link:</p>
             <ol className="list-decimal pl-4 mt-2">
               <li>Go to the eBay Kleinanzeigen product page</li>
-              <li>Copy the URL from your browser's address bar</li>
+              <li>Copy the URL from your browser address bar</li>
               <li>Paste it into the input field below</li>
             </ol>
           </div>
