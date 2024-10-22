@@ -266,7 +266,7 @@ export default function Home() {
                 <br />
                 Coming to rest of Germany soon!</h3>
             </div>
-            <form method="dialog" className="modal-backdrop">   
+            <form method="dialog" className="modal-backdrop">
               <button>close</button>
             </form>
           </dialog>
