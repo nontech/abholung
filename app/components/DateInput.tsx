@@ -7,6 +7,7 @@ const DateInput: React.FC<DateInputProps> = ({
   options = { dateFormat: 'd M D Y' },
   value,
   onChange = () => {},
+  pickupOnError,
   className = '',
   placeholder = 'Select a date'
 }) => {

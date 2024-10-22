@@ -5,6 +5,7 @@ import { DeliveryPerson } from '../../types/common';
 interface DeliveryPeopleProps {
   deliveryPeople: DeliveryPerson[];
   onSelect: (selectedPerson: DeliveryPerson) => void;
+  deliveryByError: string;
 }
 
 const getColor = (id: number) => {
@@ -12,7 +13,7 @@ const getColor = (id: number) => {
   return color[id];
 };
 
-const DeliveryPeople: React.FC<DeliveryPeopleProps> = ({ deliveryPeople, onSelect }) => {
+const DeliveryPeople: React.FC<DeliveryPeopleProps> = ({ deliveryPeople, onSelect, deliveryByError }) => {
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(null);
 
   const handleSelect = (person: DeliveryPerson) => {
@@ -23,6 +24,7 @@ const DeliveryPeople: React.FC<DeliveryPeopleProps> = ({ deliveryPeople, onSelec
   return (
     <div className="mt-4 bg-gray-100"> {/* Tailwind styles for container */}
       <h2 className="text-md mb-4 text-gray-800">Select a Delivery Person</h2> {/* Tailwind styles for title */}
+      {deliveryByError && <p className="text-red-500 text-sm mt-1">{deliveryByError}</p>}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> {/* Grid layout for cards */}
         {deliveryPeople.map((person) => (
           <div key={person.id} className={`p-2 border rounded-lg shadow-md cursor-pointer ${selectedPersonId === person.id ? 'bg-blue-100' : 'bg-white'}`} onClick={() => handleSelect(person)}> {/* Card styles */}

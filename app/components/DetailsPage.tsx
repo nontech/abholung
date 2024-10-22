@@ -240,7 +240,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                 </div>
             </div>
         </div>
-        <ContinueButton onClick={handleContinue} isEnabled={true} />
+        <div className = "flex justify-center"><ContinueButton onClick={handleContinue} isEnabled={true} /></div>
     </div>
     )
 }

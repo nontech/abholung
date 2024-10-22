@@ -11,6 +11,7 @@ export interface ProductData {
 export interface TimeRangeProps {
     selectedTime: string;
     onTimeChange: (time: string) => void;
+    pickupBetweenError: string;
 }
 
 export interface RouteInfo {
@@ -28,6 +29,7 @@ export interface DateInputProps {
     };
     value: Date | null;
     onChange: ([selectedDate]: Date[]) => void;
+    pickupOnError: string;
     className?: string;
     placeholder?: string;
 }

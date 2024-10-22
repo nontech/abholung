@@ -25,6 +25,8 @@ interface TransportRouteProps {
   setOrigin: React.Dispatch<React.SetStateAction<Place>>;
   setDestination: React.Dispatch<React.SetStateAction<Place>>;
   onMapDataChange: (mapData: MapData) => void;
+  pickupFromError: string;
+  deliverToError: string;
 }
 
 interface LatLngLiteral {
@@ -38,6 +40,8 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
   setOrigin,
   setDestination,
   onMapDataChange,
+  pickupFromError,
+  deliverToError,
 }) => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [duration, setDuration] = useState<string | null>(null);
@@ -194,6 +198,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </Autocomplete>
+          {pickupFromError && <p className="text-red-500 text-sm mt-1">{pickupFromError}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-2">Deliver To</label>
@@ -210,6 +215,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </Autocomplete>
+          {deliverToError && <p className="text-red-500 text-sm mt-1">{deliverToError}</p>}
         </div>
       </div>
 

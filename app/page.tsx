@@ -69,8 +69,14 @@ export default function Home() {
   const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
   const [serviceType, setServiceType] = useState<'buying' | 'selling'>('buying');
   const [isConfettiActive, setIsConfettiActive] = useState(false);
-
-  const [isContinueEnabled, setIsContinueEnabled] = useState<boolean>(false);
+  const [SearchFormErrors, setSearchFormErrors] = useState({
+    product: '',
+    pickupFrom: '',
+    deliverTo: '',
+    pickupOn: '',
+    pickupBetween: '',
+    deliveryBy: ''
+  });
 
   const [stage, setStage]= useState<number>(1);
 
@@ -113,6 +119,7 @@ export default function Home() {
           const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
           if (orderData) {
             await sendEmail(orderData);
+            setIsConfettiActive(true);
             setStage(4);
           }
         }
@@ -166,16 +173,42 @@ export default function Home() {
     productData: productData!,
     onEdit: setStage
   };
+
+  const validateSearchForm = () => {
+    const newErrors = {
+      product: '',
+      pickupFrom: '',
+      deliverTo: '',
+      pickupOn: '',
+      pickupBetween: '',
+      deliveryBy: ''
+    };
+    if (!productData?.newUrl.trim()) {
+      newErrors.product = 'Please paste a valid eBay Kleinanzeigen product link';
+    }
+    if (!mapData?.from.trim() || !mapData) {
+      newErrors.pickupFrom = 'Pickup From is required';
+    }
+    if (!mapData?.to.trim() || !mapData) {
+      newErrors.deliverTo = 'Delivery To is required';
+    }
+    if (selectedDate?.getDate() === new Date().getDate()) {
+      newErrors.pickupOn = 'Pickup On is required';
+    }
+    if (!selectedTime) {
+      newErrors.pickupBetween = 'Pickup Between is required';
+    }
+    if (!selectedDeliveryPerson) {
+      newErrors.deliveryBy = 'Please select a delivery person';
+    }
+    setSearchFormErrors(newErrors);
+    return newErrors;
+  };
  
   const handleContinue = () => {
-    if (stage < 4) {
-      setStage(stage + 1);
-    }
-    else {
-      setStage(1); // Reset to stage 1 if on the summary page
-    }
-    if (stage === 3) {
-      setIsConfettiActive(true);
+    const errors = validateSearchForm();
+    if (Object.values(errors).every(error => error === '')) {
+      setStage(2);
     }
   };
 
@@ -184,35 +217,7 @@ export default function Home() {
       setStage(stage - 1);
     }
   };
-
-  
-
-// COMMENT THIS OUT WHEN YOU WANT TO TEST THE PRODUCT WITHOUT FILLING OUT THE FORM
-  // const checkContinueEnabled = useCallback(() => {
-  //   switch (stage) {
-  //     case 1:
-  //       // Check conditions for stage 1
-  //       setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime && !!selectedDeliveryPerson);
-  //       break;
-  //     case 2:
-  //       // Check conditions for stage 2
-  //       if (serviceType === 'buying') {
-  //         setIsContinueEnabled(!!pickupFromName && !!deliverToEmail && !!deliverToName);
-  //       }
-  //       else {
-  //         setIsContinueEnabled(!!deliverToName && !!pickupFromEmail && !!pickupFromName);
-  //       }
-  //       break;
-  //     default:
-  //       setIsContinueEnabled(false);
-  //   }
-  // }, [stage, productData, mapData, selectedDate, selectedTime, serviceType, selectedDeliveryPerson, pickupFromName, pickupFromEmail, deliverToName, deliverToEmail]);
-  
-  // useEffect(() => {
-  //   checkContinueEnabled();
-  // }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson, checkContinueEnabled]);
-
-// UNTIL HERE
+  console.log(selectedDate);
 
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
@@ -231,30 +236,32 @@ export default function Home() {
       
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
-          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} url={url} onUrlChange={setUrl} />
+          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} url={url} onUrlChange={setUrl} productError={SearchFormErrors.product} />
           <TransportRoute
             origin={origin}
             destination={destination}
             setOrigin={setOrigin}
             setDestination={setDestination}
             onMapDataChange={setMapData}
+            pickupFromError={SearchFormErrors.pickupFrom}
+            deliverToError={SearchFormErrors.deliverTo}
           />
           <div className="flex">
             <div className="w-1/2 p-2">
-              <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
+              <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} pickupOnError={SearchFormErrors.pickupOn} />
             </div>
             <div className="w-1/2 p-2">
-              <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
+              <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} pickupBetweenError={SearchFormErrors.pickupBetween} />
             </div>
           </div>
-          <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
+          <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} deliveryByError={SearchFormErrors.deliveryBy} />
           <PriceInfo />
-          <ContinueButton onClick={handleContinue} isEnabled={true} />
+          <div className = "flex justify-center"><ContinueButton onClick={handleContinue} isEnabled={true} /></div>
         </div>
         
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} /> )}
+      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone}/> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       

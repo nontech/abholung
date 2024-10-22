@@ -12,9 +12,10 @@ interface ProductInfoProps {
   onServiceChange: (serviceType: 'buying' | 'selling') => void;
   url: string;
   onUrlChange: (url: string) => void;
+  productError: string;
 }
 
-export default function ProductInfo({ product, serviceType, onProductFetched, onServiceChange, url, onUrlChange }: ProductInfoProps) {
+export default function ProductInfo({ product, serviceType, onProductFetched, onServiceChange, url, onUrlChange, productError }: ProductInfoProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -70,13 +71,6 @@ export default function ProductInfo({ product, serviceType, onProductFetched, on
       fetchProduct(newUrl);
     }
   }
-  
-
-  // const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === 'Enter' && !loading) {
-  //     fetchProduct()
-  //   }
-  // }
 
   const clearUrl = () => {
     onUrlChange('')
@@ -98,6 +92,7 @@ export default function ProductInfo({ product, serviceType, onProductFetched, on
           }`}
           disabled={loading}
         />
+        {productError && <p className="text-red-500 text-sm mt-1">{productError}</p>}
         {url && (
           <button
             onClick={clearUrl}
