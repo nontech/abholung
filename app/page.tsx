@@ -143,6 +143,7 @@ export default function Home() {
   };
 
   const detailsPageProps: DetailsPageType = {
+    serviceType: serviceType,
     mapData: mapData,
     selectedDate: selectedDate,
     selectedTime: selectedTime,
@@ -187,29 +188,29 @@ export default function Home() {
   
 
 // COMMENT THIS OUT WHEN YOU WANT TO TEST THE PRODUCT WITHOUT FILLING OUT THE FORM
-  const checkContinueEnabled = useCallback(() => {
-    switch (stage) {
-      case 1:
-        // Check conditions for stage 1
-        setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime && !!selectedDeliveryPerson);
-        break;
-      case 2:
-        // Check conditions for stage 2
-        if (serviceType === 'buying') {
-          setIsContinueEnabled(!!pickupFromName && !!deliverToEmail && !!deliverToName);
-        }
-        else {
-          setIsContinueEnabled(!!deliverToName && !!pickupFromEmail && !!pickupFromName);
-        }
-        break;
-      default:
-        setIsContinueEnabled(false);
-    }
-  }, [stage, productData, mapData, selectedDate, selectedTime, serviceType, selectedDeliveryPerson, pickupFromName, pickupFromEmail, deliverToName, deliverToEmail]);
+  // const checkContinueEnabled = useCallback(() => {
+  //   switch (stage) {
+  //     case 1:
+  //       // Check conditions for stage 1
+  //       setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime && !!selectedDeliveryPerson);
+  //       break;
+  //     case 2:
+  //       // Check conditions for stage 2
+  //       if (serviceType === 'buying') {
+  //         setIsContinueEnabled(!!pickupFromName && !!deliverToEmail && !!deliverToName);
+  //       }
+  //       else {
+  //         setIsContinueEnabled(!!deliverToName && !!pickupFromEmail && !!pickupFromName);
+  //       }
+  //       break;
+  //     default:
+  //       setIsContinueEnabled(false);
+  //   }
+  // }, [stage, productData, mapData, selectedDate, selectedTime, serviceType, selectedDeliveryPerson, pickupFromName, pickupFromEmail, deliverToName, deliverToEmail]);
   
-  useEffect(() => {
-    checkContinueEnabled();
-  }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson, checkContinueEnabled]);
+  // useEffect(() => {
+  //   checkContinueEnabled();
+  // }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson, checkContinueEnabled]);
 
 // UNTIL HERE
 
@@ -248,18 +249,15 @@ export default function Home() {
           </div>
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
           <PriceInfo />
+          <ContinueButton onClick={handleContinue} isEnabled={true} />
         </div>
+        
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
       {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} /> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
-      {/* Conditionally render the Continue Button */}
-      {stage < 4 && (
-        <div className='flex justify-center mb-10'>
-          <ContinueButton onClick={handleContinue} isEnabled={isContinueEnabled} />
-          </div>
-        )}
+      
       {/* Confetti Animation */}
       {isConfettiActive && (
           <Confetti

@@ -1,6 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { DetailsPageType } from '../../types/common';
+import ContinueButton from './ContinueButton';
 
 interface DetailsPageProps {
     details: DetailsPageType
@@ -12,6 +13,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
     const mapData = details.mapData
     let pickupAddress = 'Address N/A';
     let deliveryAddress = 'Address N/A';
+    
 
     if (mapData && mapData.from && mapData.to) {
         pickupAddress = mapData.from;
@@ -42,7 +44,8 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
     const onDeliverToPhoneNumberChange = details.onDeliverToPhoneNumberChange
     const onAdditionalDeliveryInstructionsChange = details.onAdditionalDeliveryInstructionsChange
 
-           
+
+    const serviceType = details.serviceType
     // Product Info
     let productTitle = 'Product Title N/A'
     const productData = details.productData
@@ -55,6 +58,54 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
 
     const [showPickupInstructions, setShowPickupInstructions] = useState(false);
     const [showDeliveryInstructions, setShowDeliveryInstructions] = useState(false);
+
+    const [errors, setErrors] = useState({
+        pickupFromName: '',
+        pickupFromEmail: '',
+        deliverToName: '',
+        deliverToEmail: ''
+    });
+
+    const handleContinue = () => {
+        const newErrors = validateForm();
+        if (Object.values(newErrors).every(error => error === '')) {
+            setStage(3);
+        }
+    }
+
+    const validateForm = () => {
+        const newErrors = {
+            pickupFromName: '',
+            pickupFromEmail: '',
+            deliverToName: '',
+            deliverToEmail: ''
+        };
+
+        if (!pickupFromName.trim()) {
+            newErrors.pickupFromName = 'Pickup name is required';
+        }
+
+        if (!deliverToName.trim()) {
+            newErrors.deliverToName = 'Delivery name is required';
+        }
+
+        if (serviceType === 'selling') {
+            if (!pickupFromEmail.trim()) {
+                newErrors.pickupFromEmail = 'Pickup email is required';
+            } else if (!/\S+@\S+\.\S+/.test(pickupFromEmail)) {
+                newErrors.pickupFromEmail = 'Invalid email format';
+            }
+        } else if (serviceType === 'buying') {
+            if (!deliverToEmail.trim()) {
+                newErrors.deliverToEmail = 'Delivery email is required';
+            } else if (!/\S+@\S+\.\S+/.test(deliverToEmail)) {
+                newErrors.deliverToEmail = 'Invalid email format';
+            }
+        }
+
+        setErrors(newErrors);
+        return newErrors;
+    };
 
     return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -75,17 +126,19 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                 <input
                     type="text"
                     placeholder="Name on the door"
-                    className="block w-full border border-gray-300 rounded mt-4 p-2 text-gray-900"
+                    className={`block w-full border ${errors.pickupFromName ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={pickupFromName}
                     onChange={(e) => onPickupFromNameChange(e.target.value)}
                 />
+                {errors.pickupFromName && <p className="text-red-500 text-sm mt-1">{errors.pickupFromName}</p>}
                 <input
                     type="email"
                     placeholder="Email"
-                    className="block w-full border border-gray-300 rounded mt-4 p-2 text-gray-900"
+                    className={`block w-full border ${errors.pickupFromEmail ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={pickupFromEmail}
                     onChange={(e) => onPickupFromEmailChange(e.target.value)}
                 />
+                {errors.pickupFromEmail && <p className="text-red-500 text-sm mt-1">{errors.pickupFromEmail}</p>}
                 <input
                     type="text"
                     placeholder="+49 - Phone Number"
@@ -129,17 +182,19 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                 <input
                     type="text"
                     placeholder="Name on the door"
-                    className="block w-full border border-gray-300 rounded mt-4 p-2 text-gray-900"
+                    className={`block w-full border ${errors.deliverToName ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={deliverToName}
                     onChange={(e) => onDeliverToNameChange(e.target.value)}
                 />
+                {errors.deliverToName && <p className="text-red-500 text-sm mt-1">{errors.deliverToName}</p>}
                 <input
                     type="email"
                     placeholder="Email"
-                    className="block w-full border border-gray-300 rounded mt-4 p-2 text-gray-900"
+                    className={`block w-full border ${errors.deliverToEmail ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={deliverToEmail}
                     onChange={(e) => onDeliverToEmailChange(e.target.value)}
                 />
+                {errors.deliverToEmail && <p className="text-red-500 text-sm mt-1">{errors.deliverToEmail}</p>}
                 <input
                     type="text"
                     placeholder="+49 - Phone Number"
@@ -185,6 +240,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                 </div>
             </div>
         </div>
+        <ContinueButton onClick={handleContinue} isEnabled={true} />
     </div>
     )
 }

@@ -48,6 +48,7 @@ export interface DeliveryDetails {
 }
 
 export interface DetailsPageType {
+    serviceType: 'buying' | 'selling';
     mapData: MapData | null;
     selectedDate: Date | null;
     selectedTime: string | null;
