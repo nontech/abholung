@@ -148,6 +148,31 @@ const AdminPanel = () => {
     }
   };
 
+  const statusOrder = [
+    'order_processing',
+    'order_processed_success',
+    'order_processed_failure',
+    'order_completed_success',
+    'order_completed_failure'
+  ];
+
+  const StatusDisplay = ({ currentStatus }: { currentStatus: string }) => (
+    <div className="flex flex-col space-y-1">
+      {statusOrder.map((status) => (
+        <span
+          key={status}
+          className={`px-2 py-1 text-xs font-semibold rounded ${
+            currentStatus === status
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-200 text-gray-700'
+          }`}
+        >
+          {status}
+        </span>
+      ))}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
@@ -164,6 +189,9 @@ const AdminPanel = () => {
                     Order ID
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
+                    Delivery fee
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
                     Status
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
@@ -171,6 +199,9 @@ const AdminPanel = () => {
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
                     Customer Name
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
+                    Customer Email
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
                     Product Info
@@ -193,8 +224,9 @@ const AdminPanel = () => {
                 {orders.map((order) => (
                   <tr key={order.id}>
                     <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">{order.id}</td>
+                    <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">{order.total} €</td>
                     <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">
-                      {order.status}
+                      <StatusDisplay currentStatus={order.status!} />
                     </td>
                     <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">
                       {order.status === 'order_processing' || order.status === 'order_processed_success' ? (
@@ -207,6 +239,7 @@ const AdminPanel = () => {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 max-w-xs break-words">{order.placed_by?.full_name}</td>
+                    <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 max-w-xs break-words">{order.placed_by?.email}</td>
                     <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 max-w-xs break-words">
                       <div>
                         <strong>Title:</strong> {order.product.title}
