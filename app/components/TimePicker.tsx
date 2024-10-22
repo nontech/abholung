@@ -1,7 +1,7 @@
 import React from 'react';
 import { TimeRangeProps } from '../../types/common';
 
-const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) => {
+const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange, pickupBetweenError }) => {
   const timeOptions = [
     { value: '9-12', label: ' (Morning) 9 am - 12 pm' },
     { value: '12-15', label: '(Afternoon) 12 pm - 3 pm ' },
@@ -27,11 +27,12 @@ const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) => 
           </option>
         ))}
       </select>
+      {pickupBetweenError && <p className="text-red-500 text-sm mt-1">{pickupBetweenError}</p>}
     </div>
   );
 };
 
-const TimePicker: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) => {
+const TimePicker: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange, pickupBetweenError }) => {
 
   const handleTimeChange = (time: string) => {
     onTimeChange(time);
@@ -39,7 +40,7 @@ const TimePicker: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange }) =>
 
   return (
     <div>
-      <TimeRange selectedTime={selectedTime} onTimeChange={handleTimeChange} />
+      <TimeRange selectedTime={selectedTime} onTimeChange={handleTimeChange} pickupBetweenError={pickupBetweenError} />
     </div>
   );
 };

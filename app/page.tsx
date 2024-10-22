@@ -6,7 +6,7 @@ import ContinueButton from './components/ContinueButton';
 import Header from './components/Header';
 import BackButton from './components/BackButton';
 import type { ProductData, MapData, Place } from '../types/common';
-import { useState, useEffect } from 'react';
+import { useState, useEffect} from 'react';
 //import PaymentPage from './components/Payment';
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
@@ -18,6 +18,27 @@ import TransportRoute from './components/TransportRoute';
 import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
 import PriceInfo from './components/PriceInfo';
 import dynamic from 'next/dynamic';
+import { Database } from '@/types/supabase-types';
+// Define the Order type using the Database type
+type Order = Database['public']['Tables']['order']['Row'];
+
+// Define the Product type using the Database type
+type Product = Database['public']['Tables']['product']['Row'];
+
+type Logistics = Database['public']['Tables']['logistics']['Row'];
+
+type Users = Database['public']['Tables']['users']['Row'];
+
+// Extend the Order type to include the related Product fields
+type OrderAll = Order & {
+  product: Product;
+  logistics: Logistics;
+  delivered_by: Users;
+  pickup_from: Users;
+  deliver_to: Users;
+  placed_by: Users;
+};
+
 const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
 
 
@@ -48,6 +69,14 @@ export default function Home() {
   const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
   const [serviceType, setServiceType] = useState<'buying' | 'selling'>('buying');
   const [isConfettiActive, setIsConfettiActive] = useState(false);
+  const [SearchFormErrors, setSearchFormErrors] = useState({
+    product: '',
+    pickupFrom: '',
+    deliverTo: '',
+    pickupOn: '',
+    pickupBetween: '',
+    deliveryBy: ''
+  });
 
   const [stage, setStage]= useState<number>(1);
 
@@ -63,19 +92,38 @@ export default function Home() {
   useEffect(() => {
     if (paymentDone) {
       setIsConfettiActive(true);
+      const sendEmail = async (orderData: OrderAll) => {
+        try {
+          const emailSend = serviceType === 'buying' ? deliverToEmail : pickupFromEmail;
+          await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              emails: [
+                { to: emailSend, subject: `Order being processed - #[${orderData.id}]`, type: 'order_processing_customer', orderData: orderData },
+                { to: 'info@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
+              ],
+            }),
+          });
+        } catch (error) {
+          console.error('Error sending emails:', error);
+          alert('Error sending emails');
+        }
+      };
       const handleSaveOrder = async () => {
         const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
         const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
         const productId = await saveProductToDatabase(productData!);
         const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
         if (pickupUserId && deliverUserId && productId && logisticId) {
-          const orderData = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
+          const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
           if (orderData) {
+            await sendEmail(orderData);
+            setIsConfettiActive(true);
             setStage(4);
           }
         }
       };
-
       handleSaveOrder();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,6 +150,7 @@ export default function Home() {
   };
 
   const detailsPageProps: DetailsPageType = {
+    serviceType: serviceType,
     mapData: mapData,
     selectedDate: selectedDate,
     selectedTime: selectedTime,
@@ -124,16 +173,42 @@ export default function Home() {
     productData: productData!,
     onEdit: setStage
   };
+
+  const validateSearchForm = () => {
+    const newErrors = {
+      product: '',
+      pickupFrom: '',
+      deliverTo: '',
+      pickupOn: '',
+      pickupBetween: '',
+      deliveryBy: ''
+    };
+    if (!productData?.newUrl.trim()) {
+      newErrors.product = 'Please paste a valid eBay Kleinanzeigen product link';
+    }
+    if (!mapData?.from.trim() || !mapData) {
+      newErrors.pickupFrom = 'Pickup From is required';
+    }
+    if (!mapData?.to.trim() || !mapData) {
+      newErrors.deliverTo = 'Delivery To is required';
+    }
+    if (selectedDate?.getDate() === new Date().getDate()) {
+      newErrors.pickupOn = 'Pickup On is required';
+    }
+    if (!selectedTime) {
+      newErrors.pickupBetween = 'Pickup Between is required';
+    }
+    if (!selectedDeliveryPerson) {
+      newErrors.deliveryBy = 'Please select a delivery person';
+    }
+    setSearchFormErrors(newErrors);
+    return newErrors;
+  };
  
   const handleContinue = () => {
-    if (stage < 4) {
-      setStage(stage + 1);
-    }
-    else {
-      setStage(1); // Reset to stage 1 if on the summary page
-    }
-    if (stage === 3) {
-      setIsConfettiActive(true);
+    const errors = validateSearchForm();
+    if (Object.values(errors).every(error => error === '')) {
+      setStage(2);
     }
   };
 
@@ -142,44 +217,7 @@ export default function Home() {
       setStage(stage - 1);
     }
   };
-
-  // const [isContinueEnabled, setIsContinueEnabled] = useState<boolean>(false);
-
-  
-  // const checkContinueEnabled = useCallback(() => {
-  //     switch (stage) {
-  //       case 1:
-  //         // Check conditions for stage 1
-  //         setIsContinueEnabled(!!productData && !!mapData && !!selectedDate && !!selectedTime);
-  //         break;
-  //       case 2:
-  //         // Check conditions for stage 2
-  //         if (serviceType === 'buying') {
-  //           setIsContinueEnabled(!!pickupFromName && !!pickupFromEmail && !!deliverToName);
-  //         }
-  //         else {
-  //           setIsContinueEnabled(!!deliverToName && !!deliverToEmail && !!pickupFromName);
-  //         }
-  //         break;
-  //       case 3:
-  //         // Check conditions for stage 3
-  //         setIsContinueEnabled(!!selectedDeliveryPerson);
-  //         break;
-  //       case 4:
-  //         // Check conditions for stage 4
-  //         setIsContinueEnabled(true); // Assuming you want to enable it if you're on the summary page
-  //         break;
-  //       default:
-  //         setIsContinueEnabled(false);
-  //     }
-  //   }, [stage, productData, mapData, selectedDate, selectedTime, serviceType, selectedDeliveryPerson, pickupFromName, pickupFromEmail, deliverToName, deliverToEmail]);
-  
-  //   useEffect(() => {
-  //     checkContinueEnabled();
-  //   }, [stage, productData, mapData, selectedDate, selectedTime, pickupFromName, pickupFromEmail, pickupFromPhoneNumber, selectedDeliveryPerson, checkContinueEnabled]);
-
-  // const isContinueEnabled = productData && mapData && selectedDate && selectedTime;
-  const isContinueEnabled = true;
+  console.log(selectedDate);
 
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
@@ -198,36 +236,35 @@ export default function Home() {
       
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
-          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} url={url} onUrlChange={setUrl} />
+          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} url={url} onUrlChange={setUrl} productError={SearchFormErrors.product} />
           <TransportRoute
             origin={origin}
             destination={destination}
             setOrigin={setOrigin}
             setDestination={setDestination}
             onMapDataChange={setMapData}
+            pickupFromError={SearchFormErrors.pickupFrom}
+            deliverToError={SearchFormErrors.deliverTo}
           />
           <div className="flex">
             <div className="w-1/2 p-2">
-              <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} />
+              <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} pickupOnError={SearchFormErrors.pickupOn} />
             </div>
             <div className="w-1/2 p-2">
-              <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} />
+              <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} pickupBetweenError={SearchFormErrors.pickupBetween} />
             </div>
           </div>
-          <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} />
+          <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} deliveryByError={SearchFormErrors.deliveryBy} />
           <PriceInfo />
+          <div className = "flex justify-center"><ContinueButton onClick={handleContinue} isEnabled={true} /></div>
         </div>
+        
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} emailSend={serviceType === 'buying' ? deliverToEmail : pickupFromEmail}/> )}
+      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone}/> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
-      {/* Conditionally render the Continue Button */}
-      {stage < 4 && (
-        <div className='flex justify-center mb-10'>
-          <ContinueButton onClick={handleContinue} isEnabled={isContinueEnabled} />
-          </div>
-        )}
+      
       {/* Confetti Animation */}
       {isConfettiActive && (
           <Confetti

@@ -125,12 +125,15 @@ export const saveLogisticsToDatabase = async (mapData: MapData, additionalPickup
 };
 
 export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling') => {
+    //Determine placed_by based on the service type
+    const placedBy = serviceType === 'buying' ? deliverUserId : pickupUserId;
   
     // Insert data into orders table
     const { data, error } = await supabase
       .from('order')
       .insert([
         {
+          placed_by: placedBy,
           product: productId,
           service_type: serviceType,
           logistics: logisticId,
@@ -140,14 +143,37 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
           deliver_to: deliverUserId,
           pickup_on: selectedDate,
           pickup_between: selectedTime,
+          status: 'order_processing',
           total: '999',
         },
-      ]).select();
+      ]).select(`
+        *,
+        product: product (*),
+        logistics: logistics (*),
+        delivered_by: delivered_by (*),
+        pickup_from: pickup_from (*),
+        deliver_to: deliver_to (*),
+        placed_by: placed_by (*)
+      `);
   
     if (error) {
       console.error('Error saving to database:', error);
     } else {
       console.log('Data saved successfully:', data);
-      return data;
+      return data[0];
+    }
+};
+
+export const updateOrderStatus = async (orderId: number, status: string) => {
+    console.log('Updating order status:', orderId, status);
+    const { data, error } = await supabase
+      .from('order')
+      .update({ status: status })
+      .eq('id', orderId)
+      .select();
+    if (error) {
+      console.error('Error updating order status:', error);
+    } else {
+      console.log('Order status updated successfully:', data);
     }
 };

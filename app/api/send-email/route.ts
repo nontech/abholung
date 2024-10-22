@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
 
   try {
     for (const email of emails) {
-      const { to, subject, text } = email;
-      if (!to || !subject || !text) {
-        return NextResponse.json({ error: 'Missing required fields in one of the emails: to, subject, text' }, { status: 400 })
+      const { to, subject, type, orderData } = email;
+      if (!to || !subject || !type || !orderData) {
+        return NextResponse.json({ error: 'Missing required fields in one of the emails: to, subject, type, orderData' }, { status: 400 })
       }
 
       // Send email
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         from: process.env.EMAIL_FROM,
         to: to,
         subject: subject,
-        react: EmailTemplate({ text }),
+        react: EmailTemplate({ type, orderData }),
       });
     }
     return NextResponse.json({ message: 'Emails sent successfully'}, { status: 200 })
