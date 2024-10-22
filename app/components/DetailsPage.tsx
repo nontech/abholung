@@ -66,10 +66,32 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
         deliverToEmail: ''
     });
 
+    const handlePickupFromNameChange = (name: string) => {
+        onPickupFromNameChange(name);
+        setErrors((prevErrors) => ({ ...prevErrors, pickupFromName: '' }));
+    };
+
+    const handlePickupFromEmailChange = (email: string) => {
+        onPickupFromEmailChange(email);
+        setErrors((prevErrors) => ({ ...prevErrors, pickupFromEmail: '' }));
+    };
+
+    const handleDeliverToNameChange = (name: string) => {
+        onDeliverToNameChange(name);
+        setErrors((prevErrors) => ({ ...prevErrors, deliverToName: '' }));
+    };
+
+    const handleDeliverToEmailChange = (email: string) => {
+        onDeliverToEmailChange(email);
+        setErrors((prevErrors) => ({ ...prevErrors, deliverToEmail: '' }));
+    };
+
     const handleContinue = () => {
         const newErrors = validateForm();
         if (Object.values(newErrors).every(error => error === '')) {
             setStage(3);
+        } else {
+            setErrors(newErrors);
         }
     }
 
@@ -103,7 +125,6 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
             }
         }
 
-        setErrors(newErrors);
         return newErrors;
     };
 
@@ -128,7 +149,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                     placeholder="Name on the door"
                     className={`block w-full border ${errors.pickupFromName ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={pickupFromName}
-                    onChange={(e) => onPickupFromNameChange(e.target.value)}
+                    onChange={(e) => handlePickupFromNameChange(e.target.value)}
                 />
                 {errors.pickupFromName && <p className="text-red-500 text-sm mt-1">{errors.pickupFromName}</p>}
                 <input
@@ -136,7 +157,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                     placeholder="Email"
                     className={`block w-full border ${errors.pickupFromEmail ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={pickupFromEmail}
-                    onChange={(e) => onPickupFromEmailChange(e.target.value)}
+                    onChange={(e) => handlePickupFromEmailChange(e.target.value)}
                 />
                 {errors.pickupFromEmail && <p className="text-red-500 text-sm mt-1">{errors.pickupFromEmail}</p>}
                 <input
@@ -184,7 +205,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                     placeholder="Name on the door"
                     className={`block w-full border ${errors.deliverToName ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={deliverToName}
-                    onChange={(e) => onDeliverToNameChange(e.target.value)}
+                    onChange={(e) => handleDeliverToNameChange(e.target.value)}
                 />
                 {errors.deliverToName && <p className="text-red-500 text-sm mt-1">{errors.deliverToName}</p>}
                 <input
@@ -192,7 +213,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
                     placeholder="Email"
                     className={`block w-full border ${errors.deliverToEmail ? 'border-red-500' : 'border-gray-300'} rounded mt-4 p-2 text-gray-900`}
                     value={deliverToEmail}
-                    onChange={(e) => onDeliverToEmailChange(e.target.value)}
+                    onChange={(e) => handleDeliverToEmailChange(e.target.value)}
                 />
                 {errors.deliverToEmail && <p className="text-red-500 text-sm mt-1">{errors.deliverToEmail}</p>}
                 <input

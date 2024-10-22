@@ -34,7 +34,7 @@ export default function RootLayout({
         />
       </head>
       <CSPostHogProvider>
-        <body
+        <body data-theme="light"
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           {children}
