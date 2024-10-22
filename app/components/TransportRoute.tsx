@@ -27,6 +27,8 @@ interface TransportRouteProps {
   onMapDataChange: (mapData: MapData) => void;
   pickupFromError: string;
   deliverToError: string;
+  duration: string | null;
+  setDuration: (duration: string | null) => void;
 }
 
 interface LatLngLiteral {
@@ -42,9 +44,10 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
   onMapDataChange,
   pickupFromError,
   deliverToError,
+  duration,
+  setDuration
 }) => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
-  const [duration, setDuration] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -180,6 +183,34 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
     }
   }, [isMapLoaded, mapCenter, mapBounds]);
 
+  const calculateTimeSaved = (duration: string): string => {
+    const parts = duration.split(' ');
+    let hours = 0;
+    let minutes = 0;
+
+    for (let i = 0; i < parts.length; i += 2) {
+      const value = parseInt(parts[i]);
+      const unit = parts[i + 1];
+
+      if (unit.startsWith('hour')) {
+        hours = value;
+      } else if (unit.startsWith('min')) {
+        minutes = value;
+      }
+    }
+
+    const totalMinutes = hours * 60 + minutes;
+    const savedMinutes = totalMinutes * 2;
+    const savedHours = Math.floor(savedMinutes / 60);
+    const savedMinutesRemainder = savedMinutes % 60;
+
+    if (savedHours > 0) {
+      return `${savedHours} hour${savedHours !== 1 ? 's' : ''} ${savedMinutesRemainder} min`;
+    } else {
+      return `${savedMinutes} min`;
+    }
+  };
+
   return (
     <div>
       <div className="mb-4">
@@ -272,8 +303,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
               <div>
                 <h3 className="text-lg font-semibold mb-1">Time Saved</h3>
                 <p className="text-3xl font-bold">
-                  {parseInt(duration.replace(/\D/g, '')) * 2}{' '}
-                  {duration.replace(/[^a-zA-Z]+/g, '')}
+                  {calculateTimeSaved(duration)}
                 </p>
               </div>
               <div className="text-right">
