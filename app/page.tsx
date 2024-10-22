@@ -15,7 +15,7 @@ import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/commo
 import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
 import TransportRoute from './components/TransportRoute';
-import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
 import PriceInfo from './components/PriceInfo';
 import dynamic from 'next/dynamic';
 import { Database } from '@/types/supabase-types';
@@ -212,14 +212,14 @@ export default function Home() {
     return origin.address.toLowerCase().includes('berlin') && destination.address.toLowerCase().includes('berlin');
   }
  
-  const handleContinue = () => {
+  const handleContinue = async() => {
     const errors = validateSearchForm();
     // No form errors
     if (Object.values(errors).every(error => error === '')) {
       if (!isAddressInBerlin()) 
         {
           // [TODO] save entries to databae
-
+          await saveLocationToDatabase(mapData!);
           // open info modal
           (document.getElementById('info_modal') as HTMLDialogElement).showModal();
           return;
