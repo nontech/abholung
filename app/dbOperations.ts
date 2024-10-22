@@ -124,6 +124,23 @@ export const saveLogisticsToDatabase = async (mapData: MapData, additionalPickup
     }
 };
 
+export const saveLocationToDatabase = async (mapData: MapData) => {
+  const { data, error } = await supabase
+    .from('locations')
+    .insert([
+      {
+        from: mapData?.from,
+        to: mapData?.to,
+      }
+    ])
+    .select();
+  if (error) {
+    console.error('Error saving to database:', error);
+  } else {
+    console.log('Data saved successfully:', data);
+  }
+}
+
 export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling', totalPrice: number) => {
     //Determine placed_by based on the service type
     const placedBy = serviceType === 'buying' ? deliverUserId : pickupUserId;
