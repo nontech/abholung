@@ -312,7 +312,7 @@ export default function Home() {
             }}
             deliveryByError={SearchFormErrors.deliveryBy}
           />
-          <PriceInfo />
+          <PriceInfo setTotalPrice={setTotalPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
           <div className="flex justify-center">
             <ContinueButton onClick={handleContinue} isEnabled={true} />
           </div>
