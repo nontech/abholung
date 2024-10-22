@@ -257,6 +257,19 @@ export default function Home() {
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} deliveryByError={SearchFormErrors.deliveryBy} />
           <PriceInfo />
           <div className = "flex justify-center"><ContinueButton onClick={handleContinue} isEnabled={true} /></div>
+          {/* Open the modal using document.getElementById('ID').showModal() method */}
+          <button className="btn" onClick={() => (document.getElementById('my_modal_2') as HTMLDialogElement).showModal()}>open modal</button>
+          <dialog id="my_modal_2" className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-center text-md">We are currently only available in Berlin. 
+                <br />
+                <br />
+                Coming to rest of Germany soon!</h3>
+            </div>
+            <form method="dialog" className="modal-backdrop">   
+              <button>close</button>
+            </form>
+          </dialog>
         </div>
         
       )}
