@@ -67,6 +67,7 @@ export default function Home() {
   // Transport route details
   const [origin, setOrigin] = useState<Place>({ address: '', latLng: null });
   const [destination, setDestination] = useState<Place>({ address: '', latLng: null });
+  const [duration, setDuration] = useState<string | null>(null);
   const [serviceType, setServiceType] = useState<'buying' | 'selling'>('buying');
   const [isConfettiActive, setIsConfettiActive] = useState(false);
   const [SearchFormErrors, setSearchFormErrors] = useState({
@@ -77,6 +78,8 @@ export default function Home() {
     pickupBetween: '',
     deliveryBy: ''
   });
+
+  const [totalPrice, setTotalPrice] = useState<number>(0);
 
   const [stage, setStage]= useState<number>(1);
 
@@ -116,7 +119,7 @@ export default function Home() {
         const productId = await saveProductToDatabase(productData!);
         const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
         if (pickupUserId && deliverUserId && productId && logisticId) {
-          const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType);
+          const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice);
           if (orderData) {
             await sendEmail(orderData);
             setIsConfettiActive(true);
@@ -245,6 +248,8 @@ export default function Home() {
             onMapDataChange={setMapData}
             pickupFromError={SearchFormErrors.pickupFrom}
             deliverToError={SearchFormErrors.deliverTo}
+            duration={duration}
+            setDuration={setDuration}
           />
           <div className="flex">
             <div className="w-1/2 p-2">
@@ -255,13 +260,13 @@ export default function Home() {
             </div>
           </div>
           <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} deliveryByError={SearchFormErrors.deliveryBy} />
-          <PriceInfo />
+          <PriceInfo duration={duration} productPrice={productData?.price || ''} totalPrice={totalPrice} setTotalPrice={setTotalPrice} />
           <div className = "flex justify-center"><ContinueButton onClick={handleContinue} isEnabled={true} /></div>
         </div>
         
       )}
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone}/> )}
+      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} /> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       

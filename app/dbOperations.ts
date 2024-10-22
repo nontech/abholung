@@ -124,7 +124,7 @@ export const saveLogisticsToDatabase = async (mapData: MapData, additionalPickup
     }
 };
 
-export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling') => {
+export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling', totalPrice: number) => {
     //Determine placed_by based on the service type
     const placedBy = serviceType === 'buying' ? deliverUserId : pickupUserId;
   
@@ -144,7 +144,7 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
           pickup_on: selectedDate,
           pickup_between: selectedTime,
           status: 'order_processing',
-          total: '999',
+          total: totalPrice.toString(),
         },
       ]).select(`
         *,
