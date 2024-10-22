@@ -54,23 +54,35 @@ const AdminPanel = () => {
   };
 
   useEffect(() => {
-    if (auth) {
-      fetchOrders();
-    } else {
-      const credentials = prompt('Enter admin credentials (username:password):');
-      if (credentials === 'admin:password') {
-        setAuth(true);
+    const checkAuth = async () => {
+      if (auth) {
         fetchOrders();
       } else {
-        alert('Invalid credentials');
-        router.push('/');
+        const credentials = prompt('Enter admin credentials (username:password):');
+        try {
+          const response = await fetch('/api/admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credentials }),
+          });
+          const data = await response.json();
+          if (data.authenticated) {
+            setAuth(true);
+            fetchOrders();
+          } else {
+            alert('Invalid credentials');
+            router.push('/');
+          }
+        } catch (error) {
+          console.error('Authentication error:', error);
+          alert('Authentication failed');
+          router.push('/');
+        }
       }
-    }
-  }, [auth, router]);
+    };
 
-  if (!auth) {
-    return <div className="flex items-center justify-center h-screen">Authenticating...</div>;
-  }
+    checkAuth();
+  }, [auth, router]);
 
   async function sendEmail(emailTo: string, emailType: string, orderData: OrderAll) {
   try {
