@@ -12,11 +12,11 @@ const berlinCenter = {
   lng: 13.405
 };
 
-const berlinBounds = {
-  north: 52.6754542,
-  south: 52.3382448,
-  west: 13.088345,
-  east: 13.7611609
+const germanyBounds = {
+  north: 55.0581,
+  south: 47.2701,
+  west: 5.8663,
+  east: 15.0419
 };
 
 interface TransportRouteProps {
@@ -93,7 +93,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
   }, [origin.latLng, destination.latLng]);
 
   const autocompleteOptions: google.maps.places.AutocompleteOptions = {
-    bounds: berlinBounds,
+    bounds: germanyBounds,
     strictBounds: true,
     componentRestrictions: { country: 'de' },
     fields: ['address_components', 'geometry', 'name', 'formatted_address'],
@@ -230,7 +230,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
           onLoad={onMapLoad}
           options={{
             restriction: {
-              latLngBounds: berlinBounds,
+              latLngBounds: germanyBounds,
               strictBounds: false,
             },
           }}
