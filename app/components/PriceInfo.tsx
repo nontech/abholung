@@ -1,4 +1,4 @@
-import React, { use, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 interface PriceInfoProps {
   duration: string | null;
