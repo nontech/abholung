@@ -204,10 +204,24 @@ export default function Home() {
     setSearchFormErrors(newErrors);
     return newErrors;
   };
+
+  function isAddressInBerlin(): boolean {
+    return origin.address.toLowerCase().includes('berlin') && destination.address.toLowerCase().includes('berlin');
+  }
  
   const handleContinue = () => {
     const errors = validateSearchForm();
+    // No form errors
     if (Object.values(errors).every(error => error === '')) {
+      if (!isAddressInBerlin()) 
+        {
+          // [TODO] save entries to databae
+
+          // open info modal
+          (document.getElementById('info_modal') as HTMLDialogElement).showModal();
+          return;
+        }
+      // move on to details page
       setStage(2);
     }
   };
@@ -236,30 +250,69 @@ export default function Home() {
       
       {stage === 1 && (
         <div className='w-full h-full max-w-4xl mx-auto p-4'>
-          <ProductInfo product={productData} onProductFetched={setProductData} serviceType={serviceType} onServiceChange={setServiceType} url={url} onUrlChange={setUrl} productError={SearchFormErrors.product} />
+          <ProductInfo
+            product={productData}
+            onProductFetched={setProductData}
+            serviceType={serviceType}
+            onServiceChange={setServiceType}
+            url={url}
+            onUrlChange={(newUrl) => {
+              setUrl(newUrl);
+              setSearchFormErrors((prevErrors) => ({ ...prevErrors, product: '' }));
+            }}
+            productError={SearchFormErrors.product}
+          />
           <TransportRoute
             origin={origin}
             destination={destination}
-            setOrigin={setOrigin}
-            setDestination={setDestination}
+            setOrigin={(newOrigin) => {
+              setOrigin(newOrigin);
+              setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupFrom: '' }));
+            }}
+            setDestination={(newDestination) => {
+              setDestination(newDestination);
+              setSearchFormErrors((prevErrors) => ({ ...prevErrors, deliverTo: '' }));
+            }}
             onMapDataChange={setMapData}
             pickupFromError={SearchFormErrors.pickupFrom}
             deliverToError={SearchFormErrors.deliverTo}
           />
           <div className="flex">
             <div className="w-1/2 p-2">
-              <DateInput value={selectedDate} onChange={(date) => setSelectedDate(date[0])} pickupOnError={SearchFormErrors.pickupOn} />
+              <DateInput
+                value={selectedDate}
+                onChange={(date) => {
+                  setSelectedDate(date[0]);
+                  setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupOn: '' }));
+                }}
+                pickupOnError={SearchFormErrors.pickupOn}
+              />
             </div>
             <div className="w-1/2 p-2">
-              <TimePicker selectedTime={selectedTime} onTimeChange={setSelectedTime} pickupBetweenError={SearchFormErrors.pickupBetween} />
+              <TimePicker
+                selectedTime={selectedTime}
+                onTimeChange={(time) => {
+                  setSelectedTime(time);
+                  setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupBetween: '' }));
+                }}
+                pickupBetweenError={SearchFormErrors.pickupBetween}
+              />
             </div>
           </div>
-          <DeliveryPeople deliveryPeople={deliveryPeople} onSelect={setSelectedDeliveryPerson} deliveryByError={SearchFormErrors.deliveryBy} />
+          <DeliveryPeople
+            deliveryPeople={deliveryPeople}
+            onSelect={(person) => {
+              setSelectedDeliveryPerson(person);
+              setSearchFormErrors((prevErrors) => ({ ...prevErrors, deliveryBy: '' }));
+            }}
+            deliveryByError={SearchFormErrors.deliveryBy}
+          />
           <PriceInfo />
-          <div className = "flex justify-center"><ContinueButton onClick={handleContinue} isEnabled={true} /></div>
+          <div className="flex justify-center">
+            <ContinueButton onClick={handleContinue} isEnabled={true} />
+          </div>
           {/* Open the modal using document.getElementById('ID').showModal() method */}
-          <button className="btn" onClick={() => (document.getElementById('my_modal_2') as HTMLDialogElement).showModal()}>open modal</button>
-          <dialog id="my_modal_2" className="modal">
+          <dialog id="info_modal" className="modal">
             <div className="modal-box">
               <h3 className="font-bold text-center text-md">We are currently only available in Berlin. 
                 <br />
