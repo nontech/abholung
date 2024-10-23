@@ -19,6 +19,8 @@ import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase,
 import PriceInfo from './components/PriceInfo';
 import dynamic from 'next/dynamic';
 import { Database } from '@/types/supabase-types';
+import TypeOfService from './components/TypeOfService';
+import Image from 'next/image';
 // Define the Order type using the Database type
 type Order = Database['public']['Tables']['order']['Row'];
 
@@ -80,6 +82,7 @@ export default function Home() {
   });
 
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [price, setPrice] = useState<number>(0);
 
   const [stage, setStage]= useState<number>(1);
 
@@ -240,9 +243,9 @@ export default function Home() {
     <div className="bg-gray-100 p-5 min-h-screen">
       <Header />
       <div className='ml-64 mb-5'>
-            {/* Back Navigation */}
-            {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
-          </div>
+        {/* Back Navigation */}
+        {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
+      </div>
 
       {/* Progress Bar */}
       {stage <=3 && (
@@ -252,85 +255,108 @@ export default function Home() {
       )}
       
       {stage === 1 && (
-        <div className='w-full h-full max-w-4xl mx-auto p-4'>
-          <ProductInfo
-            product={productData}
-            onProductFetched={setProductData}
-            serviceType={serviceType}
-            onServiceChange={setServiceType}
-            url={url}
-            onUrlChange={(newUrl) => {
-              setUrl(newUrl);
-              setSearchFormErrors((prevErrors) => ({ ...prevErrors, product: '' }));
-            }}
-            productError={SearchFormErrors.product}
-          />
-          <TransportRoute
-            origin={origin}
-            destination={destination}
-            setOrigin={(newOrigin) => {
-              setOrigin(newOrigin);
-              setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupFrom: '' }));
-            }}
-            setDestination={(newDestination) => {
-              setDestination(newDestination);
-              setSearchFormErrors((prevErrors) => ({ ...prevErrors, deliverTo: '' }));
-            }}
-            onMapDataChange={setMapData}
-            pickupFromError={SearchFormErrors.pickupFrom}
-            deliverToError={SearchFormErrors.deliverTo}
-            duration={duration}
-            setDuration={setDuration}
-          />
-          <div className="flex">
-            <div className="w-1/2 p-2">
-              <DateInput
-                value={selectedDate}
-                onChange={(date) => {
-                  setSelectedDate(date[0]);
-                  setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupOn: '' }));
-                }}
-                pickupOnError={SearchFormErrors.pickupOn}
-              />
+        <div className='flex flex-col lg:flex-row w-full max-w-4xl mx-auto'>
+          <div className='w-full lg:w-2/3 lg:pr-4'>
+            <ProductInfo
+              onProductFetched={setProductData}
+              url={url}
+              onUrlChange={(newUrl) => {
+                setUrl(newUrl);
+                setSearchFormErrors((prevErrors) => ({ ...prevErrors, product: '' }));
+              }}
+              productError={SearchFormErrors.product}
+            />
+            {/* Updated right container */}
+            {productData && (
+          <div className='w-full lg:w-1/3 mt-6 lg:mt-0'>
+            <div className='lg:fixed lg:bottom-5 lg:right-12 w-full lg:w-1/4 bg-white p-3 lg:p-4 rounded-lg shadow-md overflow-y-auto lg:max-h-[calc(100vh-100px)]'>
+              <h2 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4">Order Summary</h2>
+              
+                <div className="mt-3 lg:mt-4">
+                  <h3 className="text-sm lg:text-md font-semibold mb-2 truncate" title={productData.title}>
+                    {productData.title}
+                  </h3>
+                  {productData.pic_url && (
+                    <div className="flex justify-center items-center mb-3 lg:mb-4">
+                      <Image src={productData.pic_url} alt={productData.title} width={120} height={120} className="rounded-md" />
+                    </div>
+                  )}
+                  <p className="text-base lg:text-lg font-medium text-green-600 mb-2">{productData.price}</p>
+                  <p className="text-sm lg:text-base text-gray-700 mb-1"><strong>Listed by:</strong> {productData.listed_by}</p>
+                  <p className="text-sm lg:text-base text-gray-700"><strong>Pickup Address:</strong> {productData.address}</p>
+                  <div className="mt-3 lg:mt-4">
+                    <TypeOfService onServiceChange={setServiceType} serviceType={serviceType} />
+                  </div>
+                </div>
+              
+              <div className="hidden lg:block">
+                <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
+              </div>
             </div>
-            <div className="w-1/2 p-2">
-              <TimePicker
-                selectedTime={selectedTime}
-                onTimeChange={(time) => {
-                  setSelectedTime(time);
-                  setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupBetween: '' }));
-                }}
-                pickupBetweenError={SearchFormErrors.pickupBetween}
-              />
+          
+          </div>
+          )}
+            <div className="flex mb-4">
+              <div className="w-1/2 p-2">
+                <DateInput
+                  value={selectedDate}
+                  onChange={(date) => {
+                    setSelectedDate(date[0]);
+                    setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupOn: '' }));
+                  }}
+                  pickupOnError={SearchFormErrors.pickupOn}
+                />
+              </div>
+              <div className="w-1/2 p-2">
+                <TimePicker
+                  selectedTime={selectedTime}
+                  onTimeChange={(time) => {
+                    setSelectedTime(time);
+                    setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupBetween: '' }));
+                  }}
+                  pickupBetweenError={SearchFormErrors.pickupBetween}
+                />
+              </div>
+            </div>
+            <TransportRoute
+              origin={origin}
+              destination={destination}
+              setOrigin={(newOrigin) => {
+                setOrigin(newOrigin);
+                setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupFrom: '' }));
+              }}
+              setDestination={(newDestination) => {
+                setDestination(newDestination);
+                setSearchFormErrors((prevErrors) => ({ ...prevErrors, deliverTo: '' }));
+              }}
+              onMapDataChange={setMapData}
+              pickupFromError={SearchFormErrors.pickupFrom}
+              deliverToError={SearchFormErrors.deliverTo}
+              duration={duration}
+              setDuration={setDuration}
+            />
+            <DeliveryPeople
+              deliveryPeople={deliveryPeople}
+              price={price}
+              setTotalPrice={setTotalPrice}
+              onSelect={(person) => {
+                setSelectedDeliveryPerson(person);
+                setSearchFormErrors((prevErrors) => ({ ...prevErrors, deliveryBy: '' }));
+              }}
+              deliveryByError={SearchFormErrors.deliveryBy}
+            />
+            <div className="mt-4 lg:hidden">
+              <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
+            </div>
+            <div className="flex justify-center">
+              <ContinueButton onClick={handleContinue} isEnabled={true} />
             </div>
           </div>
-          <DeliveryPeople
-            deliveryPeople={deliveryPeople}
-            onSelect={(person) => {
-              setSelectedDeliveryPerson(person);
-              setSearchFormErrors((prevErrors) => ({ ...prevErrors, deliveryBy: '' }));
-            }}
-            deliveryByError={SearchFormErrors.deliveryBy}
-          />
-          <PriceInfo setTotalPrice={setTotalPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
-          <div className="flex justify-center">
-            <ContinueButton onClick={handleContinue} isEnabled={true} />
-          </div>
-          {/* Open the modal using document.getElementById('ID').showModal() method */}
-          <dialog id="info_modal" className="modal">
-            <div className="modal-box">
-              <h3 className="font-bold text-center text-md">We are currently only available in Berlin. 
-                <br />
-                <br />
-                Coming to rest of Germany soon!</h3>
-            </div>
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
-          </dialog>
+          
+          
         </div>
-        
       )}
+      
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
       {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} /> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}

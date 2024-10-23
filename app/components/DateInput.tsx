@@ -30,6 +30,7 @@ const DateInput: React.FC<DateInputProps> = ({
     if (inputRef.current) {
       flatpickrRef.current = flatpickr(inputRef.current, {
         ...options,
+        defaultDate: maxDate,
         minDate: minDate,
         maxDate: maxDate,
         onChange: (selectedDates: Date[]) => { onChange(selectedDates) }
