@@ -4,7 +4,7 @@ import { MapData, Place } from '@/types/common';
 
 const mapContainerStyle = {
   width: '100%',
-  height: '400px'
+  height: '200px'
 };
 
 const berlinCenter = {

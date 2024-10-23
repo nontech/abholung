@@ -1,22 +1,17 @@
 'use client'
 
 import { useState, ChangeEvent } from 'react'
-import Image from 'next/image'
 import type { ProductData } from '../../types/common'
-import TypeOfService from './TypeOfService';
 import { Tooltip } from 'react-tooltip'
 
 interface ProductInfoProps {
-  product: ProductData | null;
   onProductFetched: (product: ProductData) => void;
-  serviceType: 'buying' | 'selling';
-  onServiceChange: (serviceType: 'buying' | 'selling') => void;
   url: string;
   onUrlChange: (url: string) => void;
   productError: string;
 }
 
-export default function ProductInfo({ product, serviceType, onProductFetched, onServiceChange, url, onUrlChange, productError }: ProductInfoProps) {
+export default function ProductInfo({ onProductFetched, url, onUrlChange, productError }: ProductInfoProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -104,7 +99,6 @@ export default function ProductInfo({ product, serviceType, onProductFetched, on
           placeholder="Paste eBay Kleinanzeigen product link here"
           value={url}
           onChange={handleUrlChange}
-          //onKeyDown={handleKeyPress}
           className={`w-full px-4 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             url ? 'text-black font-medium' : 'text-gray-500'
           }`}
@@ -125,24 +119,6 @@ export default function ProductInfo({ product, serviceType, onProductFetched, on
 
       {loading && <p className="text-blue-500 mt-4 pl-4">Fetching product information...</p>}
       {error && <p className="text-red-500 mt-4 pl-4">{error}</p>}
-
-      {product && (
-        <div className="mt-6 max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-          <div className="px-6 py-4">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">{product.title}</h2>
-            {product.pic_url && (
-              <div className="flex justify-center items-center mb-4">
-                <Image src={product.pic_url} alt={product.title} width={200} height={200} className="rounded-md" />
-              </div>
-            )}
-            <p className="text-lg font-medium text-green-600 mb-2">{product.price}</p>
-            <p className="text-gray-700 mb-1"> <strong className="text-black-600">Listed by: </strong>{product.listed_by}</p>
-            <p className="text-gray-700"><strong className="text-black-600">Pickup Address: </strong>{product.address}</p>
-          </div>
-          <hr className="my-4 border-2 border-grey-300" />
-          <TypeOfService onServiceChange={onServiceChange} serviceType={serviceType} />
-        </div>
-      )}
     </div>
   )
 }
