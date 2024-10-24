@@ -235,7 +235,12 @@ export default function Home() {
           // [TODO] save entries to databae
           await saveLocationToDatabase(mapData!);
           // open info modal
-          (document.getElementById('info_modal') as HTMLDialogElement).showModal();
+          const infoModal = document.getElementById('info_modal') as HTMLDialogElement | null;
+          if (infoModal) {
+            infoModal.showModal();
+          } else {
+            console.error('Info modal element not found');
+          }
           return;
         }
       // move on to details page
@@ -361,11 +366,23 @@ export default function Home() {
             <div className="mt-4 lg:hidden">
               <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
             </div>
+            {/* Open the modal using document.getElementById('ID').showModal() method */}
+            <dialog id="info_modal" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-center text-md">We are currently only available in Berlin.
+                  <br />
+                  <br />
+                  Coming to rest of Germany soon!</h3>
+              </div>
+              <form method="dialog" className="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
             <div className="flex justify-center">
               <ContinueButton onClick={handleContinue} isEnabled={true} />
             </div>
           </div>
-          <CheckoutButton priceId="price_1Q9vadEsSHaOcxF92AwcdHUD" />
+          <CheckoutButton amount={price} />
         </div>
       )}
       
