@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 interface PriceInfoProps {
   duration: string | null;
@@ -34,7 +34,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPric
   const timeSaved = calculateTimeSaved(duration? duration: null);
   const productPriceFloat = productPrice ? parseFloat(productPrice.replace('€', '').trim()) : 0;
 
-  const calculateTotalPrice = () => {
+  const calculateTotalPrice = useCallback(() => {
     let price = timeSaved * 0.21;
     
     if (productPriceFloat > 120) {
@@ -42,11 +42,11 @@ const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPric
     }
     
     setPrice(Math.min(price, 20));
-  };
+  }, [timeSaved, productPriceFloat, setPrice]);
 
   useEffect(() => {
     calculateTotalPrice();
-  }, [duration, productPrice]);
+  }, [calculateTotalPrice]);
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">
