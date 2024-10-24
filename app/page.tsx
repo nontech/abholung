@@ -1,27 +1,43 @@
 'use client';
+
+// Import React & Next stuff
+import { useState, useEffect} from 'react';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+
+// Import types
+import type { ProductData, MapData, Place } from '../types/common';
+import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
+import { Database } from '@/types/supabase-types';
+
+// Import database operations
+import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+
+// Import common components on every page
+import Header from './components/Header';
+import ProgressBar from './components/ProgressBar';
+
+// Import buttons
+import ContinueButton from './components/ContinueButton';
+import BackButton from './components/BackButton';
+
+// Import components
 import ProductInfo from './components/ProductInfo';
 import DateInput from './components/DateInput';
 import TimePicker from './components/TimePicker';
-import ContinueButton from './components/ContinueButton';
-import Header from './components/Header';
-import BackButton from './components/BackButton';
-import type { ProductData, MapData, Place } from '../types/common';
-import { useState, useEffect} from 'react';
-//import PaymentPage from './components/Payment';
+import TransportRoute from './components/TransportRoute';
+import PriceInfo from './components/PriceInfo';
+import TypeOfService from './components/TypeOfService';
+import DeliveryPeople from './components/DeliveryPeople';
+
+// Import pages
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
-import ProgressBar from './components/ProgressBar';
-import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
-import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
-import TransportRoute from './components/TransportRoute';
-import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
-import CheckoutButton from './components/CheckoutButton';
-import PriceInfo from './components/PriceInfo';
-import dynamic from 'next/dynamic';
-import { Database } from '@/types/supabase-types';
-import TypeOfService from './components/TypeOfService';
-import Image from 'next/image';
+
+// Experimental
+import StageButtons from './components/StageButtons';
+
 // Define the Order type using the Database type
 type Order = Database['public']['Tables']['order']['Row'];
 
@@ -97,18 +113,34 @@ export default function Home() {
   }, []);
 
   // Using localStorage to store the last stage and redirect to the summary page after successful payment
+  // useEffect(() => {
+  //   const lastStage = localStorage.getItem('lastStage');
+  //   if (lastStage === '3') {
+  //     setStage(4);
+  //     setIsConfettiActive(true);
+  //     localStorage.removeItem('lastStage'); // Clear the stored stage
+  //   }
+  // }, []);
+
+  // Using localStorage to redirect to the summary page after successful payment
+  // This is only triggered when the user is redirected back to the app after payment
   useEffect(() => {
-    const lastStage = localStorage.getItem('lastStage');
-    if (lastStage === '3') {
+    const newStage = localStorage.getItem('newStage');
+    console.log('Inside useEffect, newStage after redirect', newStage);
+    if (newStage === '4') {
+      console.log('newStage is 4');
       setStage(4);
+      setPaymentDone(true);
       setIsConfettiActive(true);
-      localStorage.removeItem('lastStage'); // Clear the stored stage
+      localStorage.removeItem('newStage'); // Clear the stored stage
     }
   }, []);
 
+  // Triggered when paymentDone state variable is updated by setPaymentDone(true)
   useEffect(() => {
     if (paymentDone) {
-      setIsConfettiActive(true);
+      // setIsConfettiActive(true);
+      console.log('paymentDone is done, sending emails & saving to database');
       const sendEmail = async (orderData: OrderAll) => {
         try {
           const emailSend = serviceType === 'buying' ? deliverToEmail : pickupFromEmail;
@@ -122,12 +154,14 @@ export default function Home() {
               ],
             }),
           });
+          console.log('Emails sent successfully');
         } catch (error) {
           console.error('Error sending emails:', error);
           alert('Error sending emails');
         }
       };
       const handleSaveOrder = async () => {
+        console.log('handleSaveOrder called with productData', productData);
         const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
         const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
         const productId = await saveProductToDatabase(productData!);
@@ -136,14 +170,13 @@ export default function Home() {
           const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice);
           if (orderData) {
             await sendEmail(orderData);
-            setIsConfettiActive(true);
-            setStage(4);
+            // setIsConfettiActive(true);
+            // setStage(4);
           }
         }
       };
       handleSaveOrder();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentDone]);
 
   const pickupDetails: DeliveryDetails = {
@@ -253,9 +286,6 @@ export default function Home() {
       setStage(stage - 1);
     }
   };
-  console.log(selectedDate);
-
-  const [amount, setAmount] = useState(10); // Default amount of $10
 
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
@@ -271,6 +301,9 @@ export default function Home() {
           <ProgressBar currentStep={stage} />
         </div>
       )}
+
+      {/* Stage Buttons -> Remove it later */}
+      <StageButtons currentStage={stage} setStage={setStage} />
       
       {stage === 1 && (
         <div className='flex flex-col lg:flex-row w-full max-w-4xl mx-auto'>
@@ -382,12 +415,11 @@ export default function Home() {
               <ContinueButton onClick={handleContinue} isEnabled={true} />
             </div>
           </div>
-          <CheckoutButton amount={price} />
         </div>
       )}
       
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} /> )}
+      {stage === 3 && ( <PaymentPage total_amount = {totalPrice} /> )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       
