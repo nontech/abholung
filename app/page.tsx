@@ -69,7 +69,6 @@ export default function Home() {
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [deliveryPeople, setDeliveryPeople] = useState<DeliveryPerson[]>([]);
   const [selectedDeliveryPerson, setSelectedDeliveryPerson] = useState<DeliveryPerson | null>(null);
-  const [paymentDone, setPaymentDone] = useState<boolean>(false);
   
   // Pickup from details
   const [pickupFromName, setPickupFromName] = useState<string>('');
@@ -114,7 +113,6 @@ export default function Home() {
 
   const handlePaymentSuccess = () => {
     setStage(4);
-    setPaymentDone(true);
     setIsConfettiActive(true);
     // Perform post-payment actions like sending emails and saving to database
     handleSuccessfulPayment();
