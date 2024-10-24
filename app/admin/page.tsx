@@ -48,7 +48,6 @@ const AdminPanel = () => {
     if (error) {
       console.error('Error fetching orders:', error);
     } else {
-      console.log(data);
       setOrders(data);
     }
   };

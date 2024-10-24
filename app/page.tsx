@@ -33,7 +33,7 @@ import DeliveryPeople from './components/DeliveryPeople';
 // Import pages
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
-import PaymentPage from './components/Payment';
+import CheckoutPage from './checkout/page';
 
 // Experimental
 import StageButtons from './components/StageButtons';
@@ -112,72 +112,54 @@ export default function Home() {
     fetchData();
   }, []);
 
-  // Using localStorage to store the last stage and redirect to the summary page after successful payment
-  // useEffect(() => {
-  //   const lastStage = localStorage.getItem('lastStage');
-  //   if (lastStage === '3') {
-  //     setStage(4);
-  //     setIsConfettiActive(true);
-  //     localStorage.removeItem('lastStage'); // Clear the stored stage
-  //   }
-  // }, []);
+  const handlePaymentSuccess = () => {
+    setStage(4);
+    setPaymentDone(true);
+    setIsConfettiActive(true);
+    // Perform post-payment actions like sending emails and saving to database
+    handleSuccessfulPayment();
+  };
 
-  // Using localStorage to redirect to the summary page after successful payment
-  // This is only triggered when the user is redirected back to the app after payment
-  useEffect(() => {
-    const newStage = localStorage.getItem('newStage');
-    console.log('Inside useEffect, newStage after redirect', newStage);
-    if (newStage === '4') {
-      console.log('newStage is 4');
-      setStage(4);
-      setPaymentDone(true);
-      setIsConfettiActive(true);
-      localStorage.removeItem('newStage'); // Clear the stored stage
-    }
-  }, []);
+  const handlePaymentError = (error: string) => {
+    console.error('Payment failed:', error);
+    // Handle payment failure (e.g., show error message to user)
+  };
 
-  // Triggered when paymentDone state variable is updated by setPaymentDone(true)
-  useEffect(() => {
-    if (paymentDone) {
-      // setIsConfettiActive(true);
-      console.log('paymentDone is done, sending emails & saving to database');
-      const sendEmail = async (orderData: OrderAll) => {
-        try {
-          const emailSend = serviceType === 'buying' ? deliverToEmail : pickupFromEmail;
-          await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              emails: [
-                { to: emailSend, subject: `Order being processed - #[${orderData.id}]`, type: 'order_processing_customer', orderData: orderData },
-                { to: 'info@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
-              ],
-            }),
-          });
-          console.log('Emails sent successfully');
-        } catch (error) {
-          console.error('Error sending emails:', error);
-          alert('Error sending emails');
+  const handleSuccessfulPayment = async () => {
+    console.log('paymentDone is done, sending emails & saving to database');
+    const sendEmail = async (orderData: OrderAll) => {
+      try {
+        const emailSend = serviceType === 'buying' ? deliverToEmail : pickupFromEmail;
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            emails: [
+              { to: emailSend, subject: `Order being processed - #[${orderData.id}]`, type: 'order_processing_customer', orderData: orderData },
+              { to: 'info@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
+            ],
+          }),
+        });
+        console.log('Emails sent successfully');
+      } catch (error) {
+        console.error('Error sending emails:', error);
+        alert('Error sending emails');
+      }
+    };
+    const handleSaveOrder = async () => {
+      const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
+      const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
+      const productId = await saveProductToDatabase(productData!);
+      const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
+      if (pickupUserId && deliverUserId && productId && logisticId) {
+        const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice);
+        if (orderData) {
+          await sendEmail(orderData);
         }
-      };
-      const handleSaveOrder = async () => {
-        console.log('handleSaveOrder called with productData', productData);
-        const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
-        const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
-        const productId = await saveProductToDatabase(productData!);
-        const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
-        if (pickupUserId && deliverUserId && productId && logisticId) {
-          const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice);
-          if (orderData) {
-            await sendEmail(orderData);
-            // setIsConfettiActive(true);
-            // setStage(4);
-          }
-        }
-      };
-      handleSaveOrder();
-    }
-  }, [paymentDone]);
+      }
+    };
+    handleSaveOrder();
+  };
 
   const pickupDetails: DeliveryDetails = {
     name: pickupFromName,
@@ -419,7 +401,13 @@ export default function Home() {
       )}
       
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage total_amount = {totalPrice} /> )}
+      {stage === 3 && (
+        <CheckoutPage 
+          total_amount={totalPrice} 
+          onPaymentSuccess={handlePaymentSuccess} 
+          onPaymentError={handlePaymentError}
+        />
+      )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       
