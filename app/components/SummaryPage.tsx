@@ -60,7 +60,7 @@ const SummaryPage: React.FC<DeliveryInfoProps> = ({ pickupDetails, deliveryDetai
           <div className="mt-6 text-center text-gray-500 text-sm md:text-base">
             <p>Expect to hear from us shortly!</p>
             <p className="mt-2">
-              Need to cancel? Let us know at least 3 hours before delivery, and we'll issue a full refund—no questions asked.
+              Need to cancel? Let us know at least 3 hours before delivery, and we&apos;ll issue a full refund—no questions asked.
             </p>
           </div>
 

@@ -93,7 +93,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
         }
       }
     );
-  }, [origin.latLng, destination.latLng]);
+  }, [origin.latLng, destination.latLng, setDuration]);
 
   const autocompleteOptions: google.maps.places.AutocompleteOptions = {
     bounds: germanyBounds,
