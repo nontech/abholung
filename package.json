@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",
+    "@stripe/stripe-js": "^4.8.0",
     "@supabase/supabase-js": "^2.45.4",
     "@types/geolib": "^2.0.23",
     "@vercel/kv": "^3.0.0",
@@ -27,7 +28,8 @@
     "react-flatpickr": "^3.10.13",
     "react-leaflet": "^4.2.1",
     "react-tooltip": "^5.28.0",
-    "resend": "^4.0.0"
+    "resend": "^4.0.0",
+    "stripe": "^17.2.0"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.12",

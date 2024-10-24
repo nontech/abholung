@@ -16,6 +16,7 @@ import DeliveryPeople from './components/DeliveryPeople';
 import PaymentPage from './components/Payment';
 import TransportRoute from './components/TransportRoute';
 import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+import CheckoutButton from './components/CheckoutButton';
 import PriceInfo from './components/PriceInfo';
 import dynamic from 'next/dynamic';
 import { Database } from '@/types/supabase-types';
@@ -352,8 +353,7 @@ export default function Home() {
               <ContinueButton onClick={handleContinue} isEnabled={true} />
             </div>
           </div>
-          
-          
+          <CheckoutButton priceId="price_1Q9vadEsSHaOcxF92AwcdHUD" />
         </div>
       )}
       
