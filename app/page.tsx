@@ -240,6 +240,8 @@ export default function Home() {
   };
   console.log(selectedDate);
 
+  const [amount, setAmount] = useState(10); // Default amount of $10
+
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
       <Header />

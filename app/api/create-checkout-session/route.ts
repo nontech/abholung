@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-09-30.acacia', // Use the latest API version
+  apiVersion: '2024-09-30.acacia',
 });
 
 export async function POST(request: Request) {
-  const { price } = await request.json();
+  const { amount } = await request.json();
 
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
-          price: price,
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Custom Amount Payment',
+            },
+            unit_amount: Math.round(amount * 100), // Stripe expects amount in cents
+          },
           quantity: 1,
         },
       ],
@@ -27,4 +33,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error creating checkout session' }, { status: 500 });
   }
 }
-

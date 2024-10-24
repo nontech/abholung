@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-export default function CheckoutButton({ priceId }: { priceId: string }) {
+export default function CheckoutButton({ amount }: { amount: number }) {
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
@@ -17,7 +17,7 @@ export default function CheckoutButton({ priceId }: { priceId: string }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ price: priceId }),
+        body: JSON.stringify({ amount }),
       });
 
       const { sessionId } = await response.json();
@@ -38,8 +38,7 @@ export default function CheckoutButton({ priceId }: { priceId: string }) {
 
   return (
     <button onClick={handleCheckout} disabled={loading}>
-      {loading ? 'Processing...' : 'Checkout'}
+      {loading ? 'Processing...' : `Pay $${amount.toFixed(2)}`}
     </button>
   );
 }
-
