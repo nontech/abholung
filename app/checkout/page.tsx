@@ -1,42 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import StripePaymentForm from '../components/StripePaymentForm';
+import CheckoutContent from '../components/CheckoutContent';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
-interface CheckoutPageProps {
-  total_amount: number;
-  onPaymentSuccess: () => void;
-  onPaymentError: (error: string) => void;
-}
-
-export default function CheckoutPage({ total_amount, onPaymentSuccess, onPaymentError }: CheckoutPageProps) {
-  const [clientSecret, setClientSecret] = useState('');
-
-  useEffect(() => {
-    fetch('/api/create-payment-intent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: Math.round(total_amount * 100) }),
-    })
-      .then((res) => res.json())
-      .then((data) => setClientSecret(data.clientSecret));
-  }, [total_amount]);
-
+export default function CheckoutPage() {
   return (
-    <div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">Checkout</h2>
-      <div className="mb-4">
-        <span className="text-xl font-semibold">Total: €{total_amount.toFixed(2)}</span>
-      </div>
-      {clientSecret && (
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
-          <StripePaymentForm onPaymentSuccess={onPaymentSuccess} onPaymentError={onPaymentError} />
-        </Elements>
-      )}
+    <div>
+      <h1>Checkout</h1>
+      {/* CheckoutContent will be client-side rendered */}
+      <CheckoutContent total_amount={0} onPaymentSuccess={() => {}} onPaymentError={() => {}} />
     </div>
   );
 }

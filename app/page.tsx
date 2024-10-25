@@ -29,11 +29,12 @@ import TransportRoute from './components/TransportRoute';
 import PriceInfo from './components/PriceInfo';
 import TypeOfService from './components/TypeOfService';
 import DeliveryPeople from './components/DeliveryPeople';
+import CheckoutContent from './components/CheckoutContent';
 
 // Import pages
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
-import CheckoutPage from './checkout/page';
+// import CheckoutPage from './checkout/page';
 
 // Experimental
 import StageButtons from './components/StageButtons';
@@ -400,7 +401,7 @@ export default function Home() {
       
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
       {stage === 3 && (
-        <CheckoutPage 
+        <CheckoutContent 
           total_amount={totalPrice} 
           onPaymentSuccess={handlePaymentSuccess} 
           onPaymentError={handlePaymentError}
