@@ -66,7 +66,11 @@ export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [url, setUrl] = useState<string>('');
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    const initialDate = new Date();
+    initialDate.setDate(initialDate.getDate() + 3);
+    return initialDate;
+  });
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [deliveryPeople, setDeliveryPeople] = useState<DeliveryPerson[]>([]);
   const [selectedDeliveryPerson, setSelectedDeliveryPerson] = useState<DeliveryPerson | null>(null);
@@ -332,9 +336,11 @@ export default function Home() {
               <div className="w-1/2 p-2">
                 <DateInput
                   value={selectedDate}
-                  onChange={(date) => {
-                    setSelectedDate(date[0]);
-                    setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupOn: '' }));
+                  onChange={(dates) => {
+                    if (dates && dates.length > 0) {
+                      setSelectedDate(dates[0]);
+                      setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupOn: '' }));
+                    }
                   }}
                   pickupOnError={SearchFormErrors.pickupOn}
                 />
