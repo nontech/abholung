@@ -236,7 +236,7 @@ export default function Home() {
   }
  
   const handleContinue = async() => {
-    let validForm = validateSearchForm();
+    const validForm = validateSearchForm();
     // No form errors
     if (validForm) {
       console.log('no form errors');
