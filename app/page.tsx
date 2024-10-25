@@ -34,10 +34,9 @@ import CheckoutContent from './components/CheckoutContent';
 // Import pages
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
-// import CheckoutPage from './checkout/page';
 
 // Experimental
-import StageButtons from './components/StageButtons';
+// import StageButtons from './components/StageButtons';
 
 // Define the Order type using the Database type
 type Order = Database['public']['Tables']['order']['Row'];
@@ -280,7 +279,7 @@ export default function Home() {
       )}
 
       {/* Stage Buttons -> Remove it later */}
-      <StageButtons currentStage={stage} setStage={setStage} />
+      {/* <StageButtons currentStage={stage} setStage={setStage} /> */}
       
       {stage === 1 && (
         <div className='flex flex-col lg:flex-row w-full max-w-4xl mx-auto'>
