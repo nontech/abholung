@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
   
   const body = await req.json();
   const { emails } = body;
-  console.log('Received emails:', emails);
 
   if (!process.env.EMAIL_FROM) {
     return NextResponse.json({ error: 'EMAIL_FROM environment variable is not set' }, { status: 500 })

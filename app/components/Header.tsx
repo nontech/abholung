@@ -3,7 +3,6 @@ import Image from 'next/image';
 
 const Header: React.FC = () => {
   const logoPath = '/images/Logo.svg';
-  console.log('Logo path:', logoPath);
 
   return (
     <header className="w-full py-4">

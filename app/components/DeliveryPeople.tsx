@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { DeliveryPerson } from '../../types/common';
 
@@ -24,10 +24,6 @@ const DeliveryPeople: React.FC<DeliveryPeopleProps> = ({ deliveryPeople, onSelec
     const newPrice = getAdjustedPrice(index);
     setTotalPrice(newPrice);
   };
-
-  useEffect(() => {
-    setSelectedPersonId(null);
-  }, [price]);
 
   const getAdjustedPrice = (index: number) => {
     if (index === 0) return price;

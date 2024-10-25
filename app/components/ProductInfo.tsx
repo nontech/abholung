@@ -18,8 +18,6 @@ export default function ProductInfo({ onProductFetched, url, onUrlChange, produc
   const fetchProduct = async (newUrl: string) => {
     setLoading(true)
     setError('')
-    console.log("fetchProduct $url", newUrl);
-    console.log(JSON.stringify({ newUrl }));
 
     try {
       const response = await fetch('/api/fetch-product-info', {
@@ -63,7 +61,6 @@ export default function ProductInfo({ onProductFetched, url, onUrlChange, produc
     };
   
     if (isValidUrl(newUrl) && isKleinanzeigenUrl(newUrl)) {
-      console.log("validated_url", newUrl);
       fetchProduct(newUrl);
     }
   }

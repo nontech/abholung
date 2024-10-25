@@ -46,7 +46,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPric
 
   useEffect(() => {
     calculateTotalPrice();
-  }, [calculateTotalPrice]);
+  }, [duration, productPriceFloat, setPrice]);
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">

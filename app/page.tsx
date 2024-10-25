@@ -1,26 +1,43 @@
 'use client';
+
+// Import React & Next stuff
+import { useState, useEffect} from 'react';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+
+// Import types
+import type { ProductData, MapData, Place } from '../types/common';
+import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
+import { Database } from '@/types/supabase-types';
+
+// Import database operations
+import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+
+// Import common components on every page
+import Header from './components/Header';
+import ProgressBar from './components/ProgressBar';
+
+// Import buttons
+import ContinueButton from './components/ContinueButton';
+import BackButton from './components/BackButton';
+
+// Import components
 import ProductInfo from './components/ProductInfo';
 import DateInput from './components/DateInput';
 import TimePicker from './components/TimePicker';
-import ContinueButton from './components/ContinueButton';
-import Header from './components/Header';
-import BackButton from './components/BackButton';
-import type { ProductData, MapData, Place } from '../types/common';
-import { useState, useEffect} from 'react';
-//import PaymentPage from './components/Payment';
+import TransportRoute from './components/TransportRoute';
+import PriceInfo from './components/PriceInfo';
+import TypeOfService from './components/TypeOfService';
+import DeliveryPeople from './components/DeliveryPeople';
+import CheckoutContent from './components/CheckoutContent';
+
+// Import pages
 import SummaryPage from './components/SummaryPage';
 import DetailsPage from './components/DetailsPage';
-import ProgressBar from './components/ProgressBar';
-import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/common';
-import DeliveryPeople from './components/DeliveryPeople';
-import PaymentPage from './components/Payment';
-import TransportRoute from './components/TransportRoute';
-import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
-import PriceInfo from './components/PriceInfo';
-import dynamic from 'next/dynamic';
-import { Database } from '@/types/supabase-types';
-import TypeOfService from './components/TypeOfService';
-import Image from 'next/image';
+
+// Experimental
+// import StageButtons from './components/StageButtons';
+
 // Define the Order type using the Database type
 type Order = Database['public']['Tables']['order']['Row'];
 
@@ -48,11 +65,14 @@ export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [url, setUrl] = useState<string>('');
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    const initialDate = new Date();
+    initialDate.setDate(initialDate.getDate() + 3);
+    return initialDate;
+  });
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [deliveryPeople, setDeliveryPeople] = useState<DeliveryPerson[]>([]);
   const [selectedDeliveryPerson, setSelectedDeliveryPerson] = useState<DeliveryPerson | null>(null);
-  const [paymentDone, setPaymentDone] = useState<boolean>(false);
   
   // Pickup from details
   const [pickupFromName, setPickupFromName] = useState<string>('');
@@ -95,45 +115,59 @@ export default function Home() {
     fetchData();
   }, []);
 
+  // Reset form errors and selected delivery person when price changes
   useEffect(() => {
-    if (paymentDone) {
-      setIsConfettiActive(true);
-      const sendEmail = async (orderData: OrderAll) => {
-        try {
-          const emailSend = serviceType === 'buying' ? deliverToEmail : pickupFromEmail;
-          await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              emails: [
-                { to: emailSend, subject: `Order being processed - #[${orderData.id}]`, type: 'order_processing_customer', orderData: orderData },
-                { to: 'info@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
-              ],
-            }),
-          });
-        } catch (error) {
-          console.error('Error sending emails:', error);
-          alert('Error sending emails');
+    setTotalPrice(0);
+    setSelectedDeliveryPerson(null);
+  }, [price]);
+
+  const handlePaymentSuccess = () => {
+    setStage(4);
+    setIsConfettiActive(true);
+    // Perform post-payment actions like sending emails and saving to database
+    handleSuccessfulPayment();
+  };
+
+  const handlePaymentError = (error: string) => {
+    console.error('Payment failed:', error);
+    // Handle payment failure (e.g., show error message to user)
+  };
+
+  const handleSuccessfulPayment = async () => {
+    console.log('paymentDone is done, sending emails & saving to database');
+    const sendEmail = async (orderData: OrderAll) => {
+      try {
+        const emailSend = serviceType === 'buying' ? deliverToEmail : pickupFromEmail;
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            emails: [
+              { to: emailSend, subject: `Order being processed - #[${orderData.id}]`, type: 'order_processing_customer', orderData: orderData },
+              { to: 'info@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
+            ],
+          }),
+        });
+        console.log('Emails sent successfully');
+      } catch (error) {
+        console.error('Error sending emails:', error);
+        alert('Error sending emails');
+      }
+    };
+    const handleSaveOrder = async () => {
+      const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
+      const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
+      const productId = await saveProductToDatabase(productData!);
+      const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
+      if (pickupUserId && deliverUserId && productId && logisticId) {
+        const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice);
+        if (orderData) {
+          await sendEmail(orderData);
         }
-      };
-      const handleSaveOrder = async () => {
-        const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
-        const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
-        const productId = await saveProductToDatabase(productData!);
-        const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
-        if (pickupUserId && deliverUserId && productId && logisticId) {
-          const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice);
-          if (orderData) {
-            await sendEmail(orderData);
-            setIsConfettiActive(true);
-            setStage(4);
-          }
-        }
-      };
-      handleSaveOrder();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentDone]);
+      }
+    };
+    handleSaveOrder();
+  };
 
   const pickupDetails: DeliveryDetails = {
     name: pickupFromName,
@@ -182,33 +216,18 @@ export default function Home() {
 
   const validateSearchForm = () => {
     const newErrors = {
-      product: '',
-      pickupFrom: '',
-      deliverTo: '',
-      pickupOn: '',
-      pickupBetween: '',
-      deliveryBy: ''
+      product: !productData?.newUrl?.trim() ? 'Please paste a valid eBay Kleinanzeigen product link' : '',
+      pickupFrom: !mapData?.from?.trim() ? 'Pickup From is required' : '',
+      deliverTo: !mapData?.to?.trim() ? 'Delivery To is required' : '',
+      pickupOn: !selectedDate ? 'Pickup On is required' : '',
+      pickupBetween: !selectedTime ? 'Pickup Between is required' : '',
+      deliveryBy: !selectedDeliveryPerson ? 'Please select a delivery person' : ''
     };
-    if (!productData?.newUrl.trim()) {
-      newErrors.product = 'Please paste a valid eBay Kleinanzeigen product link';
-    }
-    if (!mapData?.from.trim() || !mapData) {
-      newErrors.pickupFrom = 'Pickup From is required';
-    }
-    if (!mapData?.to.trim() || !mapData) {
-      newErrors.deliverTo = 'Delivery To is required';
-    }
-    if (selectedDate?.getDate() === new Date().getDate()) {
-      newErrors.pickupOn = 'Pickup On is required';
-    }
-    if (!selectedTime) {
-      newErrors.pickupBetween = 'Pickup Between is required';
-    }
-    if (!selectedDeliveryPerson) {
-      newErrors.deliveryBy = 'Please select a delivery person';
-    }
+
     setSearchFormErrors(newErrors);
-    return newErrors;
+
+    // Check if any error message is not empty
+    return !Object.values(newErrors).some(error => error !== '');
   };
 
   function isAddressInBerlin(): boolean {
@@ -216,15 +235,21 @@ export default function Home() {
   }
  
   const handleContinue = async() => {
-    const errors = validateSearchForm();
+    const validForm = validateSearchForm();
     // No form errors
-    if (Object.values(errors).every(error => error === '')) {
+    if (validForm) {
+      console.log('no form errors');
       if (!isAddressInBerlin()) 
         {
           // [TODO] save entries to databae
           await saveLocationToDatabase(mapData!);
           // open info modal
-          (document.getElementById('info_modal') as HTMLDialogElement).showModal();
+          const infoModal = document.getElementById('info_modal') as HTMLDialogElement | null;
+          if (infoModal) {
+            infoModal.showModal();
+          } else {
+            console.error('Info modal element not found');
+          }
           return;
         }
       // move on to details page
@@ -237,7 +262,6 @@ export default function Home() {
       setStage(stage - 1);
     }
   };
-  console.log(selectedDate);
 
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
@@ -253,6 +277,9 @@ export default function Home() {
           <ProgressBar currentStep={stage} />
         </div>
       )}
+
+      {/* Stage Buttons -> Remove it later */}
+      {/* <StageButtons currentStage={stage} setStage={setStage} /> */}
       
       {stage === 1 && (
         <div className='flex flex-col lg:flex-row w-full max-w-4xl mx-auto'>
@@ -300,9 +327,11 @@ export default function Home() {
               <div className="w-1/2 p-2">
                 <DateInput
                   value={selectedDate}
-                  onChange={(date) => {
-                    setSelectedDate(date[0]);
-                    setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupOn: '' }));
+                  onChange={(dates) => {
+                    if (dates && dates.length > 0) {
+                      setSelectedDate(dates[0]);
+                      setSearchFormErrors((prevErrors) => ({ ...prevErrors, pickupOn: '' }));
+                    }
                   }}
                   pickupOnError={SearchFormErrors.pickupOn}
                 />
@@ -348,17 +377,33 @@ export default function Home() {
             <div className="mt-4 lg:hidden">
               <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
             </div>
+            {/* Open the modal using document.getElementById('ID').showModal() method */}
+            <dialog id="info_modal" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-center text-md">We are currently only available in Berlin.
+                  <br />
+                  <br />
+                  Coming to rest of Germany soon!</h3>
+              </div>
+              <form method="dialog" className="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
             <div className="flex justify-center">
               <ContinueButton onClick={handleContinue} isEnabled={true} />
             </div>
           </div>
-          
-          
         </div>
       )}
       
       {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
-      {stage === 3 && ( <PaymentPage handlePaymentDone = {setPaymentDone} /> )}
+      {stage === 3 && (
+        <CheckoutContent 
+          total_amount={totalPrice} 
+          onPaymentSuccess={handlePaymentSuccess} 
+          onPaymentError={handlePaymentError}
+        />
+      )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}
       
       
