@@ -25,10 +25,6 @@ const DeliveryPeople: React.FC<DeliveryPeopleProps> = ({ deliveryPeople, onSelec
     setTotalPrice(newPrice);
   };
 
-  useEffect(() => {
-    setSelectedPersonId(null);
-  }, [price]);
-
   const getAdjustedPrice = (index: number) => {
     if (index === 0) return price;
     if (index === 1) return price + 0.1 * price;

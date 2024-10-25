@@ -116,6 +116,12 @@ export default function Home() {
     fetchData();
   }, []);
 
+  // Reset form errors and selected delivery person when price changes
+  useEffect(() => {
+    setTotalPrice(0);
+    setSelectedDeliveryPerson(null);
+  }, [price]);
+
   const handlePaymentSuccess = () => {
     setStage(4);
     setIsConfettiActive(true);
@@ -211,33 +217,18 @@ export default function Home() {
 
   const validateSearchForm = () => {
     const newErrors = {
-      product: '',
-      pickupFrom: '',
-      deliverTo: '',
-      pickupOn: '',
-      pickupBetween: '',
-      deliveryBy: ''
+      product: !productData?.newUrl?.trim() ? 'Please paste a valid eBay Kleinanzeigen product link' : '',
+      pickupFrom: !mapData?.from?.trim() ? 'Pickup From is required' : '',
+      deliverTo: !mapData?.to?.trim() ? 'Delivery To is required' : '',
+      pickupOn: !selectedDate ? 'Pickup On is required' : '',
+      pickupBetween: !selectedTime ? 'Pickup Between is required' : '',
+      deliveryBy: !selectedDeliveryPerson ? 'Please select a delivery person' : ''
     };
-    if (!productData?.newUrl.trim()) {
-      newErrors.product = 'Please paste a valid eBay Kleinanzeigen product link';
-    }
-    if (!mapData?.from.trim() || !mapData) {
-      newErrors.pickupFrom = 'Pickup From is required';
-    }
-    if (!mapData?.to.trim() || !mapData) {
-      newErrors.deliverTo = 'Delivery To is required';
-    }
-    if (selectedDate?.getDate() === new Date().getDate()) {
-      newErrors.pickupOn = 'Pickup On is required';
-    }
-    if (!selectedTime) {
-      newErrors.pickupBetween = 'Pickup Between is required';
-    }
-    if (!selectedDeliveryPerson) {
-      newErrors.deliveryBy = 'Please select a delivery person';
-    }
+
     setSearchFormErrors(newErrors);
-    return newErrors;
+
+    // Check if any error message is not empty
+    return !Object.values(newErrors).some(error => error !== '');
   };
 
   function isAddressInBerlin(): boolean {
@@ -245,9 +236,10 @@ export default function Home() {
   }
  
   const handleContinue = async() => {
-    const errors = validateSearchForm();
+    let validForm = validateSearchForm();
     // No form errors
-    if (Object.values(errors).every(error => error === '')) {
+    if (validForm) {
+      console.log('no form errors');
       if (!isAddressInBerlin()) 
         {
           // [TODO] save entries to databae
