@@ -141,7 +141,7 @@ export const saveLocationToDatabase = async (mapData: MapData) => {
   }
 }
 
-export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling', totalPrice: number) => {
+export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: number, productId: number, logisticId: number, selectedDeliveryPerson: DeliveryPerson, selectedDate: Date, selectedTime: string, serviceType: 'buying' | 'selling', totalPrice: number, paymentDone: boolean) => {
     //Determine placed_by based on the service type
     const placedBy = serviceType === 'buying' ? deliverUserId : pickupUserId;
   
@@ -152,6 +152,7 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
         {
           placed_by: placedBy,
           product: productId,
+          payment_done: paymentDone,
           service_type: serviceType,
           logistics: logisticId,
           delivered_by: selectedDeliveryPerson?.id,
@@ -160,25 +161,40 @@ export const saveOrderToDatabase = async (pickupUserId: number, deliverUserId: n
           deliver_to: deliverUserId,
           pickup_on: selectedDate,
           pickup_between: selectedTime,
-          status: 'order_processing',
+          status: 'order_pending_payment',
           total: totalPrice.toString(),
         },
-      ]).select(`
-        *,
-        product: product (*),
-        logistics: logistics (*),
-        delivered_by: delivered_by (*),
-        pickup_from: pickup_from (*),
-        deliver_to: deliver_to (*),
-        placed_by: placed_by (*)
-      `);
+      ]).select()
   
     if (error) {
       console.error('Error saving to database:', error);
     } else {
       console.log('Data saved successfully:', data);
-      return data[0];
+      return data[0].id;
     }
+};
+
+export const updateOrderPaymentDone = async (orderId: number, paymentDone: boolean, payment_method: string, payment_error: string | null) => {
+  const { data, error } = await supabase
+    .from('order')
+    .update({ payment_done: paymentDone, status: paymentDone ? 'order_processing' : 'order_pending_payment', payment_method: payment_method, payment_error: payment_error })
+    .eq('id', orderId)
+    .select(`
+      *,
+      product: product (*),
+      logistics: logistics (*),
+      delivered_by: delivered_by (*),
+      pickup_from: pickup_from (*),
+      deliver_to: deliver_to (*),
+      placed_by: placed_by (*)
+    `);
+
+  if (error) {
+    console.error('Error saving to database:', error);
+  } else {
+    console.log('Data saved successfully:', data);
+    return data[0];
+  }
 };
 
 export const updateOrderStatus = async (orderId: number, status: string) => {

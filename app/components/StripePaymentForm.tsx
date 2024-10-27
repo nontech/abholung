@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 interface StripePaymentFormProps {
-  onPaymentSuccess: () => void;
-  onPaymentError: (error: string) => void;
+  onPaymentSuccess: (payment_method: string) => void;
+  onPaymentError: (payment_method: string, error: string) => void;
 }
 
 export default function StripePaymentForm({ onPaymentSuccess, onPaymentError }: StripePaymentFormProps) {
@@ -17,12 +17,14 @@ export default function StripePaymentForm({ onPaymentSuccess, onPaymentError }: 
     event.preventDefault();
 
     if (!stripe || !elements) {
+      setIsProcessing(false);
       return;
     }
 
     setIsProcessing(true);
 
-    const { error } = await stripe.confirmPayment({
+    // Confirm payment and get the result
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}`,
@@ -31,9 +33,11 @@ export default function StripePaymentForm({ onPaymentSuccess, onPaymentError }: 
     });
 
     if (error) {
-      onPaymentError(error.message ?? 'An unexpected error occurred.');
-    } else {
-      onPaymentSuccess();
+      onPaymentError('', error.message ?? 'An unexpected error occurred.');
+    } else if (paymentIntent) {
+      // Get the payment method from the paymentIntent
+      console.log('paymentIntent', paymentIntent);
+      onPaymentSuccess(paymentIntent.payment_method as string);
     }
 
     setIsProcessing(false);

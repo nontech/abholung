@@ -9,8 +9,8 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 interface CheckoutContentProps {
   total_amount: number;
-  onPaymentSuccess: () => void;
-  onPaymentError: (error: string) => void;
+  onPaymentSuccess: (payment_method: string) => void;
+  onPaymentError: (payment_method: string, error: string) => void;
 }
 
 export default function CheckoutContent({ total_amount, onPaymentSuccess, onPaymentError }: CheckoutContentProps) {
@@ -34,7 +34,7 @@ export default function CheckoutContent({ total_amount, onPaymentSuccess, onPaym
       </div>
       {clientSecret && (
         <Elements stripe={stripePromise} options={{ clientSecret }}>
-          <StripePaymentForm onPaymentSuccess={onPaymentSuccess} onPaymentError={onPaymentError} />
+          <StripePaymentForm onPaymentSuccess={(payment_method: string) => onPaymentSuccess(payment_method)} onPaymentError={(payment_method: string, error: string) => onPaymentError(payment_method, error)} />
         </Elements>
       )}
     </div>
