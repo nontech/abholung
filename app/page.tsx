@@ -340,7 +340,7 @@ export default function Home() {
                 </div>
               
               <div className="hidden lg:block">
-                <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
+                <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''} deliveryDate={selectedDate}/>
               </div>
             </div>
           
@@ -398,7 +398,7 @@ export default function Home() {
               deliveryByError={SearchFormErrors.deliveryBy}
             />
             <div className="mt-4 lg:hidden">
-              <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
+              <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''} deliveryDate = {selectedDate}/>
             </div>
             {/* Open the modal using document.getElementById('ID').showModal() method */}
             <dialog id="info_modal" className="modal">
