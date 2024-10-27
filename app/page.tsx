@@ -11,7 +11,7 @@ import { DeliveryDetails, DetailsPageType, DeliveryPerson } from '../types/commo
 import { Database } from '@/types/supabase-types';
 
 // Import database operations
-import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase } from './dbOperations';
+import { fetchDeliveryPeople, saveDeliverUserToDatabase, saveLocationToDatabase, saveLogisticsToDatabase, saveOrderToDatabase, savePickupUserToDatabase, saveProductToDatabase, updateOrderPaymentDone } from './dbOperations';
 
 // Import common components on every page
 import Header from './components/Header';
@@ -106,6 +106,8 @@ export default function Home() {
 
   const [stage, setStage]= useState<number>(1);
 
+  const [orderId, setOrderId] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchDeliveryPeople();
@@ -121,19 +123,45 @@ export default function Home() {
     setSelectedDeliveryPerson(null);
   }, [price]);
 
-  const handlePaymentSuccess = () => {
+  const saveOrderToDb = async () => {
+    const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
+    const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
+    const productId = await saveProductToDatabase(productData!);
+    const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
+    const paymentDone = false;
+    if (pickupUserId && deliverUserId && productId && logisticId) {
+      const orderId: number | null = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice, paymentDone);
+      return orderId;
+    }
+    return null;
+  };
+
+  const updateOrderPaymentDetails = async (paymentDone: boolean, payment_method: string, payment_error: string | null) => {
+    if (orderId) {
+      const orderData: OrderAll | null = await updateOrderPaymentDone(orderId, paymentDone, payment_method, payment_error);
+      return orderData;
+    }
+    return null;
+  };
+
+
+  const handleDetailsPageSubmission = async(submitted: boolean) => {
+    if (submitted) {
+      const orderId = await saveOrderToDb();
+      if (orderId) {
+        setOrderId(orderId);
+      }
+    }
+  };
+
+  const handlePaymentError = async (payment_method: string,error: string) => {
+    console.error('Payment failed:', error);
+    await updateOrderPaymentDetails(false, payment_method, error);
+  };
+
+  const handleSuccessfulPayment = async (payment_method: string) => {
     setStage(4);
     setIsConfettiActive(true);
-    // Perform post-payment actions like sending emails and saving to database
-    handleSuccessfulPayment();
-  };
-
-  const handlePaymentError = (error: string) => {
-    console.error('Payment failed:', error);
-    // Handle payment failure (e.g., show error message to user)
-  };
-
-  const handleSuccessfulPayment = async () => {
     console.log('paymentDone is done, sending emails & saving to database');
     const sendEmail = async (orderData: OrderAll) => {
       try {
@@ -145,6 +173,9 @@ export default function Home() {
             emails: [
               { to: emailSend, subject: `Order being processed - #[${orderData.id}]`, type: 'order_processing_customer', orderData: orderData },
               { to: 'info@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
+              { to: 'aman.jaiswal@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
+              { to: 'mukesh.jaiswal@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
+              { to: 'philip.tapiwa@kleinanzeigenkurier.de', subject: `New order placed - #[${orderData.id}]`, type: 'order_processing_kk', orderData: orderData },
             ],
           }),
         });
@@ -154,19 +185,11 @@ export default function Home() {
         alert('Error sending emails');
       }
     };
-    const handleSaveOrder = async () => {
-      const pickupUserId = await savePickupUserToDatabase(pickupFromName, pickupFromEmail, pickupFromPhoneNumber);
-      const deliverUserId = await saveDeliverUserToDatabase(deliverToName, deliverToEmail, deliverPhoneNumber);
-      const productId = await saveProductToDatabase(productData!);
-      const logisticId = await saveLogisticsToDatabase(mapData!, additionalPickupInstructions, additionalDeliveryInstructions);
-      if (pickupUserId && deliverUserId && productId && logisticId) {
-        const orderData: OrderAll = await saveOrderToDatabase(pickupUserId, deliverUserId, productId, logisticId, selectedDeliveryPerson!, selectedDate!, selectedTime, serviceType, totalPrice);
-        if (orderData) {
-          await sendEmail(orderData);
-        }
-      }
-    };
-    handleSaveOrder();
+    
+    const orderData = await updateOrderPaymentDetails(true, payment_method, null);
+    if (orderData) {
+      await sendEmail(orderData);
+    }
   };
 
   const pickupDetails: DeliveryDetails = {
@@ -317,7 +340,7 @@ export default function Home() {
                 </div>
               
               <div className="hidden lg:block">
-                <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
+                <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''} deliveryDate={selectedDate}/>
               </div>
             </div>
           
@@ -375,7 +398,7 @@ export default function Home() {
               deliveryByError={SearchFormErrors.deliveryBy}
             />
             <div className="mt-4 lg:hidden">
-              <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''}/>
+              <PriceInfo setPrice={setPrice} totalPrice={totalPrice} duration={duration} productPrice={productData?.price || ''} deliveryDate = {selectedDate}/>
             </div>
             {/* Open the modal using document.getElementById('ID').showModal() method */}
             <dialog id="info_modal" className="modal">
@@ -396,12 +419,12 @@ export default function Home() {
         </div>
       )}
       
-      {stage === 2 && ( <DetailsPage details={detailsPageProps} /> )}
+      {stage === 2 && ( <DetailsPage details={detailsPageProps} handleDetailsPageSubmission={handleDetailsPageSubmission} /> )}
       {stage === 3 && (
         <CheckoutContent 
           total_amount={totalPrice} 
-          onPaymentSuccess={handlePaymentSuccess} 
-          onPaymentError={handlePaymentError}
+          onPaymentSuccess={(payment_method: string) => handleSuccessfulPayment(payment_method)} 
+          onPaymentError={(payment_method: string, error: string) => handlePaymentError(payment_method, error)}
         />
       )}
       {stage === 4 && ( <SummaryPage pickupDetails = {pickupDetails} deliveryDetails = {deliveryDetails} /> )}

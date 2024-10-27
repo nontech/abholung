@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      locations: {
+        Row: {
+          created_at: string
+          from: string | null
+          id: number
+          to: string | null
+        }
+        Insert: {
+          created_at?: string
+          from?: string | null
+          id?: number
+          to?: string | null
+        }
+        Update: {
+          created_at?: string
+          from?: string | null
+          id?: number
+          to?: string | null
+        }
+        Relationships: []
+      }
       logistics: {
         Row: {
           created_at: string
@@ -49,6 +70,9 @@ export type Database = {
           delivered_by: number | null
           id: number
           logistics: number
+          payment_done: boolean | null
+          payment_error: string | null
+          payment_method: string | null
           pickup_between: string
           pickup_from: number | null
           pickup_on: string | null
@@ -65,6 +89,9 @@ export type Database = {
           delivered_by?: number | null
           id?: number
           logistics: number
+          payment_done?: boolean | null
+          payment_error?: string | null
+          payment_method?: string | null
           pickup_between: string
           pickup_from?: number | null
           pickup_on?: string | null
@@ -81,6 +108,9 @@ export type Database = {
           delivered_by?: number | null
           id?: number
           logistics?: number
+          payment_done?: boolean | null
+          payment_error?: string | null
+          payment_method?: string | null
           pickup_between?: string
           pickup_from?: number | null
           pickup_on?: string | null
@@ -214,7 +244,7 @@ export type Database = {
     }
     Enums: {
       order_status:
-        | "order_placed"
+        | "order_pending_payment"
         | "order_processing"
         | "order_processed_success"
         | "order_processed_failure"

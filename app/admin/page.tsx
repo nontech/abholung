@@ -160,6 +160,7 @@ const AdminPanel = () => {
   };
 
   const statusOrder = [
+    'order_pending_payment',
     'order_processing',
     'order_processed_success',
     'order_processed_failure',
@@ -229,6 +230,9 @@ const AdminPanel = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
                     Delivered By
                   </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
+                    Payment info
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -240,13 +244,17 @@ const AdminPanel = () => {
                       <StatusDisplay currentStatus={order.status!} />
                     </td>
                     <td className="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 max-w-xs break-words">
-                      {order.status === 'order_processing' || order.status === 'order_processed_success' ? (
-                      <div className="flex flex-col justify-between">
-                        <button onClick={() => handleConfirmOrder( order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email!, order )} className="mx-2 my-2 bg-green-500 text-white px-2 py-1 rounded">Confirm</button>
-                        <button onClick={() => handleDeclineOrder( order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email!, order )} className="bg-red-500 text-white px-2 py-1 rounded">Decline</button>
-                      </div>
-                      ) : (
-                      <button onClick={() => handleRevertOrder(order.id, order.status!)} className="mx-2 my-2 bg-blue-500 text-white px-2 py-1 rounded">Revert back</button>
+                      {order.status !== 'order_pending_payment' && (
+                        <>
+                          {(order.status === 'order_processing' || order.status === 'order_processed_success') ? (
+                            <div className="flex flex-col justify-between">
+                              <button onClick={() => handleConfirmOrder(order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email!, order)} className="mx-2 my-2 bg-green-500 text-white px-2 py-1 rounded">Confirm</button>
+                              <button onClick={() => handleDeclineOrder(order.service_type === 'buying' ? order.deliver_to!.email! : order.pickup_from!.email!, order)} className="bg-red-500 text-white px-2 py-1 rounded">Decline</button>
+                            </div>
+                          ) : (
+                            <button onClick={() => handleRevertOrder(order.id, order.status!)} className="mx-2 my-2 bg-blue-500 text-white px-2 py-1 rounded">Revert back</button>
+                          )}
+                        </>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 max-w-xs break-words">{order.placed_by?.full_name}</td>
@@ -283,6 +291,17 @@ const AdminPanel = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 max-w-xs break-words">{order.delivered_by.full_name}</td>
+                    <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 max-w-xs break-words">
+                      <div>
+                        <strong>Method:</strong> {order.payment_method}
+                      </div>
+                      <div>
+                        <strong>Completed:</strong> {order.payment_done}
+                      </div>
+                      <div>
+                        <strong>Error:</strong> {order.payment_done}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

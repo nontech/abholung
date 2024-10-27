@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-types": "npx supabase gen types typescript --project-id lnqtozhericysmxlstuh > types/supabase-types.ts"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",

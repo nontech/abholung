@@ -5,9 +5,10 @@ import ContinueButton from './ContinueButton';
 
 interface DetailsPageProps {
     details: DetailsPageType
+    handleDetailsPageSubmission: (submitted: boolean) => void
 }
 
-const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
+const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubmission}) => {
 
     // From & To Addresses
     const mapData = details.mapData
@@ -93,6 +94,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details}) => {
     const handleContinue = () => {
         const newErrors = validateForm();
         if (Object.values(newErrors).every(error => error === '')) {
+            handleDetailsPageSubmission(true);
             setStage(3);
         } else {
             setErrors(newErrors);

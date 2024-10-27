@@ -5,6 +5,7 @@ interface PriceInfoProps {
   productPrice: string | null;
   totalPrice: number;
   setPrice: (price: number) => void;
+  deliveryDate: Date | null;
 }
 const calculateTimeSaved = (duration: string | null): number => {
   if (!duration) return 0;
@@ -30,7 +31,7 @@ const calculateTimeSaved = (duration: string | null): number => {
 };
 
 
-const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPrice, setPrice }) => {
+const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPrice, setPrice, deliveryDate }) => {
   const timeSaved = calculateTimeSaved(duration? duration: null);
   const productPriceFloat = productPrice ? parseFloat(productPrice.replace('€', '').trim()) : 0;
 
@@ -40,13 +41,26 @@ const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPric
     if (productPriceFloat > 120) {
       price += productPriceFloat * 0.1;
     }
-    
+    if (deliveryDate) {
+      const today = new Date();
+      const differenceInDays = Math.ceil((deliveryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      if (differenceInDays == 2){
+        price += price * 0.1;
+      }
+      else if (differenceInDays == 1){
+        price += price * 0.2;
+      }
+      else if (differenceInDays == 0){
+        price += price * 0.3;
+      }
+      
+    }
     setPrice(Math.min(price, 20));
-  }, [timeSaved, productPriceFloat, setPrice]);
+  }, [timeSaved, productPriceFloat, setPrice, deliveryDate]);
 
   useEffect(() => {
     calculateTotalPrice();
-  }, [duration, productPriceFloat, setPrice]);
+  }, [duration, productPriceFloat, setPrice, deliveryDate]);
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">
