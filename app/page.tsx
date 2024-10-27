@@ -239,7 +239,7 @@ export default function Home() {
 
   const validateSearchForm = () => {
     const newErrors = {
-      product: !productData?.newUrl?.trim() ? 'Please paste a valid eBay Kleinanzeigen product link' : '',
+      product: !productData?.newUrl?.trim() ? 'Please paste a valid Kleinanzeigen product link' : '',
       pickupFrom: !mapData?.from?.trim() ? 'Pickup From is required' : '',
       deliverTo: !mapData?.to?.trim() ? 'Delivery To is required' : '',
       pickupOn: !selectedDate ? 'Pickup On is required' : '',
