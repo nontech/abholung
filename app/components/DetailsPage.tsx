@@ -145,7 +145,9 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
             {/* Pickup From Section */}
             <div>
                 {/* Pickup From Title */}
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">Pickup From</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-900">
+                  Pickup From <span className="badge badge-ghost">( Seller )</span>
+                </h2>
                 
                 {/* Edit Button */}
                 <div className="flex items-center mt-2">
@@ -250,7 +252,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
 
             {/* Deliver To Section */}
             <div>
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">Deliver To</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-900">Deliver To <span className="badge badge-ghost">( Buyer )</span></h2>
                 <div className="flex items-center mt-2">
                     <p className="text-gray-600 flex-grow">{deliveryAddress}</p>
                     <button
