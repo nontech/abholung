@@ -14,8 +14,6 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
     const mapData = details.mapData
     let pickupAddress = 'Address N/A';
     let deliveryAddress = 'Address N/A';
-    
-
     if (mapData && mapData.from && mapData.to) {
         pickupAddress = mapData.from;
         deliveryAddress = mapData.to;
@@ -55,6 +53,12 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
         productTitle = productData.title
         productPrice = productData.price
     }
+
+    // Delivery Info
+    const deliveryPerson = details.deliveryPerson
+
+    // Total Price
+    const totalPrice = details.totalPrice
   
     const setStage = details.onEdit
     const handleEdit = () => {
@@ -243,8 +247,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
                 {/* Product Info Card */}
                 <div className="bg-white shadow-md rounded-lg p-4 mt-4">
                     <h2 className="text-xl font-semibold mb-4 text-gray-900">Product Information</h2>
-                    <p className="text-gray-700"><strong>Product:</strong> {productTitle}</p>
-                    <p className="text-gray-700"><strong>Price:</strong> {productPrice}</p>
+                    <p className="text-gray-700">{productTitle}</p>
                     {/* Add more product details as needed */}
                 </div>
             </div>
@@ -344,9 +347,11 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
 
                 {/* DateTime Info Card */}
                 <div className="bg-white shadow-md rounded-lg p-4 mt-4">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Delivery Date and Time</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Delivery Information</h2>
                     <p className="text-gray-700"><strong>Date:</strong> {formattedDate}</p>
                     <p className="text-gray-700"><strong>Time:</strong> {selectedTime || 'N/A'}</p>
+                    <p className="text-gray-700"><strong>Delivery Person:</strong> {deliveryPerson?.full_name || 'N/A'}</p>
+                    <p className="text-gray-700"><strong>Total Price:</strong> EUR {totalPrice || 'N/A'}</p>
                 </div>
             </div>
         </div>
