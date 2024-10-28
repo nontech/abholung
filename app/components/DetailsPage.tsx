@@ -47,12 +47,8 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
     const serviceType = details.serviceType
     // Product Info
     let productTitle = 'Product Title N/A'
-    let productPrice = 'Price N/A'
     const productData = details.productData
-    if (productData) {
-        productTitle = productData.title
-        productPrice = productData.price
-    }
+    if (productData) productTitle = productData.title
 
     // Delivery Info
     const deliveryPerson = details.deliveryPerson

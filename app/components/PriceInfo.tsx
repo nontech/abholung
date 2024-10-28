@@ -60,7 +60,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPric
 
   useEffect(() => {
     calculateTotalPrice();
-  }, [duration, productPriceFloat, setPrice, deliveryDate]);
+  }, [calculateTotalPrice]); // Add calculateTotalPrice to the dependency array
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">
