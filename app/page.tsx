@@ -234,12 +234,14 @@ export default function Home() {
     onDeliverToPhoneNumberChange: setdeliverPhoneNumber,
     onAdditionalDeliveryInstructionsChange: setAdditionaldeliveryInstructions,
     productData: productData!,
+    deliveryPerson: selectedDeliveryPerson,
+    totalPrice: totalPrice,
     onEdit: setStage
   };
 
   const validateSearchForm = () => {
     const newErrors = {
-      product: !productData?.newUrl?.trim() ? 'Please paste a valid eBay Kleinanzeigen product link' : '',
+      product: !productData?.newUrl?.trim() ? 'Please paste a valid Kleinanzeigen product link' : '',
       pickupFrom: !mapData?.from?.trim() ? 'Pickup From is required' : '',
       deliverTo: !mapData?.to?.trim() ? 'Delivery To is required' : '',
       pickupOn: !selectedDate ? 'Pickup On is required' : '',
@@ -301,8 +303,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Stage Buttons -> Remove it later */}
-      {/* <StageButtons currentStage={stage} setStage={setStage} /> */}
       
       {stage === 1 && (
         <div className='flex flex-col lg:flex-row w-full max-w-4xl mx-auto'>

@@ -303,7 +303,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
               <div>
                 <h3 className="text-lg font-semibold mb-1">Time Saved</h3>
                 <p className="text-3xl font-bold">
-                  {calculateTimeSaved(duration)}
+                  {calculateTimeSaved(duration)} <span className="text-sm text-gray-400">( + 10 min )</span>
                 </p>
               </div>
               <div className="text-right">
@@ -321,7 +321,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
               </div>
             </div>
             <p className="mt-2 text-sm opacity-80">
-              Compared to traditional methods, you&apos;re saving valuable time!
+              You are saving valuable time, including time spent talking to individual.
             </p>
           </div>
         </div>

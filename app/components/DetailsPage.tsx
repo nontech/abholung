@@ -14,8 +14,6 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
     const mapData = details.mapData
     let pickupAddress = 'Address N/A';
     let deliveryAddress = 'Address N/A';
-    
-
     if (mapData && mapData.from && mapData.to) {
         pickupAddress = mapData.from;
         deliveryAddress = mapData.to;
@@ -49,12 +47,14 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
     const serviceType = details.serviceType
     // Product Info
     let productTitle = 'Product Title N/A'
-    let productPrice = 'Price N/A'
     const productData = details.productData
-    if (productData) {
-        productTitle = productData.title
-        productPrice = productData.price
-    }
+    if (productData) productTitle = productData.title
+
+    // Delivery Info
+    const deliveryPerson = details.deliveryPerson
+
+    // Total Price
+    const totalPrice = details.totalPrice
   
     const setStage = details.onEdit
     const handleEdit = () => {
@@ -145,7 +145,9 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
             {/* Pickup From Section */}
             <div>
                 {/* Pickup From Title */}
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">Pickup From</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-900">
+                  Pickup From <span className="badge badge-ghost">( Seller )</span>
+                </h2>
                 
                 {/* Edit Button */}
                 <div className="flex items-center mt-2">
@@ -173,7 +175,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
                         className="grow" 
                         placeholder="Name on the door"
                         value={pickupFromName}
-                    onChange={(e) => handlePickupFromNameChange(e.target.value)} 
+                        onChange={(e) => handlePickupFromNameChange(e.target.value)} 
                     />
                 </label>
                 {errors.pickupFromName && <p className="text-red-500 text-sm mt-1">{errors.pickupFromName}</p>}
@@ -243,15 +245,14 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
                 {/* Product Info Card */}
                 <div className="bg-white shadow-md rounded-lg p-4 mt-4">
                     <h2 className="text-xl font-semibold mb-4 text-gray-900">Product Information</h2>
-                    <p className="text-gray-700"><strong>Product:</strong> {productTitle}</p>
-                    <p className="text-gray-700"><strong>Price:</strong> {productPrice}</p>
+                    <p className="text-gray-700">{productTitle}</p>
                     {/* Add more product details as needed */}
                 </div>
             </div>
 
             {/* Deliver To Section */}
             <div>
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">Deliver To</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-900">Deliver To <span className="badge badge-ghost">( Buyer )</span></h2>
                 <div className="flex items-center mt-2">
                     <p className="text-gray-600 flex-grow">{deliveryAddress}</p>
                     <button
@@ -344,9 +345,11 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
 
                 {/* DateTime Info Card */}
                 <div className="bg-white shadow-md rounded-lg p-4 mt-4">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Delivery Date and Time</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Delivery Information</h2>
                     <p className="text-gray-700"><strong>Date:</strong> {formattedDate}</p>
                     <p className="text-gray-700"><strong>Time:</strong> {selectedTime || 'N/A'}</p>
+                    <p className="text-gray-700"><strong>Delivery Person:</strong> {deliveryPerson?.full_name || 'N/A'}</p>
+                    <p className="text-gray-700"><strong>Total Price:</strong> EUR {totalPrice || 'N/A'}</p>
                 </div>
             </div>
         </div>
