@@ -234,6 +234,8 @@ export default function Home() {
     onDeliverToPhoneNumberChange: setdeliverPhoneNumber,
     onAdditionalDeliveryInstructionsChange: setAdditionaldeliveryInstructions,
     productData: productData!,
+    deliveryPerson: selectedDeliveryPerson,
+    totalPrice: totalPrice,
     onEdit: setStage
   };
 
@@ -301,8 +303,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Stage Buttons -> Remove it later */}
-      {/* <StageButtons currentStage={stage} setStage={setStage} /> */}
       
       {stage === 1 && (
         <div className='flex flex-col lg:flex-row w-full max-w-4xl mx-auto'>
