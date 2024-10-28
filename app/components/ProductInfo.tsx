@@ -79,13 +79,11 @@ export default function ProductInfo({ onProductFetched, url, onUrlChange, produc
           </svg>
         </div>
         <Tooltip id="product-link-help" place="top" float={true}>
-          <div>
-            <p>To get the product link:</p>
-            <ol className="list-decimal pl-4 mt-2">
-              <li>Go to the Kleinanzeigen product page</li>
-              <li>Copy the URL from your browser address bar</li>
-              <li>Paste it into the input field below</li>
-            </ol>
+          <div className="text-sm">
+            <p>1. Visit the product page on Kleinanzeigen</p>
+            <p>2. On App: Tap Share - Copy Link</p>
+            <p>On Website: Copy URL from browser address bar</p>
+            <p>3. Paste link into the input field below</p>
           </div>
         </Tooltip>
       </div>

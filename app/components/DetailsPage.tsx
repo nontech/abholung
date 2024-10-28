@@ -173,7 +173,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({details, handleDetailsPageSubm
                         className="grow" 
                         placeholder="Name on the door"
                         value={pickupFromName}
-                    onChange={(e) => handlePickupFromNameChange(e.target.value)} 
+                        onChange={(e) => handlePickupFromNameChange(e.target.value)} 
                     />
                 </label>
                 {errors.pickupFromName && <p className="text-red-500 text-sm mt-1">{errors.pickupFromName}</p>}
