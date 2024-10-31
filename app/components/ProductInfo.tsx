@@ -55,7 +55,7 @@ export default function ProductInfo({
   };
 
   const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let newUrl = cleanKleinanzeigenUrl(e.target.value);
+    const newUrl = cleanKleinanzeigenUrl(e.target.value);
     onUrlChange(newUrl);
 
     // Simple URL validation using the cleaned URL
