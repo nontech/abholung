@@ -29,7 +29,7 @@ export default function DatePicker({
     if (!date) {
       setSelectedDate(maxDate);
     }
-  }, []);
+  }, [date, maxDate, setSelectedDate]);
 
   const isDateInRange = (date: Date) => {
     const start = startOfDay(minDate);

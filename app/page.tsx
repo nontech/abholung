@@ -1,7 +1,7 @@
 "use client";
 
 // Import React & Next stuff
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
@@ -36,13 +36,14 @@ import BackButton from "./components/BackButton";
 
 // Import components
 import ProductInfo from "./components/ProductInfo";
-import DateInput from "./components/DateInput";
+// import DateInput from "./components/DateInput";
 import TimePicker from "./components/TimePicker";
 import TransportRoute from "./components/TransportRoute";
 import PriceInfo from "./components/PriceInfo";
 import TypeOfService from "./components/TypeOfService";
 import DeliveryPeople from "./components/DeliveryPeople";
 import CheckoutContent from "./components/CheckoutContent";
+import DatePicker from "./components/DatePicker";
 
 // Import pages
 import SummaryPage from "./components/SummaryPage";
@@ -259,7 +260,7 @@ export default function Home() {
         });
         console.log("Emails sent successfully");
       } catch (error) {
-        console.error("Error sending emails:", error);
+        console.error("Error sending emails:");
         alert("Error sending emails");
       }
     };
@@ -352,7 +353,6 @@ export default function Home() {
     const validForm = validateSearchForm();
     // No form errors
     if (validForm) {
-      console.log("no form errors");
       if (!isAddressInBerlin()) {
         // save entries to databae
         await saveLocationToDatabase(mapData!);
@@ -385,6 +385,14 @@ export default function Home() {
       setStage(stage - 1);
     }
   };
+
+  const handleDateChange = useCallback((newDate: Date) => {
+    setSelectedDate(newDate);
+    setSearchFormErrors((prevErrors) => ({
+      ...prevErrors,
+      pickupOn: "",
+    }));
+  }, []);
 
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
@@ -473,7 +481,7 @@ export default function Home() {
             )}
             <div className="flex mb-4">
               <div className="w-1/2 p-2">
-                <DateInput
+                {/* <DateInput
                   value={selectedDate}
                   onChange={(dates) => {
                     if (dates && dates.length > 0) {
@@ -485,6 +493,10 @@ export default function Home() {
                     }
                   }}
                   pickupOnError={SearchFormErrors.pickupOn}
+                /> */}
+                <DatePicker
+                  date={selectedDate || undefined}
+                  setSelectedDate={handleDateChange}
                 />
               </div>
               <div className="w-1/2 p-2">
