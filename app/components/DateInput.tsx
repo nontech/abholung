@@ -1,25 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react';
-import 'flatpickr/dist/flatpickr.min.css';
+import React, { useEffect, useRef, useState } from "react";
+import "flatpickr/dist/flatpickr.min.css";
 import flatpickr from "flatpickr";
-import { DateInputProps } from '../../types/common';
+import { DateInputProps } from "../../types/common";
 
 const DateInput: React.FC<DateInputProps> = ({
-  options = { dateFormat: 'd M D Y' },
+  options = { dateFormat: "d M D Y" },
   value,
   onChange = () => {},
   pickupOnError,
-  className = '',
-  placeholder = 'Select a date'
+  className = "",
+  placeholder = "Select a date",
 }) => {
   const flatpickrRef = useRef<flatpickr.Instance | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     if (inputRef.current && !flatpickrRef.current) {
       const now = new Date();
-      const minDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      const maxDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3);
+      const minDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1
+      );
+      const maxDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 3
+      );
 
       flatpickrRef.current = flatpickr(inputRef.current, {
         ...options,
@@ -31,7 +39,7 @@ const DateInput: React.FC<DateInputProps> = ({
             setInputValue(selectedDates[0].toLocaleDateString());
             onChange(selectedDates);
           }
-        }
+        },
       });
 
       // Set initial value
@@ -59,7 +67,9 @@ const DateInput: React.FC<DateInputProps> = ({
 
   return (
     <div>
-      <label htmlFor="date" className="block text-gray-600 font-bold mb-2">Pickup On</label>
+      <label htmlFor="date" className="block text-gray-600 font-bold mb-2">
+        Pickup On
+      </label>
       <input
         ref={inputRef}
         type="text"
@@ -71,7 +81,9 @@ const DateInput: React.FC<DateInputProps> = ({
         placeholder={placeholder}
         readOnly
       />
-      {pickupOnError && <p className="text-red-500 text-sm mt-1">{pickupOnError}</p>}
+      {pickupOnError && (
+        <p className="text-red-500 text-sm mt-1">{pickupOnError}</p>
+      )}
     </div>
   );
 };
