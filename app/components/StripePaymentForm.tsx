@@ -1,14 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import React, { useState } from "react";
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
 interface StripePaymentFormProps {
   onPaymentSuccess: (payment_method: string) => void;
   onPaymentError: (payment_method: string, error: string) => void;
 }
 
-export default function StripePaymentForm({ onPaymentSuccess, onPaymentError }: StripePaymentFormProps) {
+export default function StripePaymentForm({
+  onPaymentSuccess,
+  onPaymentError,
+}: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -29,14 +36,13 @@ export default function StripePaymentForm({ onPaymentSuccess, onPaymentError }: 
       confirmParams: {
         return_url: `${window.location.origin}`,
       },
-      redirect: 'if_required',
+      redirect: "if_required",
     });
 
     if (error) {
-      onPaymentError('', error.message ?? 'An unexpected error occurred.');
+      onPaymentError("", error.message ?? "An unexpected error occurred.");
     } else if (paymentIntent) {
       // Get the payment method from the paymentIntent
-      console.log('paymentIntent', paymentIntent);
       onPaymentSuccess(paymentIntent.payment_method as string);
     }
 
@@ -46,9 +52,17 @@ export default function StripePaymentForm({ onPaymentSuccess, onPaymentError }: 
   return (
     <form onSubmit={handleSubmit}>
       <PaymentElement />
-      <button disabled={isProcessing || !stripe || !elements} className="mt-4 bg-blue-500 text-white p-2 rounded">
-        {isProcessing ? 'Processing...' : 'Pay now'}
-      </button>
+      <div className="flex items-end justify-between gap-4">
+        <button
+          disabled={isProcessing || !stripe || !elements}
+          className="mt-4 bg-blue-500 text-white p-2 rounded"
+        >
+          {isProcessing ? "Processing..." : "Pay now"}
+        </button>
+        <span className="mt-4 text-sm text-gray-500 italic">
+          powered by <span className="font-semibold">RocApply</span>
+        </span>
+      </div>
     </form>
   );
 }
