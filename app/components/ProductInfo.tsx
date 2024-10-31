@@ -93,6 +93,7 @@ export default function ProductInfo({
         <h1 className="text-xl font-bold text-gray-800">
           Kleinanzeigen Product Link
         </h1>
+        {/* Help Icon */}
         <div
           className="ml-2 text-gray-500 cursor-pointer"
           data-tooltip-id="product-link-help"
@@ -110,7 +111,8 @@ export default function ProductInfo({
             />
           </svg>
         </div>
-        <Tooltip id="product-link-help" place="top" float={true}>
+        {/* Help Tooltip text */}
+        <Tooltip id="product-link-help" place="top" className="z-50">
           <div className="text-sm">
             <p>1. Visit the product page on Kleinanzeigen</p>
             <p>2. On App: Tap Share - Copy Link</p>
