@@ -71,6 +71,8 @@ export interface DetailsPageType {
     onDeliverToPhoneNumberChange: (value: string) => void;
     onAdditionalDeliveryInstructionsChange: (value: string) => void;
     productData: ProductData;
+    deliveryPerson: DeliveryPerson | null;
+    totalPrice: number;
     onEdit: (value: number) => void;
 }
 
