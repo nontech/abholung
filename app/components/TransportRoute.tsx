@@ -5,6 +5,7 @@ import {
   GoogleMap,
 } from "@react-google-maps/api";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { calculateTimeSaved } from "./PriceInfo";
 
 const mapContainerStyle = {
   width: "100%",
@@ -33,6 +34,7 @@ interface TransportRouteProps {
   deliverToError: string;
   duration: string | null;
   setDuration: (duration: string | null) => void;
+  setTotalPrice: (price: number) => void;
 }
 
 interface LatLngLiteral {
@@ -50,6 +52,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
   deliverToError,
   duration,
   setDuration,
+  setTotalPrice,
 }) => {
   const [directions, setDirections] =
     useState<google.maps.DirectionsResult | null>(null);
@@ -176,6 +179,13 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
         distance: distance || "",
         duration: duration || "",
       });
+
+      // Calculate base price from time saved
+      if (duration) {
+        const timeSaved = calculateTimeSaved(duration);
+        const basePrice = Math.min(timeSaved * 0.21, 20);
+        setTotalPrice(basePrice); // Set initial price based on time saved only
+      }
     } else {
       setShowMap(false);
     }
@@ -186,6 +196,8 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
     destination.address,
     fetchDirections,
     onMapDataChange,
+    duration,
+    distance,
   ]);
 
   useEffect(() => {
@@ -200,36 +212,6 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
       }
     }
   }, [isMapLoaded, mapCenter, mapBounds]);
-
-  const calculateTimeSaved = (duration: string): string => {
-    const parts = duration.split(" ");
-    let hours = 0;
-    let minutes = 0;
-
-    for (let i = 0; i < parts.length; i += 2) {
-      const value = parseInt(parts[i]);
-      const unit = parts[i + 1];
-
-      if (unit.startsWith("hour")) {
-        hours = value;
-      } else if (unit.startsWith("min")) {
-        minutes = value;
-      }
-    }
-
-    const totalMinutes = hours * 60 + minutes;
-    const savedMinutes = totalMinutes * 2;
-    const savedHours = Math.floor(savedMinutes / 60);
-    const savedMinutesRemainder = savedMinutes % 60;
-
-    if (savedHours > 0) {
-      return `${savedHours} hour${
-        savedHours !== 1 ? "s" : ""
-      } ${savedMinutesRemainder} min`;
-    } else {
-      return `${savedMinutes} min`;
-    }
-  };
 
   return (
     <div>

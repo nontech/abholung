@@ -133,22 +133,47 @@ export default function Home() {
     pickupBetween: "",
   });
 
+  const [basePrice, setBasePrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [price, setPrice] = useState<number>(0);
 
   const [stage, setStage] = useState<number>(1);
 
   const [orderId, setOrderId] = useState<number | null>(null);
 
-  // Reset form errors and selected delivery person when price changes
-  useEffect(() => {
-    setTotalPrice(0);
-  }, [price]);
-
   const [transportMode, setTransportMode] = useState<TransportModeData>({
     mode: "public transport",
     needsExtraHelper: false,
   });
+
+  // Calculate total price whenever dependencies change
+  useEffect(() => {
+    // Cap the base price at 20€
+    let total = Math.min(basePrice, 20);
+
+    // Add product value surcharge
+    const productPriceFloat = productData?.price
+      ? parseFloat(productData.price.replace("€", "").trim())
+      : 0;
+    if (productPriceFloat > 120) {
+      total += productPriceFloat * 0.1;
+    }
+
+    // Add urgency surcharge
+    if (selectedDate) {
+      const today = new Date();
+      const daysFromNow = Math.ceil(
+        (selectedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysFromNow === 2) {
+        total += 2;
+      } else if (daysFromNow === 1) {
+        total += 5;
+      }
+    }
+
+    setTotalPrice(total); // No cap on total price
+  }, [basePrice, productData?.price, selectedDate]);
 
   const saveOrderToDb = async () => {
     const pickupUserId = await savePickupUserToDatabase(
@@ -495,50 +520,16 @@ export default function Home() {
 
                   <div className="hidden lg:block">
                     <PriceInfo
-                      setPrice={setPrice}
                       totalPrice={totalPrice}
-                      duration={duration}
+                      basePrice={basePrice}
                       productPrice={productData?.price || ""}
                       deliveryDate={selectedDate}
+                      duration={duration}
                     />
                   </div>
                 </div>
               </div>
             )}
-            <div className="flex mb-4">
-              <div className="w-1/2 p-2">
-                {/* <DateInput
-                  value={selectedDate}
-                  onChange={(dates) => {
-                    if (dates && dates.length > 0) {
-                      setSelectedDate(dates[0]);
-                      setSearchFormErrors((prevErrors) => ({
-                        ...prevErrors,
-                        pickupOn: "",
-                      }));
-                    }
-                  }}
-                  pickupOnError={SearchFormErrors.pickupOn}
-                /> */}
-                <DatePicker
-                  date={selectedDate || undefined}
-                  setSelectedDate={handleDateChange}
-                />
-              </div>
-              <div className="w-1/2 p-2">
-                <TimePicker
-                  selectedTime={selectedTime}
-                  onTimeChange={(time) => {
-                    setSelectedTime(time);
-                    setSearchFormErrors((prevErrors) => ({
-                      ...prevErrors,
-                      pickupBetween: "",
-                    }));
-                  }}
-                  pickupBetweenError={SearchFormErrors.pickupBetween}
-                />
-              </div>
-            </div>
             <TransportRoute
               origin={origin}
               destination={destination}
@@ -561,7 +552,30 @@ export default function Home() {
               deliverToError={SearchFormErrors.deliverTo}
               duration={duration}
               setDuration={setDuration}
+              setTotalPrice={setBasePrice}
             />
+            <div className="flex mb-4">
+              <div className="w-1/2 p-2">
+                <DatePicker
+                  date={selectedDate || undefined}
+                  setSelectedDate={handleDateChange}
+                />
+              </div>
+              <div className="w-1/2 p-2">
+                <TimePicker
+                  selectedTime={selectedTime}
+                  onTimeChange={(time) => {
+                    setSelectedTime(time);
+                    setSearchFormErrors((prevErrors) => ({
+                      ...prevErrors,
+                      pickupBetween: "",
+                    }));
+                  }}
+                  pickupBetweenError={SearchFormErrors.pickupBetween}
+                />
+              </div>
+            </div>
+
             {/* Transport Mode Selector */}
             <TransportModeSelector
               selectedMode={transportMode.mode}
@@ -575,11 +589,11 @@ export default function Home() {
 
             <div className="mt-4 lg:hidden">
               <PriceInfo
-                setPrice={setPrice}
                 totalPrice={totalPrice}
-                duration={duration}
+                basePrice={basePrice}
                 productPrice={productData?.price || ""}
                 deliveryDate={selectedDate}
+                duration={duration}
               />
             </div>
             {/* Open the modal using document.getElementById('ID').showModal() method */}

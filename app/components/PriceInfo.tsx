@@ -1,15 +1,33 @@
-import React, { useEffect, useCallback } from 'react';
+import React from "react";
 
 interface PriceInfoProps {
   duration: string | null;
   productPrice: string | null;
   totalPrice: number;
-  setPrice: (price: number) => void;
+  basePrice: number;
   deliveryDate: Date | null;
 }
-const calculateTimeSaved = (duration: string | null): number => {
+
+interface PriceDetailProps {
+  label: string;
+  amount: number;
+  className?: string;
+}
+
+const PriceDetail: React.FC<PriceDetailProps> = ({
+  label,
+  amount,
+  className,
+}) => (
+  <div className={`flex justify-between items-center ${className || ""}`}>
+    <span className="text-gray-600">{label}:</span>
+    <span className="font-medium">{amount.toFixed(2)} €</span>
+  </div>
+);
+
+export const calculateTimeSaved = (duration: string | null): number => {
   if (!duration) return 0;
-  const parts = duration.split(' ');
+  const parts = duration.split(" ");
   let hours = 0;
   let minutes = 0;
 
@@ -17,59 +35,71 @@ const calculateTimeSaved = (duration: string | null): number => {
     const value = parseInt(parts[i]);
     const unit = parts[i + 1];
 
-    if (unit.startsWith('hour')) {
+    if (unit.startsWith("hour")) {
       hours = value;
-    } else if (unit.startsWith('min')) {
+    } else if (unit.startsWith("min")) {
       minutes = value;
     }
   }
 
   const totalMinutes = hours * 60 + minutes;
   const savedMinutes = totalMinutes * 2;
-  
+
   return savedMinutes;
 };
 
+const PriceInfo: React.FC<PriceInfoProps> = ({
+  productPrice,
+  totalPrice,
+  basePrice,
+  deliveryDate,
+}) => {
+  const productPriceFloat = productPrice
+    ? parseFloat(productPrice.replace("€", "").trim())
+    : 0;
 
-const PriceInfo: React.FC<PriceInfoProps> = ({ duration, productPrice, totalPrice, setPrice, deliveryDate }) => {
-  const timeSaved = calculateTimeSaved(duration? duration: null);
-  const productPriceFloat = productPrice ? parseFloat(productPrice.replace('€', '').trim()) : 0;
+  const productSurcharge =
+    productPriceFloat > 120 ? productPriceFloat * 0.1 : 0;
 
-  const calculateTotalPrice = useCallback(() => {
-    let price = timeSaved * 0.21;
-    
-    if (productPriceFloat > 120) {
-      price += productPriceFloat * 0.1;
-    }
-    if (deliveryDate) {
-      const today = new Date();
-      const differenceInDays = Math.ceil((deliveryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      if (differenceInDays == 2){
-        price += price * 0.1;
-      }
-      else if (differenceInDays == 1){
-        price += price * 0.2;
-      }
-      else if (differenceInDays == 0){
-        price += price * 0.3;
-      }
-      
-    }
-    setPrice(Math.min(price, 20));
-  }, [timeSaved, productPriceFloat, setPrice, deliveryDate]);
+  const getUrgencySurcharge = (): number => {
+    if (!deliveryDate) return 0;
+    const today = new Date();
+    const daysFromNow = Math.ceil(
+      (deliveryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [calculateTotalPrice]); // Add calculateTotalPrice to the dependency array
+    if (daysFromNow === 2) return 2;
+    if (daysFromNow === 1) return 5;
+    return 0;
+  };
+
+  const urgencySurcharge = getUrgencySurcharge();
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">
-      <h2 className="text-l font-semibold text-gray-700 mb-2">Price Information</h2>
-      <div className="flex flex-col">
-        <div className="flex justify-between font-bold">
-          <span className="text-gray-700">Total Price:</span>
-          <span className="text-gray-900">{totalPrice.toFixed(2)} €</span>
-        </div>
+      <h2 className="text-l font-semibold text-gray-700 mb-4">
+        Price Information
+      </h2>
+      <div className="space-y-3">
+        <PriceDetail
+          label="Base Price (Time Saved)"
+          amount={basePrice}
+          className="pb-2 border-b border-gray-200"
+        />
+        {productSurcharge > 0 && (
+          <PriceDetail
+            label="Product Value Surcharge"
+            amount={productSurcharge}
+          />
+        )}
+        {urgencySurcharge > 0 && (
+          <PriceDetail label="Urgency Surcharge" amount={urgencySurcharge} />
+        )}
+        <PriceDetail
+          label="Total Price"
+          amount={totalPrice}
+          className="pt-2 border-t border-gray-200 font-bold"
+        />
       </div>
     </div>
   );
