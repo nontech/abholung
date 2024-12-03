@@ -44,6 +44,8 @@ import TypeOfService from "./components/TypeOfService";
 import DeliveryPeople from "./components/DeliveryPeople";
 import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
+import TransportModeSelector from "./components/TransportModeSelector";
+import PaymentOptionSelector from "./components/PaymentArrangementSelector";
 
 // Import pages
 import SummaryPage from "./components/SummaryPage";
@@ -72,19 +74,27 @@ type OrderAll = Order & {
   placed_by: Users;
 };
 
-const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
+const Confetti = dynamic(() => import("react-confetti"), {
+  ssr: false,
+});
 
 export default function Home() {
-  const [productData, setProductData] = useState<ProductData | null>(null);
+  const [productData, setProductData] = useState<ProductData | null>(
+    null
+  );
   const [url, setUrl] = useState<string>("");
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
-    const initialDate = new Date();
-    initialDate.setDate(initialDate.getDate() + 3);
-    return initialDate;
-  });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    () => {
+      const initialDate = new Date();
+      initialDate.setDate(initialDate.getDate() + 3);
+      return initialDate;
+    }
+  );
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [deliveryPeople, setDeliveryPeople] = useState<DeliveryPerson[]>([]);
+  const [deliveryPeople, setDeliveryPeople] = useState<
+    DeliveryPerson[]
+  >([]);
   const [selectedDeliveryPerson, setSelectedDeliveryPerson] =
     useState<DeliveryPerson | null>(null);
 
@@ -93,26 +103,34 @@ export default function Home() {
   const [pickupFromEmail, setPickupFromEmail] = useState<string>("");
   const [pickupFromPhoneNumber, setPickupFromPhoneNumber] =
     useState<string>("");
-  const [additionalPickupInstructions, setAdditionalPickupInstructions] =
-    useState<string>("");
+  const [
+    additionalPickupInstructions,
+    setAdditionalPickupInstructions,
+  ] = useState<string>("");
 
   // Deliver to details
   const [deliverToName, setdeliverToName] = useState<string>("");
   const [deliverToEmail, setdeliverToEmail] = useState<string>("");
-  const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>("");
-  const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] =
+  const [deliverPhoneNumber, setdeliverPhoneNumber] =
     useState<string>("");
+  const [
+    additionalDeliveryInstructions,
+    setAdditionaldeliveryInstructions,
+  ] = useState<string>("");
 
   // Transport route details
-  const [origin, setOrigin] = useState<Place>({ address: "", latLng: null });
+  const [origin, setOrigin] = useState<Place>({
+    address: "",
+    latLng: null,
+  });
   const [destination, setDestination] = useState<Place>({
     address: "",
     latLng: null,
   });
   const [duration, setDuration] = useState<string | null>(null);
-  const [serviceType, setServiceType] = useState<"buying" | "selling">(
-    "buying"
-  );
+  const [serviceType, setServiceType] = useState<
+    "buying" | "selling"
+  >("buying");
   const [isConfettiActive, setIsConfettiActive] = useState(false);
   const [SearchFormErrors, setSearchFormErrors] = useState({
     product: "",
@@ -129,6 +147,8 @@ export default function Home() {
   const [stage, setStage] = useState<number>(1);
 
   const [orderId, setOrderId] = useState<number | null>(null);
+
+  // const [isItemPaidAlready, setIsItemPaidAlready] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -207,7 +227,10 @@ export default function Home() {
     }
   };
 
-  const handlePaymentError = async (payment_method: string, error: string) => {
+  const handlePaymentError = async (
+    payment_method: string,
+    error: string
+  ) => {
     console.error("Payment failed:", error);
     await updateOrderPaymentDetails(false, payment_method, error);
   };
@@ -215,7 +238,9 @@ export default function Home() {
   const handleSuccessfulPayment = async (payment_method: string) => {
     setStage(4);
     setIsConfettiActive(true);
-    console.log("paymentDone is done, sending emails & saving to database");
+    console.log(
+      "paymentDone is done, sending emails & saving to database"
+    );
     const sendEmail = async (orderData: OrderAll) => {
       try {
         const emailSend =
@@ -307,7 +332,8 @@ export default function Home() {
     onPickupFromNameChange: setPickupFromName,
     onPickupFromEmailChange: setPickupFromEmail,
     onPickupFromPhoneNumberChange: setPickupFromPhoneNumber,
-    onAdditionalPickupInstructionsChange: setAdditionalPickupInstructions,
+    onAdditionalPickupInstructionsChange:
+      setAdditionalPickupInstructions,
     deliverToName: deliverToName,
     deliverToEmail: deliverToEmail,
     deliverToPhoneNumber: deliverPhoneNumber,
@@ -315,7 +341,8 @@ export default function Home() {
     onDeliverToNameChange: setdeliverToName,
     onDeliverToEmailChange: setdeliverToEmail,
     onDeliverToPhoneNumberChange: setdeliverPhoneNumber,
-    onAdditionalDeliveryInstructionsChange: setAdditionaldeliveryInstructions,
+    onAdditionalDeliveryInstructionsChange:
+      setAdditionaldeliveryInstructions,
     productData: productData!,
     deliveryPerson: selectedDeliveryPerson,
     totalPrice: totalPrice,
@@ -327,10 +354,16 @@ export default function Home() {
       product: !productData?.newUrl?.trim()
         ? "Please paste a valid Kleinanzeigen product link"
         : "",
-      pickupFrom: !mapData?.from?.trim() ? "Pickup From is required" : "",
-      deliverTo: !mapData?.to?.trim() ? "Delivery To is required" : "",
+      pickupFrom: !mapData?.from?.trim()
+        ? "Pickup From is required"
+        : "",
+      deliverTo: !mapData?.to?.trim()
+        ? "Delivery To is required"
+        : "",
       pickupOn: !selectedDate ? "Pickup On is required" : "",
-      pickupBetween: !selectedTime ? "Pickup Between is required" : "",
+      pickupBetween: !selectedTime
+        ? "Pickup Between is required"
+        : "",
       deliveryBy: !selectedDeliveryPerson
         ? "Please select a delivery person"
         : "",
@@ -369,7 +402,9 @@ export default function Home() {
       setStage(2);
     } else {
       setTimeout(() => {
-        const continueButton = document.getElementById("continue-section");
+        const continueButton = document.getElementById(
+          "continue-section"
+        );
         if (continueButton) {
           continueButton.scrollIntoView({
             behavior: "smooth",
@@ -394,12 +429,31 @@ export default function Home() {
     }));
   }, []);
 
+  const handleModeChange = (
+    mode: string,
+    needsExtraHelper?: boolean
+  ) => {
+    console.log("Selected mode:", mode);
+    console.log("Needs extra helper:", needsExtraHelper);
+    // Handle the mode change and extra helper requirement here
+  };
+
+  const handlePaymentOptionChange = (isItemPaidAlready: boolean) => {
+    console.log(
+      "Payment option:",
+      isItemPaidAlready ? "prepaid" : "kk payment"
+    );
+    // setIsItemPaidAlready(isItemPaidAlready);
+  };
+
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
       <Header />
       <div className="ml-64 mb-5">
         {/* Back Navigation */}
-        {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
+        {stage > 1 && stage < 4 && (
+          <BackButton onClick={handleBack} />
+        )}
       </div>
 
       {/* Progress Bar */}
@@ -454,10 +508,12 @@ export default function Home() {
                       {productData.price}
                     </p>
                     <p className="text-sm lg:text-base text-gray-700 mb-1">
-                      <strong>Listed by:</strong> {productData.listed_by}
+                      <strong>Listed by:</strong>{" "}
+                      {productData.listed_by}
                     </p>
                     <p className="text-sm lg:text-base text-gray-700">
-                      <strong>Pickup Address:</strong> {productData.address}
+                      <strong>Pickup Address:</strong>{" "}
+                      {productData.address}
                     </p>
                     <div className="mt-3 lg:mt-4">
                       <TypeOfService
@@ -536,6 +592,12 @@ export default function Home() {
               duration={duration}
               setDuration={setDuration}
             />
+            {/* Transport Mode Selector */}
+            <TransportModeSelector onModeChange={handleModeChange} />
+            {/* Payment Option Selector */}
+            <PaymentOptionSelector
+              onPaymentOptionChange={handlePaymentOptionChange}
+            />
             <DeliveryPeople
               deliveryPeople={deliveryPeople}
               price={price}
@@ -584,14 +646,20 @@ export default function Home() {
                   {Object.values(SearchFormErrors).map(
                     (error, index) =>
                       error && (
-                        <p key={index} className="text-red-500 text-sm">
+                        <p
+                          key={index}
+                          className="text-red-500 text-sm"
+                        >
                           {error}
                         </p>
                       )
                   )}
                 </div>
               )}
-              <ContinueButton onClick={handleContinue} isEnabled={true} />
+              <ContinueButton
+                onClick={handleContinue}
+                isEnabled={true}
+              />
             </div>
           </div>
         </div>
