@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import {
-  GoogleMap,
-  DirectionsRenderer,
-  Autocomplete,
-} from "@react-google-maps/api";
 import { MapData, Place } from "@/types/common";
+import {
+  Autocomplete,
+  DirectionsRenderer,
+  GoogleMap,
+} from "@react-google-maps/api";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 const mapContainerStyle = {
   width: "100%",
@@ -170,7 +170,12 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
       setMapBounds(bounds);
 
       // update mapData
-      onMapDataChange({ from: origin.address, to: destination.address });
+      onMapDataChange({
+        from: origin.address,
+        to: destination.address,
+        distance: distance || "",
+        duration: duration || "",
+      });
     } else {
       setShowMap(false);
     }

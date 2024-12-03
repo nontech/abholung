@@ -12,11 +12,14 @@ import type {
   MapData,
   Place,
   ProductData,
+  TransportMode,
+  TransportModeData,
 } from "../types/common";
 import { DeliveryDetails, DetailsPageType } from "../types/common";
 
 // Import database operations
 import {
+  fetchDeliveryPersonByMode,
   saveDeliverUserToDatabase,
   saveLocationToDatabase,
   saveLogisticsToDatabase,
@@ -87,8 +90,6 @@ export default function Home() {
     return initialDate;
   });
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [selectedDeliveryPerson, setSelectedDeliveryPerson] =
-    useState<DeliveryPerson | null>(null);
 
   // Pickup from details
   const [pickupFromName, setPickupFromName] = useState<string>("");
@@ -106,7 +107,9 @@ export default function Home() {
     useState<string>("");
 
   // Set Messenger
-  const [deliveryPerson, setDeliveryPerson] = useState<DeliveryPerson>();
+  const [deliveryPerson, setDeliveryPerson] = useState<DeliveryPerson | null>(
+    null
+  );
 
   // Transport route details
   const [origin, setOrigin] = useState<Place>({
@@ -142,6 +145,11 @@ export default function Home() {
     setTotalPrice(0);
   }, [price]);
 
+  const [transportMode, setTransportMode] = useState<TransportModeData>({
+    mode: "public transport",
+    needsExtraHelper: false,
+  });
+
   const saveOrderToDb = async () => {
     const pickupUserId = await savePickupUserToDatabase(
       pickupFromName,
@@ -157,7 +165,8 @@ export default function Home() {
     const logisticId = await saveLogisticsToDatabase(
       mapData!,
       additionalPickupInstructions,
-      additionalDeliveryInstructions
+      additionalDeliveryInstructions,
+      transportMode
     );
     const paymentDone = false;
     if (pickupUserId && deliverUserId && productId && logisticId) {
@@ -387,10 +396,20 @@ export default function Home() {
     }));
   }, []);
 
-  const handleModeChange = (mode: string, needsExtraHelper?: boolean) => {
-    console.log("Selected mode:", mode);
-    console.log("Needs extra helper:", needsExtraHelper);
-    // Handle the mode change and extra helper requirement here
+  const handleModeChange = async (
+    mode: TransportMode,
+    needsExtraHelper: boolean
+  ) => {
+    setTransportMode({
+      mode,
+      needsExtraHelper,
+    });
+
+    // Fetch and set delivery person based on transport mode
+    const deliveryPerson = await fetchDeliveryPersonByMode(mode);
+    if (deliveryPerson) {
+      setDeliveryPerson(deliveryPerson);
+    }
   };
 
   const handlePaymentOptionChange = (isItemPaidAlready: boolean) => {
@@ -544,7 +563,11 @@ export default function Home() {
               setDuration={setDuration}
             />
             {/* Transport Mode Selector */}
-            <TransportModeSelector onModeChange={handleModeChange} />
+            <TransportModeSelector
+              selectedMode={transportMode.mode}
+              needsExtraHelper={transportMode.needsExtraHelper}
+              onModeChange={handleModeChange}
+            />
             {/* Payment Option Selector */}
             <PaymentOptionSelector
               onPaymentOptionChange={handlePaymentOptionChange}
@@ -602,7 +625,7 @@ export default function Home() {
         <DetailsPage
           details={detailsPageProps}
           handleDetailsPageSubmission={handleDetailsPageSubmission}
-          setDeliveryPerson={() => setDeliveryPerson}
+          deliveryPerson={deliveryPerson}
         />
       )}
       {stage === 3 && (

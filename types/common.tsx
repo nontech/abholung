@@ -37,6 +37,8 @@ export interface DateInputProps {
 export interface MapData {
   from: string;
   to: string;
+  distance: string;
+  duration: string;
 }
 
 export interface DeliveryDetails {
@@ -84,4 +86,16 @@ export interface DeliveryPerson {
 export interface Place {
   address: string;
   latLng: google.maps.LatLng | null;
+}
+
+export type TransportMode =
+  | "car"
+  | "bicycle"
+  | "public transport"
+  | "truck"
+  | "cargo bike";
+
+export interface TransportModeData {
+  mode: TransportMode;
+  needsExtraHelper: boolean;
 }

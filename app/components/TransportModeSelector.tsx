@@ -1,8 +1,11 @@
+import { TransportMode } from "@/types/common";
+import { Bike, Car, Train, Truck } from "lucide-react";
 import React, { useState } from "react";
-import { Train, Bike, Car, Truck } from "lucide-react";
 
 interface TransportModeSelectorProps {
-  onModeChange: (mode: string, needsExtraHelper?: boolean) => void;
+  selectedMode: TransportMode;
+  needsExtraHelper: boolean;
+  onModeChange: (mode: TransportMode, needsExtraHelper: boolean) => void;
 }
 
 const CargoBikeIcon = () => (
@@ -23,73 +26,42 @@ const CargoBikeIcon = () => (
 );
 
 const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
+  selectedMode,
+  needsExtraHelper,
   onModeChange,
 }) => {
-  const [selectedMode, setSelectedMode] = useState<string>(
-    "public_transport"
-  );
-  const [needsExtraHelper, setNeedsExtraHelper] = useState(false);
   const [otherModeText, setOtherModeText] = useState("");
-
-  const handleModeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const mode = event.target.value;
-    setSelectedMode(mode);
-    onModeChange(mode, needsExtraHelper);
-  };
-
-  const handleHelperChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setNeedsExtraHelper(event.target.checked);
-    onModeChange(selectedMode, event.target.checked);
-  };
-
-  const handleOtherModeChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const text = e.target.value;
-    setOtherModeText(text);
-    onModeChange(`other:${text}`);
-  };
 
   const transportOptions = [
     {
-      value: "public_transport",
+      value: "public transport" as TransportMode,
       label: "Public Transport",
       icon: <Train className="w-6 h-6" />,
       color: "blue",
     },
     {
-      value: "bicycle",
+      value: "bicycle" as TransportMode,
       label: "Bicycle",
       icon: <Bike className="w-6 h-6" />,
       color: "green",
     },
     {
-      value: "cargo_bike",
+      value: "cargo bike" as TransportMode,
       label: "Cargo Bike",
       icon: <CargoBikeIcon />,
       color: "green",
     },
     {
-      value: "car",
+      value: "car" as TransportMode,
       label: "Car",
       icon: <Car className="w-6 h-6" />,
       color: "red",
     },
     {
-      value: "truck",
+      value: "truck" as TransportMode,
       label: "Truck",
       icon: <Truck className="w-6 h-6" />,
       color: "yellow",
-    },
-    {
-      value: "other",
-      label: "Other",
-      icon: null,
-      color: "gray",
     },
   ];
 
@@ -115,48 +87,33 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
               type="radio"
               value={option.value}
               checked={selectedMode === option.value}
-              onChange={handleModeChange}
+              onChange={() => onModeChange(option.value, needsExtraHelper)}
               className="form-radio h-4 w-4 text-blue-600 hidden"
             />
             <div className="flex flex-col w-full">
               <div className="flex items-center space-x-3">
-                {option.icon && (
-                  <div
-                    className={`${
-                      selectedMode === option.value
-                        ? "text-blue-600"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {option.icon}
-                  </div>
-                )}
+                <div
+                  className={`${
+                    selectedMode === option.value
+                      ? "text-blue-600"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {option.icon}
+                </div>
                 <span
                   className={`
-                  font-medium
-                  ${
-                    selectedMode === option.value
-                      ? "text-blue-700"
-                      : "text-gray-700"
-                  }
-                `}
+                    font-medium
+                    ${
+                      selectedMode === option.value
+                        ? "text-blue-700"
+                        : "text-gray-700"
+                    }
+                  `}
                 >
                   {option.label}
                 </span>
               </div>
-
-              {/* Embed input field for Other option */}
-              {option.value === "other" &&
-                selectedMode === "other" && (
-                  <input
-                    type="text"
-                    value={otherModeText}
-                    onChange={handleOtherModeChange}
-                    placeholder="Please specify"
-                    className="mt-2 w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                )}
             </div>
             {selectedMode === option.value && (
               <div className="absolute right-4 top-4">
@@ -184,7 +141,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
             <input
               type="checkbox"
               checked={needsExtraHelper}
-              onChange={handleHelperChange}
+              onChange={(e) => onModeChange(selectedMode, e.target.checked)}
               className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
             />
             <span>Need an extra person to carry stuff</span>

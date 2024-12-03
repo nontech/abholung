@@ -1,18 +1,18 @@
 "use client";
 import { useState } from "react";
-import { DetailsPageType } from "../../types/common";
+import { DeliveryPerson, DetailsPageType } from "../../types/common";
 import ContinueButton from "./ContinueButton";
 
 interface DetailsPageProps {
   details: DetailsPageType;
   handleDetailsPageSubmission: (submitted: boolean) => void;
-  setDeliveryPerson: () => void;
+  deliveryPerson: DeliveryPerson | null;
 }
 
 const DetailsPage: React.FC<DetailsPageProps> = ({
   details,
   handleDetailsPageSubmission,
-  setDeliveryPerson,
+  deliveryPerson,
 }) => {
   // From & To Addresses
   const mapData = details.mapData;
@@ -421,10 +421,10 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
             <p className="text-gray-700">
               <strong>Time:</strong> {selectedTime || "N/A"}
             </p>
-            {/* <p className="text-gray-700">
+            <p className="text-gray-700">
               <strong>Delivery Person:</strong>{" "}
               {deliveryPerson?.full_name || "N/A"}
-            </p> */}
+            </p>
             <p className="text-gray-700">
               <strong>Total Price:</strong> EUR {totalPrice || "N/A"}
             </p>

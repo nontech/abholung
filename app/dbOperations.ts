@@ -1,4 +1,10 @@
-import { DeliveryPerson, MapData, ProductData } from "@/types/common";
+import {
+  DeliveryPerson,
+  MapData,
+  ProductData,
+  TransportMode,
+  TransportModeData,
+} from "@/types/common";
 import { supabase } from "./supabaseClient";
 
 export const fetchDeliveryPeople = async () => {
@@ -119,27 +125,31 @@ export const saveProductToDatabase = async (productData: ProductData) => {
 export const saveLogisticsToDatabase = async (
   mapData: MapData,
   additionalPickupInstructions: string,
-  additionalDeliveryInstructions: string
+  additionalDeliveryInstructions: string,
+  transportMode: TransportModeData
 ) => {
-  const { data, error } = await supabase
-    .from("logistics")
-    .insert([
-      {
-        from: mapData?.from,
-        to: mapData?.to,
-        from_additional_instructions: additionalPickupInstructions,
-        to_additional_instructions: additionalDeliveryInstructions,
-      },
-    ])
-    .select();
-  if (error) {
-    console.error("Error saving to database:", error);
-    return null;
-  } else {
-    if (data && data.length > 0) {
-      const logisticId = data[0].id;
-      return logisticId;
-    }
+  try {
+    const { data, error } = await supabase
+      .from("logistics")
+      .insert([
+        {
+          from: mapData.from,
+          to: mapData.to,
+          distance: mapData.distance,
+          duration: mapData.duration,
+          pickup_instructions: additionalPickupInstructions,
+          delivery_instructions: additionalDeliveryInstructions,
+          transport_mode: transportMode.mode,
+          needs_extra_helper: transportMode.needsExtraHelper,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data.id;
+  } catch (error) {
+    console.error("Error saving logistics:", error);
     return null;
   }
 };
@@ -249,5 +259,22 @@ export const updateOrderStatus = async (orderId: number, status: string) => {
     console.error("Error updating order status");
   } else {
     console.log("Order status updated successfully:", data);
+  }
+};
+
+export const fetchDeliveryPersonByMode = async (mode: TransportMode) => {
+  try {
+    const { data, error } = await supabase
+      .from("messengers")
+      .select("id, full_name, mode_of_transport")
+      .contains("mode_of_transport", [mode])
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error fetching delivery person:", error);
+    return null;
   }
 };
