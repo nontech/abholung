@@ -42,11 +42,14 @@ import ProductInfo from "./components/ProductInfo";
 import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
 import PaymentOptionSelector from "./components/PaymentArrangementSelector";
-import PriceInfo, { calculateTimeSaved } from "./components/PriceInfo";
+import PriceInfo, {
+  calculateTimeSaved,
+} from "./components/PriceInfo";
 import TimePicker from "./components/TimePicker";
 import TransportModeSelector from "./components/TransportModeSelector";
 import TransportRoute from "./components/TransportRoute";
 import TypeOfService from "./components/TypeOfService";
+import Footer from "./components/Footer";
 
 // Import pages
 import DetailsPage from "./components/DetailsPage";
@@ -90,7 +93,9 @@ const parseGermanPrice = (price: string): number => {
   // Remove currency symbol and any whitespace
   const cleanPrice = price.replace("€", "").trim();
   // Replace dots (thousand separators) with nothing and comma with dot
-  const standardizedPrice = cleanPrice.replace(".", "").replace(",", ".");
+  const standardizedPrice = cleanPrice
+    .replace(".", "")
+    .replace(",", ".");
   return parseFloat(standardizedPrice);
 };
 
@@ -119,14 +124,18 @@ const HOW_IT_WORKS_STEPS = [
 ];
 
 export default function Home() {
-  const [productData, setProductData] = useState<ProductData | null>(null);
+  const [productData, setProductData] = useState<ProductData | null>(
+    null
+  );
   const [url, setUrl] = useState<string>("");
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
-    const initialDate = new Date();
-    initialDate.setDate(initialDate.getDate() + 3);
-    return initialDate;
-  });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    () => {
+      const initialDate = new Date();
+      initialDate.setDate(initialDate.getDate() + 3);
+      return initialDate;
+    }
+  );
   const [selectedTime, setSelectedTime] = useState<string>("");
 
   // Pickup from details
@@ -134,20 +143,24 @@ export default function Home() {
   const [pickupFromEmail, setPickupFromEmail] = useState<string>("");
   const [pickupFromPhoneNumber, setPickupFromPhoneNumber] =
     useState<string>("");
-  const [additionalPickupInstructions, setAdditionalPickupInstructions] =
-    useState<string>("");
+  const [
+    additionalPickupInstructions,
+    setAdditionalPickupInstructions,
+  ] = useState<string>("");
 
   // Deliver to details
   const [deliverToName, setdeliverToName] = useState<string>("");
   const [deliverToEmail, setdeliverToEmail] = useState<string>("");
-  const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>("");
-  const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] =
+  const [deliverPhoneNumber, setdeliverPhoneNumber] =
     useState<string>("");
+  const [
+    additionalDeliveryInstructions,
+    setAdditionaldeliveryInstructions,
+  ] = useState<string>("");
 
   // Set Messenger
-  const [deliveryPerson, setDeliveryPerson] = useState<DeliveryPerson | null>(
-    null
-  );
+  const [deliveryPerson, setDeliveryPerson] =
+    useState<DeliveryPerson | null>(null);
 
   // Transport route details
   const [origin, setOrigin] = useState<Place>({
@@ -159,9 +172,9 @@ export default function Home() {
     latLng: null,
   });
   const [duration, setDuration] = useState<string | null>(null);
-  const [serviceType, setServiceType] = useState<"buying" | "selling">(
-    "buying"
-  );
+  const [serviceType, setServiceType] = useState<
+    "buying" | "selling"
+  >("buying");
   const [isConfettiActive, setIsConfettiActive] = useState(false);
   const [SearchFormErrors, setSearchFormErrors] = useState({
     product: "",
@@ -223,7 +236,9 @@ export default function Home() {
         "cargo bike": 10,
       };
       const hourlyRate =
-        vehicleCosts[transportMode.mode as keyof typeof vehicleCosts] || 0;
+        vehicleCosts[
+          transportMode.mode as keyof typeof vehicleCosts
+        ] || 0;
       const calculatedVehicleCost = hourlyRate * timeSavedHours;
       setVehicleCost(calculatedVehicleCost);
       total += calculatedVehicleCost;
@@ -243,7 +258,8 @@ export default function Home() {
     let calculatedUrgencySurcharge = 0;
     if (selectedDate) {
       const daysFromNow = Math.ceil(
-        (selectedDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+        (selectedDate.getTime() - new Date().getTime()) /
+          (1000 * 60 * 60 * 24)
       );
 
       if (daysFromNow === 2) {
@@ -299,7 +315,9 @@ export default function Home() {
         totalPrice,
         false, // paymentDone
         isItemPaidAlready,
-        !isItemPaidAlready ? parseGermanPrice(productData!.price!) : null,
+        !isItemPaidAlready
+          ? parseGermanPrice(productData!.price!)
+          : null,
         vehicleCost,
         helperCost,
         urgencySurcharge
@@ -335,7 +353,10 @@ export default function Home() {
     }
   };
 
-  const handlePaymentError = async (payment_method: string, error: string) => {
+  const handlePaymentError = async (
+    payment_method: string,
+    error: string
+  ) => {
     console.error("Payment failed:", error);
     await updateOrderPaymentDetails(false, payment_method, error);
   };
@@ -343,7 +364,9 @@ export default function Home() {
   const handleSuccessfulPayment = async (payment_method: string) => {
     setStage(4);
     setIsConfettiActive(true);
-    console.log("paymentDone is done, sending emails & saving to database");
+    console.log(
+      "paymentDone is done, sending emails & saving to database"
+    );
     const sendEmail = async (orderData: OrderAll) => {
       try {
         const emailSend =
@@ -435,7 +458,8 @@ export default function Home() {
     onPickupFromNameChange: setPickupFromName,
     onPickupFromEmailChange: setPickupFromEmail,
     onPickupFromPhoneNumberChange: setPickupFromPhoneNumber,
-    onAdditionalPickupInstructionsChange: setAdditionalPickupInstructions,
+    onAdditionalPickupInstructionsChange:
+      setAdditionalPickupInstructions,
     deliverToName: deliverToName,
     deliverToEmail: deliverToEmail,
     deliverToPhoneNumber: deliverPhoneNumber,
@@ -443,7 +467,8 @@ export default function Home() {
     onDeliverToNameChange: setdeliverToName,
     onDeliverToEmailChange: setdeliverToEmail,
     onDeliverToPhoneNumberChange: setdeliverPhoneNumber,
-    onAdditionalDeliveryInstructionsChange: setAdditionaldeliveryInstructions,
+    onAdditionalDeliveryInstructionsChange:
+      setAdditionaldeliveryInstructions,
     productData: productData!,
     totalPrice: totalPrice,
     onEdit: setStage,
@@ -454,10 +479,16 @@ export default function Home() {
       product: !productData?.newUrl?.trim()
         ? "Please paste a valid Kleinanzeigen product link"
         : "",
-      pickupFrom: !mapData?.from?.trim() ? "Pickup From is required" : "",
-      deliverTo: !mapData?.to?.trim() ? "Delivery To is required" : "",
+      pickupFrom: !mapData?.from?.trim()
+        ? "Pickup From is required"
+        : "",
+      deliverTo: !mapData?.to?.trim()
+        ? "Delivery To is required"
+        : "",
       pickupOn: !selectedDate ? "Pickup On is required" : "",
-      pickupBetween: !selectedTime ? "Pickup Between is required" : "",
+      pickupBetween: !selectedTime
+        ? "Pickup Between is required"
+        : "",
     };
 
     setSearchFormErrors(newErrors);
@@ -493,7 +524,9 @@ export default function Home() {
       setStage(2);
     } else {
       setTimeout(() => {
-        const continueButton = document.getElementById("continue-section");
+        const continueButton = document.getElementById(
+          "continue-section"
+        );
         if (continueButton) {
           continueButton.scrollIntoView({
             behavior: "smooth",
@@ -558,14 +591,17 @@ export default function Home() {
     }
   }, [productData]);
 
-  const [isProductDetailsOpen, setIsProductDetailsOpen] = useState(false);
+  const [isProductDetailsOpen, setIsProductDetailsOpen] =
+    useState(false);
 
   return (
     <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50 p-5 min-h-screen">
       <Header />
       <div className="ml-64 mb-5">
         {/* Back Navigation */}
-        {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
+        {stage > 1 && stage < 4 && (
+          <BackButton onClick={handleBack} />
+        )}
       </div>
 
       {/* Progress Bar */}
@@ -624,10 +660,14 @@ export default function Home() {
                   {/* Separate How It Works Card */}
                   <div className="bg-white p-3 rounded-lg shadow-md">
                     <button
-                      onClick={() => setIsHowItWorksOpen(!isHowItWorksOpen)}
+                      onClick={() =>
+                        setIsHowItWorksOpen(!isHowItWorksOpen)
+                      }
                       className="w-full p-4 flex justify-between items-center text-left"
                     >
-                      <span className="text-lg font-medium">How It Works</span>
+                      <span className="text-lg font-medium">
+                        How It Works
+                      </span>
                       {isHowItWorksOpen ? (
                         <ChevronUp className="h-5 w-5" />
                       ) : (
@@ -642,7 +682,9 @@ export default function Home() {
                             <div className="flex gap-3">
                               {/* Icon Circle */}
                               <div className="relative z-10 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                                <span className="text-sm">{step.icon}</span>
+                                <span className="text-sm">
+                                  {step.icon}
+                                </span>
                               </div>
 
                               {/* Content */}
@@ -657,7 +699,8 @@ export default function Home() {
                             </div>
 
                             {/* Connecting Line */}
-                            {index < HOW_IT_WORKS_STEPS.length - 1 && (
+                            {index <
+                              HOW_IT_WORKS_STEPS.length - 1 && (
                               <div
                                 className="absolute left-[11px] top-6 w-[2px] h-[calc(100%-12px)] bg-emerald-200"
                                 aria-hidden="true"
@@ -684,7 +727,10 @@ export default function Home() {
                     <div className="mt-3 p-2 lg:mt-4">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                        <h2 className="text-xl font-semibold"> Product info</h2>
+                        <h2 className="text-xl font-semibold">
+                          {" "}
+                          Product info
+                        </h2>
                       </div>
                       <span className="text-md mb-2 truncate">
                         <strong>Title:</strong> {productData.title}
@@ -704,7 +750,9 @@ export default function Home() {
                       <div className="mt-3">
                         <div
                           onClick={() =>
-                            setIsProductDetailsOpen(!isProductDetailsOpen)
+                            setIsProductDetailsOpen(
+                              !isProductDetailsOpen
+                            )
                           }
                           className="w-full cursor-pointer select-none"
                         >
@@ -753,7 +801,9 @@ export default function Home() {
                         duration={duration}
                         isItemPaidAlready={isItemPaidAlready}
                         transportMode={transportMode.mode}
-                        needsExtraHelper={transportMode.needsExtraHelper}
+                        needsExtraHelper={
+                          transportMode.needsExtraHelper
+                        }
                         vehicleCost={vehicleCost}
                         helperCost={helperCost}
                         urgencySurcharge={urgencySurcharge}
@@ -779,6 +829,71 @@ export default function Home() {
               />
             </div>
 
+            {productData && (
+              <div className="w-full lg:w-1/3 mt-6 lg:mt-0">
+                <div className="lg:fixed lg:bottom-5 lg:right-12 w-full lg:w-1/4 bg-white p-3 lg:p-4 rounded-lg shadow-md overflow-y-auto lg:max-h-[calc(100vh-100px)]">
+                  <h2 className="text-lg font-semibold mb-3 lg:mb-4">
+                    Order Summary
+                  </h2>
+
+                  <div className="mt-3 lg:mt-4">
+                    <h3
+                      className="text-sm lg:text-md font-semibold mb-2 truncate"
+                      title={productData.title}
+                    >
+                      {productData.title}
+                    </h3>
+                    {productData.pic_url && (
+                      <div className="flex justify-center items-center mb-3 lg:mb-4">
+                        <Image
+                          src={productData.pic_url}
+                          alt={productData.title}
+                          width={120}
+                          height={120}
+                          className="rounded-md w-[120px] h-[120px] object-cover"
+                          unoptimized
+                        />
+                      </div>
+                    )}
+                    <p className="text-base lg:text-lg font-medium text-green-600 mb-2">
+                      {productData.price}
+                    </p>
+                    <p className="text-sm lg:text-base text-gray-700 mb-1">
+                      <strong>Listed by:</strong>{" "}
+                      {productData.listed_by}
+                    </p>
+                    <p className="text-sm lg:text-base text-gray-700">
+                      <strong>Pickup Address:</strong>{" "}
+                      {productData.address}
+                    </p>
+                    <div className="mt-3 lg:mt-4">
+                      <TypeOfService
+                        onServiceChange={handleServiceTypeChange}
+                        serviceType={serviceType}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="hidden lg:block">
+                    <PriceInfo
+                      totalPrice={totalPrice}
+                      basePrice={basePrice}
+                      productPrice={productData?.price || ""}
+                      deliveryDate={selectedDate}
+                      duration={duration}
+                      isItemPaidAlready={isItemPaidAlready}
+                      transportMode={transportMode.mode}
+                      needsExtraHelper={
+                        transportMode.needsExtraHelper
+                      }
+                      vehicleCost={vehicleCost}
+                      helperCost={helperCost}
+                      urgencySurcharge={urgencySurcharge}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
             <TransportRoute
               origin={origin}
               destination={destination}
@@ -805,13 +920,12 @@ export default function Home() {
             />
 
             {/* Wrap just the date/time pickers in a card */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6 mt-6">
-              <div className="flex flex-row items-center gap-3 mb-6">
-                <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                <h2 className="text-2xl font-semibold ">Pickup Schedule</h2>
-              </div>
-              <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-1 w-full gap-6">
-                <div>
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 className="text-lg font-semibold mb-6">
+                Pickup Schedule
+              </h2>
+              <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-2 w-full gap-4">
+                <div className="sm:pr-2">
                   <DatePicker
                     date={selectedDate || undefined}
                     setSelectedDate={handleDateChange}
@@ -827,7 +941,9 @@ export default function Home() {
                         pickupBetween: "",
                       }));
                     }}
-                    pickupBetweenError={SearchFormErrors.pickupBetween}
+                    pickupBetweenError={
+                      SearchFormErrors.pickupBetween
+                    }
                   />
                 </div>
               </div>
@@ -850,10 +966,13 @@ export default function Home() {
               <div className="p-6 bg-white rounded-lg shadow-md mb-6">
                 <div className="flex items-center space-x-2 text-amber-600">
                   <AlertCircle className="h-5 w-5" />
-                  <span className="font-medium">Payment Reminder</span>
+                  <span className="font-medium">
+                    Payment Reminder
+                  </span>
                 </div>
                 <p className="mt-2 text-gray-600">
-                  Make sure the payment for item has been done by the buyer
+                  Make sure the payment for item has been done by the
+                  buyer
                 </p>
               </div>
             )}
@@ -899,14 +1018,20 @@ export default function Home() {
                   {Object.values(SearchFormErrors).map(
                     (error, index) =>
                       error && (
-                        <p key={index} className="text-red-500 text-sm">
+                        <p
+                          key={index}
+                          className="text-red-500 text-sm"
+                        >
                           {error}
                         </p>
                       )
                   )}
                 </div>
               )}
-              <ContinueButton onClick={handleContinue} isEnabled={true} />
+              <ContinueButton
+                onClick={handleContinue}
+                isEnabled={true}
+              />
             </div>
           </div>
         </div>
@@ -936,6 +1061,9 @@ export default function Home() {
           deliveryDetails={deliveryDetails}
         />
       )}
+
+      {/* Add Footer at the bottom */}
+      <Footer />
 
       {/* Confetti Animation */}
       {isConfettiActive && (
