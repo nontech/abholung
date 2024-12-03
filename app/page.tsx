@@ -46,6 +46,7 @@ import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
 import TransportModeSelector from "./components/TransportModeSelector";
 import PaymentOptionSelector from "./components/PaymentArrangementSelector";
+import Footer from "./components/Footer";
 
 // Import pages
 import SummaryPage from "./components/SummaryPage";
@@ -688,6 +689,9 @@ export default function Home() {
           deliveryDetails={deliveryDetails}
         />
       )}
+
+      {/* Add Footer at the bottom */}
+      <Footer />
 
       {/* Confetti Animation */}
       {isConfettiActive && (
