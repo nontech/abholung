@@ -45,6 +45,7 @@ import DeliveryPeople from "./components/DeliveryPeople";
 import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
 import TransportModeSelector from "./components/TransportModeSelector";
+import PaymentOptionSelector from "./components/PaymentArrangementSelector";
 
 // Import pages
 import SummaryPage from "./components/SummaryPage";
@@ -146,6 +147,8 @@ export default function Home() {
   const [stage, setStage] = useState<number>(1);
 
   const [orderId, setOrderId] = useState<number | null>(null);
+
+  // const [isItemPaidAlready, setIsItemPaidAlready] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -435,6 +438,14 @@ export default function Home() {
     // Handle the mode change and extra helper requirement here
   };
 
+  const handlePaymentOptionChange = (isItemPaidAlready: boolean) => {
+    console.log(
+      "Payment option:",
+      isItemPaidAlready ? "prepaid" : "kk payment"
+    );
+    // setIsItemPaidAlready(isItemPaidAlready);
+  };
+
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
       <Header />
@@ -467,7 +478,6 @@ export default function Home() {
               }}
               productError={SearchFormErrors.product}
             />
-            <TransportModeSelector onModeChange={handleModeChange} />
             {/* Updated right container */}
             {productData && (
               <div className="w-full lg:w-1/3 mt-6 lg:mt-0">
@@ -581,6 +591,12 @@ export default function Home() {
               deliverToError={SearchFormErrors.deliverTo}
               duration={duration}
               setDuration={setDuration}
+            />
+            {/* Transport Mode Selector */}
+            <TransportModeSelector onModeChange={handleModeChange} />
+            {/* Payment Option Selector */}
+            <PaymentOptionSelector
+              onPaymentOptionChange={handlePaymentOptionChange}
             />
             <DeliveryPeople
               deliveryPeople={deliveryPeople}
