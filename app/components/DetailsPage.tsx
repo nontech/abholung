@@ -6,11 +6,13 @@ import ContinueButton from "./ContinueButton";
 interface DetailsPageProps {
   details: DetailsPageType;
   handleDetailsPageSubmission: (submitted: boolean) => void;
+  setDeliveryPerson: () => void;
 }
 
 const DetailsPage: React.FC<DetailsPageProps> = ({
   details,
   handleDetailsPageSubmission,
+  setDeliveryPerson,
 }) => {
   // From & To Addresses
   const mapData = details.mapData;
@@ -53,8 +55,7 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
   const productData = details.productData;
   if (productData) productTitle = productData.title;
 
-  // Delivery Info
-  const deliveryPerson = details.deliveryPerson;
+  // Delivery Person will be matched based on the mode of transport
 
   // Total Price
   const totalPrice = details.totalPrice;
@@ -420,10 +421,10 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
             <p className="text-gray-700">
               <strong>Time:</strong> {selectedTime || "N/A"}
             </p>
-            <p className="text-gray-700">
+            {/* <p className="text-gray-700">
               <strong>Delivery Person:</strong>{" "}
               {deliveryPerson?.full_name || "N/A"}
-            </p>
+            </p> */}
             <p className="text-gray-700">
               <strong>Total Price:</strong> EUR {totalPrice || "N/A"}
             </p>

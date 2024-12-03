@@ -1,22 +1,22 @@
 "use client";
 
 // Import React & Next stuff
-import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 
 // Import types
-import type { ProductData, MapData, Place } from "../types/common";
-import {
-  DeliveryDetails,
-  DetailsPageType,
-  DeliveryPerson,
-} from "../types/common";
 import { Database } from "@/types/supabase-types";
+import type {
+  DeliveryPerson,
+  MapData,
+  Place,
+  ProductData,
+} from "../types/common";
+import { DeliveryDetails, DetailsPageType } from "../types/common";
 
 // Import database operations
 import {
-  fetchDeliveryPeople,
   saveDeliverUserToDatabase,
   saveLocationToDatabase,
   saveLogisticsToDatabase,
@@ -31,23 +31,22 @@ import Header from "./components/Header";
 import ProgressBar from "./components/ProgressBar";
 
 // Import buttons
-import ContinueButton from "./components/ContinueButton";
 import BackButton from "./components/BackButton";
+import ContinueButton from "./components/ContinueButton";
 
 // Import components
 import ProductInfo from "./components/ProductInfo";
 // import DateInput from "./components/DateInput";
-import TimePicker from "./components/TimePicker";
-import TransportRoute from "./components/TransportRoute";
-import PriceInfo from "./components/PriceInfo";
-import TypeOfService from "./components/TypeOfService";
-import DeliveryPeople from "./components/DeliveryPeople";
 import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
+import PriceInfo from "./components/PriceInfo";
+import TimePicker from "./components/TimePicker";
+import TransportRoute from "./components/TransportRoute";
+import TypeOfService from "./components/TypeOfService";
 
 // Import pages
-import SummaryPage from "./components/SummaryPage";
 import DetailsPage from "./components/DetailsPage";
+import SummaryPage from "./components/SummaryPage";
 
 // Experimental
 // import StageButtons from './components/StageButtons';
@@ -84,9 +83,6 @@ export default function Home() {
     return initialDate;
   });
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [deliveryPeople, setDeliveryPeople] = useState<DeliveryPerson[]>([]);
-  const [selectedDeliveryPerson, setSelectedDeliveryPerson] =
-    useState<DeliveryPerson | null>(null);
 
   // Pickup from details
   const [pickupFromName, setPickupFromName] = useState<string>("");
@@ -102,6 +98,9 @@ export default function Home() {
   const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>("");
   const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] =
     useState<string>("");
+
+  // Set Messenger
+  const [deliveryPerson, setDeliveryPerson] = useState<DeliveryPerson>();
 
   // Transport route details
   const [origin, setOrigin] = useState<Place>({ address: "", latLng: null });
@@ -120,7 +119,6 @@ export default function Home() {
     deliverTo: "",
     pickupOn: "",
     pickupBetween: "",
-    deliveryBy: "",
   });
 
   const [totalPrice, setTotalPrice] = useState<number>(0);
@@ -130,19 +128,9 @@ export default function Home() {
 
   const [orderId, setOrderId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchDeliveryPeople();
-      setDeliveryPeople(data);
-    };
-
-    fetchData();
-  }, []);
-
   // Reset form errors and selected delivery person when price changes
   useEffect(() => {
     setTotalPrice(0);
-    setSelectedDeliveryPerson(null);
   }, [price]);
 
   const saveOrderToDb = async () => {
@@ -169,7 +157,7 @@ export default function Home() {
         deliverUserId,
         productId,
         logisticId,
-        selectedDeliveryPerson!,
+        deliveryPerson!,
         selectedDate!,
         selectedTime,
         serviceType,
@@ -317,7 +305,6 @@ export default function Home() {
     onDeliverToPhoneNumberChange: setdeliverPhoneNumber,
     onAdditionalDeliveryInstructionsChange: setAdditionaldeliveryInstructions,
     productData: productData!,
-    deliveryPerson: selectedDeliveryPerson,
     totalPrice: totalPrice,
     onEdit: setStage,
   };
@@ -331,9 +318,6 @@ export default function Home() {
       deliverTo: !mapData?.to?.trim() ? "Delivery To is required" : "",
       pickupOn: !selectedDate ? "Pickup On is required" : "",
       pickupBetween: !selectedTime ? "Pickup Between is required" : "",
-      deliveryBy: !selectedDeliveryPerson
-        ? "Please select a delivery person"
-        : "",
     };
 
     setSearchFormErrors(newErrors);
@@ -536,19 +520,6 @@ export default function Home() {
               duration={duration}
               setDuration={setDuration}
             />
-            <DeliveryPeople
-              deliveryPeople={deliveryPeople}
-              price={price}
-              setTotalPrice={setTotalPrice}
-              onSelect={(person) => {
-                setSelectedDeliveryPerson(person);
-                setSearchFormErrors((prevErrors) => ({
-                  ...prevErrors,
-                  deliveryBy: "",
-                }));
-              }}
-              deliveryByError={SearchFormErrors.deliveryBy}
-            />
             <div className="mt-4 lg:hidden">
               <PriceInfo
                 setPrice={setPrice}
@@ -601,6 +572,7 @@ export default function Home() {
         <DetailsPage
           details={detailsPageProps}
           handleDetailsPageSubmission={handleDetailsPageSubmission}
+          setDeliveryPerson={() => setDeliveryPerson}
         />
       )}
       {stage === 3 && (

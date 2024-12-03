@@ -63,6 +63,39 @@ export type Database = {
         }
         Relationships: []
       }
+      messengers: {
+        Row: {
+          address: string | null
+          created_at: string
+          full_name: string | null
+          id: number
+          mode_of_transport:
+            | Database["public"]["Enums"]["mode_of_transport"][]
+            | null
+          phone_number: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: number
+          mode_of_transport?:
+            | Database["public"]["Enums"]["mode_of_transport"][]
+            | null
+          phone_number?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: number
+          mode_of_transport?:
+            | Database["public"]["Enums"]["mode_of_transport"][]
+            | null
+          phone_number?: string | null
+        }
+        Relationships: []
+      }
       order: {
         Row: {
           created_at: string
@@ -243,6 +276,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      mode_of_transport:
+        | "bike"
+        | "car"
+        | "public transport"
+        | "truck"
+        | "cargo bike"
+        | "other"
       order_status:
         | "order_pending_payment"
         | "order_processing"
