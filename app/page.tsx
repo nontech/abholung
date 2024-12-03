@@ -147,8 +147,7 @@ export default function Home() {
 
   // Calculate total price whenever dependencies change
   useEffect(() => {
-    // Cap the base price at 20€
-    let total = Math.min(basePrice, 20);
+    let total = basePrice;
 
     // Add product value surcharge
     const productPriceFloat = productData?.price
@@ -172,7 +171,7 @@ export default function Home() {
       }
     }
 
-    setTotalPrice(total); // No cap on total price
+    setTotalPrice(Math.min(total, 20));
   }, [basePrice, productData?.price, selectedDate]);
 
   const saveOrderToDb = async () => {
