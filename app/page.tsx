@@ -39,8 +39,10 @@ import ProductInfo from "./components/ProductInfo";
 // import DateInput from "./components/DateInput";
 import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
+import PaymentOptionSelector from "./components/PaymentArrangementSelector";
 import PriceInfo from "./components/PriceInfo";
 import TimePicker from "./components/TimePicker";
+import TransportModeSelector from "./components/TransportModeSelector";
 import TransportRoute from "./components/TransportRoute";
 import TypeOfService from "./components/TypeOfService";
 
@@ -71,7 +73,9 @@ type OrderAll = Order & {
   placed_by: Users;
 };
 
-const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
+const Confetti = dynamic(() => import("react-confetti"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
@@ -83,6 +87,8 @@ export default function Home() {
     return initialDate;
   });
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedDeliveryPerson, setSelectedDeliveryPerson] =
+    useState<DeliveryPerson | null>(null);
 
   // Pickup from details
   const [pickupFromName, setPickupFromName] = useState<string>("");
@@ -103,7 +109,10 @@ export default function Home() {
   const [deliveryPerson, setDeliveryPerson] = useState<DeliveryPerson>();
 
   // Transport route details
-  const [origin, setOrigin] = useState<Place>({ address: "", latLng: null });
+  const [origin, setOrigin] = useState<Place>({
+    address: "",
+    latLng: null,
+  });
   const [destination, setDestination] = useState<Place>({
     address: "",
     latLng: null,
@@ -378,6 +387,20 @@ export default function Home() {
     }));
   }, []);
 
+  const handleModeChange = (mode: string, needsExtraHelper?: boolean) => {
+    console.log("Selected mode:", mode);
+    console.log("Needs extra helper:", needsExtraHelper);
+    // Handle the mode change and extra helper requirement here
+  };
+
+  const handlePaymentOptionChange = (isItemPaidAlready: boolean) => {
+    console.log(
+      "Payment option:",
+      isItemPaidAlready ? "prepaid" : "kk payment"
+    );
+    // setIsItemPaidAlready(isItemPaidAlready);
+  };
+
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
       <Header />
@@ -520,6 +543,13 @@ export default function Home() {
               duration={duration}
               setDuration={setDuration}
             />
+            {/* Transport Mode Selector */}
+            <TransportModeSelector onModeChange={handleModeChange} />
+            {/* Payment Option Selector */}
+            <PaymentOptionSelector
+              onPaymentOptionChange={handlePaymentOptionChange}
+            />
+
             <div className="mt-4 lg:hidden">
               <PriceInfo
                 setPrice={setPrice}
