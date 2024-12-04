@@ -91,7 +91,8 @@ export type TransportMode =
   | "bicycle"
   | "public transport"
   | "truck"
-  | "cargo bike";
+  | "cargo bike"
+  | "other";
 
 export interface TransportModeData {
   mode: TransportMode;

@@ -2,16 +2,16 @@ import React, { useState } from "react";
 
 interface PaymentOptionSelectorProps {
   onPaymentOptionChange: (isPrepaid: boolean) => void;
+  initialValue: boolean;
 }
 
 const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
   onPaymentOptionChange,
+  initialValue,
 }) => {
-  const [isPrepaid, setIsPrepaid] = useState<boolean>(true);
+  const [isPrepaid, setIsPrepaid] = useState<boolean>(initialValue);
 
-  const handleOptionChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value === "prepaid";
     setIsPrepaid(value);
     onPaymentOptionChange(value);
@@ -41,8 +41,8 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
             className="form-radio h-4 w-4 text-blue-600 hidden"
           />
           <span className="font-medium text-gray-700">
-            I&apos;ve already paid for the product. Please pickup &
-            deliver it to me.
+            I&apos;ve already paid for the product. Please pickup & deliver it
+            to me.
           </span>
           {isPrepaid && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -80,8 +80,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
               className="form-radio h-4 w-4 text-blue-600 hidden"
             />
             <span className="font-medium text-gray-700">
-              I would like you to handle payment, including price of
-              the item
+              I would like you to handle payment, including price of the item
             </span>
             {!isPrepaid && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -125,8 +124,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
                 ></path>
               </svg>
               <p className="text-sm text-yellow-700">
-                We&apos;ll have a video call for you to verify the
-                product
+                We&apos;ll have a video call for you to verify the product
               </p>
             </div>
           </div>

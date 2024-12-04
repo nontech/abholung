@@ -8,6 +8,7 @@ interface PriceInfoProps {
   deliveryDate: Date | null;
   isItemPaidAlready?: boolean;
   transportMode?: string;
+  needsExtraHelper?: boolean;
 }
 
 interface PriceDetailProps {
@@ -71,6 +72,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
   deliveryDate,
   isItemPaidAlready = true,
   transportMode,
+  needsExtraHelper = false,
 }) => {
   const productPriceFloat = productPrice
     ? parseFloat(productPrice.replace("€", "").trim())
@@ -110,7 +112,15 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
     }
   };
 
+  const getHelperCost = (): number => {
+    if (!duration || !needsExtraHelper) return 0;
+    const HELPER_RATE = 15;
+    const timeSavedHours = calculateTimeSaved(duration) / 60;
+    return HELPER_RATE * timeSavedHours;
+  };
+
   const vehicleCost = getVehicleCost();
+  const helperCost = getHelperCost();
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">
@@ -120,7 +130,13 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
       <div className="space-y-3">
         <PriceDetail
           label="Delivery Price"
-          amount={basePrice + productSurcharge + urgencySurcharge + vehicleCost}
+          amount={
+            basePrice +
+            productSurcharge +
+            urgencySurcharge +
+            vehicleCost +
+            helperCost
+          }
           className="pb-2 border-b border-gray-200"
         />
 

@@ -13,7 +13,6 @@ import type {
   Place,
   ProductData,
   TransportMode,
-  TransportModeData,
 } from "../types/common";
 import { DeliveryDetails, DetailsPageType } from "../types/common";
 
@@ -80,6 +79,9 @@ const Confetti = dynamic(() => import("react-confetti"), {
   ssr: false,
 });
 
+// Add AlertCircle to the imports at the top
+import { AlertCircle } from "lucide-react";
+
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [url, setUrl] = useState<string>("");
@@ -140,7 +142,11 @@ export default function Home() {
 
   const [orderId, setOrderId] = useState<number | null>(null);
 
-  const [transportMode, setTransportMode] = useState<TransportModeData>({
+  const [transportMode, setTransportMode] = useState<{
+    mode: TransportMode;
+    needsExtraHelper: boolean;
+    otherModeText?: string;
+  }>({
     mode: "public transport",
     needsExtraHelper: false,
   });
@@ -190,6 +196,12 @@ export default function Home() {
       const hourlyRate =
         vehicleCosts[transportMode.mode as keyof typeof vehicleCosts] || 0;
       total += hourlyRate * timeSavedHours;
+
+      // Add helper cost if needed
+      if (transportMode.needsExtraHelper) {
+        const HELPER_RATE = 15;
+        total += HELPER_RATE * timeSavedHours;
+      }
     }
 
     setTotalPrice(total);
@@ -200,6 +212,7 @@ export default function Home() {
     isItemPaidAlready,
     duration,
     transportMode.mode,
+    transportMode.needsExtraHelper,
   ]);
 
   const saveOrderToDb = async () => {
@@ -450,11 +463,13 @@ export default function Home() {
 
   const handleModeChange = async (
     mode: TransportMode,
-    needsExtraHelper: boolean
+    needsExtraHelper: boolean,
+    otherModeText?: string
   ) => {
     setTransportMode({
       mode,
       needsExtraHelper,
+      otherModeText: mode === "other" ? otherModeText : undefined,
     });
 
     // Fetch and set delivery person based on transport mode
@@ -466,10 +481,6 @@ export default function Home() {
 
   const handlePaymentOptionChange = (isPaid: boolean) => {
     setIsItemPaidAlready(isPaid);
-    console.log(
-      "Payment handling updated:",
-      isPaid ? "prepaid" : "KK handles payment"
-    );
   };
 
   return (
@@ -554,6 +565,7 @@ export default function Home() {
                       duration={duration}
                       isItemPaidAlready={isItemPaidAlready}
                       transportMode={transportMode.mode}
+                      needsExtraHelper={transportMode.needsExtraHelper}
                     />
                   </div>
                 </div>
@@ -611,11 +623,25 @@ export default function Home() {
               needsExtraHelper={transportMode.needsExtraHelper}
               onModeChange={handleModeChange}
               duration={duration}
+              otherModeText={transportMode.otherModeText}
             />
-            {/* Payment Option Selector */}
-            <PaymentOptionSelector
-              onPaymentOptionChange={handlePaymentOptionChange}
-            />
+            {/* Payment Option Selector or Disclaimer */}
+            {serviceType === "buying" ? (
+              <PaymentOptionSelector
+                onPaymentOptionChange={handlePaymentOptionChange}
+                initialValue={isItemPaidAlready}
+              />
+            ) : (
+              <div className="p-6 bg-white rounded-lg shadow-md mb-6">
+                <div className="flex items-center space-x-2 text-amber-600">
+                  <AlertCircle className="h-5 w-5" />
+                  <span className="font-medium">Payment Reminder</span>
+                </div>
+                <p className="mt-2 text-gray-600">
+                  Make sure the payment for item has been done by the buyer
+                </p>
+              </div>
+            )}
 
             <div className="mt-4 lg:hidden">
               <PriceInfo
@@ -626,6 +652,7 @@ export default function Home() {
                 duration={duration}
                 isItemPaidAlready={isItemPaidAlready}
                 transportMode={transportMode.mode}
+                needsExtraHelper={transportMode.needsExtraHelper}
               />
             </div>
             {/* Open the modal using document.getElementById('ID').showModal() method */}

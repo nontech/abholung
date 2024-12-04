@@ -1,18 +1,31 @@
-import React from 'react';
+import { ArrowRight } from "lucide-react";
 
 interface ContinueButtonProps {
   onClick: () => void;
   isEnabled: boolean;
 }
 
-const ContinueButton: React.FC<ContinueButtonProps> = ({ onClick, isEnabled }) => {
+const ContinueButton: React.FC<ContinueButtonProps> = ({
+  onClick,
+  isEnabled,
+}) => {
   return (
     <button
       onClick={onClick}
-      className={`mt-4 bg-green-500 text-white px-4 py-2 rounded ${!isEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       disabled={!isEnabled}
+      className={`
+        flex items-center justify-center space-x-2
+        px-8 py-3 rounded-lg font-medium text-base
+        transition-all duration-200 transform
+        ${
+          isEnabled
+            ? "bg-green-600 text-white hover:bg-green-700 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+        }
+      `}
     >
-      Continue
+      <span>Continue</span>
+      <ArrowRight className="w-5 h-5" />
     </button>
   );
 };

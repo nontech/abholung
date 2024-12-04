@@ -1,13 +1,18 @@
 import { TransportMode } from "@/types/common";
-import { Bike, Car, Train, Truck } from "lucide-react";
-import React, { useState } from "react";
+import { Bike, Car, PersonStanding, Train, Truck } from "lucide-react";
+import React from "react";
 import { calculateTimeSaved } from "./PriceInfo";
 
 interface TransportModeSelectorProps {
   selectedMode: TransportMode;
   needsExtraHelper: boolean;
-  onModeChange: (mode: TransportMode, needsExtraHelper: boolean) => void;
+  onModeChange: (
+    mode: TransportMode,
+    needsExtraHelper: boolean,
+    otherModeText?: string
+  ) => void;
   duration: string | null;
+  otherModeText?: string;
 }
 
 const CargoBikeIcon = () => (
@@ -27,20 +32,29 @@ const CargoBikeIcon = () => (
   </svg>
 );
 
+const HELPER_HOURLY_RATE = 15;
+
 const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
   selectedMode,
   needsExtraHelper,
   onModeChange,
   duration,
+  otherModeText,
 }) => {
-  const [otherModeText, setOtherModeText] = useState("");
-
   const calculateVehicleCost = (hourlyRate: number | null): string | null => {
     if (!duration || !hourlyRate) return null;
 
     const timeSavedHours = calculateTimeSaved(duration) / 60;
-    const cost = Math.round(hourlyRate * timeSavedHours);
-    return cost > 0 ? `+${cost}€` : null;
+    const vehicleCost = Math.round(hourlyRate * timeSavedHours);
+    return vehicleCost > 0 ? `+${vehicleCost}€` : null;
+  };
+
+  const calculateHelperCost = (): string | null => {
+    if (!duration) return null;
+
+    const timeSavedHours = calculateTimeSaved(duration) / 60;
+    const helperCost = Math.round(HELPER_HOURLY_RATE * timeSavedHours);
+    return helperCost > 0 ? `(+${helperCost}€)` : null;
   };
 
   const transportOptions = [
@@ -79,16 +93,25 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
       color: "yellow",
       hourlyRate: 50,
     },
+    {
+      value: "other" as TransportMode,
+      label: "Other",
+      icon: null,
+      color: "gray",
+      hourlyRate: null,
+    },
   ];
+
+  const helperCost = calculateHelperCost();
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md mb-6">
       <h3 className="text-xl font-semibold mb-6 text-gray-800">
-        Select mode of transport
+        Choose your delivery method
       </h3>
       <div className="grid grid-cols-2 gap-4">
         {transportOptions.map((option) => {
-          const cost = calculateVehicleCost(option.hourlyRate);
+          const vehicleCost = calculateVehicleCost(option.hourlyRate);
           return (
             <label
               key={option.value}
@@ -105,7 +128,9 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                 type="radio"
                 value={option.value}
                 checked={selectedMode === option.value}
-                onChange={() => onModeChange(option.value, needsExtraHelper)}
+                onChange={() =>
+                  onModeChange(option.value, needsExtraHelper, otherModeText)
+                }
                 className="form-radio h-4 w-4 text-blue-600 hidden"
               />
               <div className="flex flex-col w-full">
@@ -134,11 +159,13 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    {cost && (
-                      <span className="text-sm font-medium text-green-600">
-                        {cost}
-                      </span>
-                    )}
+                    <div className="flex flex-col items-end">
+                      {vehicleCost && (
+                        <span className="text-sm font-medium text-green-600">
+                          {vehicleCost}
+                        </span>
+                      )}
+                    </div>
                     {selectedMode === option.value && (
                       <svg
                         className="w-5 h-5 text-blue-500"
@@ -154,25 +181,58 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                     )}
                   </div>
                 </div>
+                {selectedMode === "other" && option.value === "other" && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      value={otherModeText || ""}
+                      onChange={(e) =>
+                        onModeChange("other", needsExtraHelper, e.target.value)
+                      }
+                      placeholder="Please specify transport mode"
+                      className="w-full p-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
               </div>
             </label>
           );
         })}
       </div>
 
-      {(selectedMode === "truck" || selectedMode === "car") && (
-        <div className="mt-8 flex justify-center">
-          <label className="flex items-center space-x-2 text-gray-700 cursor-pointer">
+      <div className="mt-8">
+        <div className="flex flex-col items-center">
+          <label
+            className="flex items-center p-4 rounded-lg border-2 cursor-pointer w-full max-w-md hover:bg-gray-50 transition-all duration-200
+            ${needsExtraHelper ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+          >
             <input
               type="checkbox"
               checked={needsExtraHelper}
               onChange={(e) => onModeChange(selectedMode, e.target.checked)}
               className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
             />
-            <span>Need an extra person to carry stuff</span>
+            <div className="ml-3 flex-grow">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <PersonStanding className="w-5 h-5" />
+                  <div>
+                    <p className="font-medium text-gray-900">Add a Helper</p>
+                    <p className="text-sm text-gray-500">
+                      Get assistance with heavy or bulky items
+                    </p>
+                  </div>
+                </div>
+                {helperCost && (
+                  <span className="text-sm font-medium text-green-600 ml-2">
+                    {helperCost}
+                  </span>
+                )}
+              </div>
+            </div>
           </label>
         </div>
-      )}
+      </div>
     </div>
   );
 };
