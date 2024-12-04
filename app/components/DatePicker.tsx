@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  addDays,
-  format,
-  isAfter,
-  isBefore,
-  startOfDay,
-} from "date-fns";
+import { addDays, format, isBefore, startOfDay } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -27,19 +21,15 @@ export default function DatePicker({
 }) {
   const today = startOfDay(new Date());
   const minDate = addDays(today, 1);
-  const maxDate = addDays(today, 3);
 
   const isDateInRange = (date: Date) => {
     const start = startOfDay(minDate);
-    const end = startOfDay(maxDate);
-    return !isBefore(date, start) && !isAfter(date, end);
+    return !isBefore(date, start);
   };
 
   return (
     <div>
-      <div className="block text-gray-600 font-bold mb-2">
-        Pickup On
-      </div>
+      <div className="block text-gray-600 font-bold mb-2">Pickup On</div>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -50,11 +40,7 @@ export default function DatePicker({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? (
-              format(date, "EEE, d MMM yyyy")
-            ) : (
-              <span>Pick a date</span>
-            )}
+            {date ? format(date, "EEE, d MMM yyyy") : <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -72,7 +58,6 @@ export default function DatePicker({
             disabled={(date) => !isDateInRange(date)}
             defaultMonth={minDate}
             fromDate={minDate}
-            toDate={maxDate}
             initialFocus
           />
         </PopoverContent>
