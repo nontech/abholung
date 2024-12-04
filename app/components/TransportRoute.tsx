@@ -5,7 +5,7 @@ import {
   GoogleMap,
 } from "@react-google-maps/api";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { calculateTimeSaved } from "./PriceInfo";
+import { calculateTimeSaved, formatTimeSaved } from "./PriceInfo";
 
 const mapContainerStyle = {
   width: "100%",
@@ -177,13 +177,6 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
         from: origin.address,
         to: destination.address,
       });
-
-      // Calculate base price from time saved
-      if (duration) {
-        const timeSaved = calculateTimeSaved(duration);
-        const basePrice = Math.min(timeSaved * 0.21, 20);
-        setTotalPrice(basePrice); // Set initial price based on time saved only
-      }
     } else {
       setShowMap(false);
     }
@@ -208,6 +201,17 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
       }
     }
   }, [isMapLoaded, mapCenter, mapBounds]);
+
+  useEffect(() => {
+    if (duration) {
+      const timeSavedMinutes = calculateTimeSaved(duration);
+      // Base price calculation: €0.21 per minute saved, capped at €20
+      const basePrice = Math.min(timeSavedMinutes * 0.21, 20);
+      setTotalPrice(basePrice);
+    } else {
+      setTotalPrice(0);
+    }
+  }, [duration, setTotalPrice]);
 
   return (
     <div>
@@ -321,7 +325,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
               <div>
                 <h3 className="text-lg font-semibold mb-1">Time Saved</h3>
                 <p className="text-3xl font-bold">
-                  {calculateTimeSaved(duration)}
+                  {formatTimeSaved(calculateTimeSaved(duration))}
                 </p>
               </div>
               <div className="text-right">

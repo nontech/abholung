@@ -145,6 +145,8 @@ export default function Home() {
     needsExtraHelper: false,
   });
 
+  const [isItemPaidAlready, setIsItemPaidAlready] = useState(true);
+
   // Calculate total price whenever dependencies change
   useEffect(() => {
     let total = basePrice;
@@ -153,6 +155,13 @@ export default function Home() {
     const productPriceFloat = productData?.price
       ? parseFloat(productData.price.replace("€", "").trim())
       : 0;
+
+    // Add product price if KK is handling payment
+    if (!isItemPaidAlready) {
+      total += productPriceFloat;
+    }
+
+    // Add product value surcharge
     if (productPriceFloat > 120) {
       total += productPriceFloat * 0.1;
     }
@@ -171,8 +180,8 @@ export default function Home() {
       }
     }
 
-    setTotalPrice(Math.min(total, 20));
-  }, [basePrice, productData?.price, selectedDate]);
+    setTotalPrice(total);
+  }, [basePrice, productData?.price, selectedDate, isItemPaidAlready]);
 
   const saveOrderToDb = async () => {
     const pickupUserId = await savePickupUserToDatabase(
@@ -436,12 +445,12 @@ export default function Home() {
     }
   };
 
-  const handlePaymentOptionChange = (isItemPaidAlready: boolean) => {
+  const handlePaymentOptionChange = (isPaid: boolean) => {
+    setIsItemPaidAlready(isPaid);
     console.log(
-      "Payment option:",
-      isItemPaidAlready ? "prepaid" : "kk payment"
+      "Payment handling updated:",
+      isPaid ? "prepaid" : "KK handles payment"
     );
-    // setIsItemPaidAlready(isItemPaidAlready);
   };
 
   return (
@@ -524,6 +533,7 @@ export default function Home() {
                       productPrice={productData?.price || ""}
                       deliveryDate={selectedDate}
                       duration={duration}
+                      isItemPaidAlready={isItemPaidAlready}
                     />
                   </div>
                 </div>
@@ -593,6 +603,7 @@ export default function Home() {
                 productPrice={productData?.price || ""}
                 deliveryDate={selectedDate}
                 duration={duration}
+                isItemPaidAlready={isItemPaidAlready}
               />
             </div>
             {/* Open the modal using document.getElementById('ID').showModal() method */}

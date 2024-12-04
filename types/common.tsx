@@ -97,3 +97,12 @@ export interface TransportModeData {
   mode: TransportMode;
   needsExtraHelper: boolean;
 }
+
+export interface PriceInfoProps {
+  duration: string | null;
+  productPrice: string | null;
+  totalPrice: number;
+  basePrice: number;
+  deliveryDate: Date | null;
+  isItemPaidAlready?: boolean;
+}
