@@ -610,6 +610,7 @@ export default function Home() {
               selectedMode={transportMode.mode}
               needsExtraHelper={transportMode.needsExtraHelper}
               onModeChange={handleModeChange}
+              duration={duration}
             />
             {/* Payment Option Selector */}
             <PaymentOptionSelector

@@ -119,8 +119,8 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
       </h2>
       <div className="space-y-3">
         <PriceDetail
-          label="Base Price"
-          amount={basePrice}
+          label="Delivery Price"
+          amount={basePrice + productSurcharge + urgencySurcharge + vehicleCost}
           className="pb-2 border-b border-gray-200"
         />
 
@@ -129,24 +129,6 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
             label="Item Price"
             amount={productPriceFloat}
             className="pb-2 border-b border-gray-200"
-          />
-        )}
-
-        {productSurcharge > 0 && (
-          <PriceDetail
-            label="Product Value Surcharge"
-            amount={productSurcharge}
-          />
-        )}
-
-        {urgencySurcharge > 0 && (
-          <PriceDetail label="Urgency Surcharge" amount={urgencySurcharge} />
-        )}
-
-        {vehicleCost > 0 && (
-          <PriceDetail
-            label={`Vehicle Cost (${transportMode})`}
-            amount={vehicleCost}
           />
         )}
 

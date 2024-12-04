@@ -1,11 +1,13 @@
 import { TransportMode } from "@/types/common";
 import { Bike, Car, Train, Truck } from "lucide-react";
 import React, { useState } from "react";
+import { calculateTimeSaved } from "./PriceInfo";
 
 interface TransportModeSelectorProps {
   selectedMode: TransportMode;
   needsExtraHelper: boolean;
   onModeChange: (mode: TransportMode, needsExtraHelper: boolean) => void;
+  duration: string | null;
 }
 
 const CargoBikeIcon = () => (
@@ -29,8 +31,17 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
   selectedMode,
   needsExtraHelper,
   onModeChange,
+  duration,
 }) => {
   const [otherModeText, setOtherModeText] = useState("");
+
+  const calculateVehicleCost = (hourlyRate: number | null): string | null => {
+    if (!duration || !hourlyRate) return null;
+
+    const timeSavedHours = calculateTimeSaved(duration) / 60;
+    const cost = Math.round(hourlyRate * timeSavedHours);
+    return cost > 0 ? `+${cost}€` : null;
+  };
 
   const transportOptions = [
     {
@@ -38,30 +49,35 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
       label: "Public Transport",
       icon: <Train className="w-6 h-6" />,
       color: "blue",
+      hourlyRate: null,
     },
     {
       value: "bicycle" as TransportMode,
       label: "Bicycle",
       icon: <Bike className="w-6 h-6" />,
       color: "green",
+      hourlyRate: null,
     },
     {
       value: "cargo bike" as TransportMode,
       label: "Cargo Bike",
       icon: <CargoBikeIcon />,
       color: "green",
+      hourlyRate: 10,
     },
     {
       value: "car" as TransportMode,
       label: "Car",
       icon: <Car className="w-6 h-6" />,
       color: "red",
+      hourlyRate: 30,
     },
     {
       value: "truck" as TransportMode,
       label: "Truck",
       icon: <Truck className="w-6 h-6" />,
       color: "yellow",
+      hourlyRate: 50,
     },
   ];
 
@@ -71,70 +87,79 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
         Select mode of transport
       </h3>
       <div className="grid grid-cols-2 gap-4">
-        {transportOptions.map((option) => (
-          <label
-            key={option.value}
-            className={`
-              relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
-              ${
-                selectedMode === option.value
-                  ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500 ring-opacity-50"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-              }
-            `}
-          >
-            <input
-              type="radio"
-              value={option.value}
-              checked={selectedMode === option.value}
-              onChange={() => onModeChange(option.value, needsExtraHelper)}
-              className="form-radio h-4 w-4 text-blue-600 hidden"
-            />
-            <div className="flex flex-col w-full">
-              <div className="flex items-center space-x-3">
-                <div
-                  className={`${
-                    selectedMode === option.value
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  }`}
-                >
-                  {option.icon}
+        {transportOptions.map((option) => {
+          const cost = calculateVehicleCost(option.hourlyRate);
+          return (
+            <label
+              key={option.value}
+              className={`
+                relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
+                ${
+                  selectedMode === option.value
+                    ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500 ring-opacity-50"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }
+              `}
+            >
+              <input
+                type="radio"
+                value={option.value}
+                checked={selectedMode === option.value}
+                onChange={() => onModeChange(option.value, needsExtraHelper)}
+                className="form-radio h-4 w-4 text-blue-600 hidden"
+              />
+              <div className="flex flex-col w-full">
+                <div className="flex items-center justify-between space-x-3">
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className={`${
+                        selectedMode === option.value
+                          ? "text-blue-600"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {option.icon}
+                    </div>
+                    <span
+                      className={`
+                        font-medium
+                        ${
+                          selectedMode === option.value
+                            ? "text-blue-700"
+                            : "text-gray-700"
+                        }
+                      `}
+                    >
+                      {option.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {cost && (
+                      <span className="text-sm font-medium text-green-600">
+                        {cost}
+                      </span>
+                    )}
+                    {selectedMode === option.value && (
+                      <svg
+                        className="w-5 h-5 text-blue-500"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    )}
+                  </div>
                 </div>
-                <span
-                  className={`
-                    font-medium
-                    ${
-                      selectedMode === option.value
-                        ? "text-blue-700"
-                        : "text-gray-700"
-                    }
-                  `}
-                >
-                  {option.label}
-                </span>
               </div>
-            </div>
-            {selectedMode === option.value && (
-              <div className="absolute right-4 top-4">
-                <svg
-                  className="w-5 h-5 text-blue-500"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-            )}
-          </label>
-        ))}
+            </label>
+          );
+        })}
       </div>
 
-      {/* Extra helper checkbox for car and truck options */}
       {(selectedMode === "truck" || selectedMode === "car") && (
         <div className="mt-8 flex justify-center">
           <label className="flex items-center space-x-2 text-gray-700 cursor-pointer">
