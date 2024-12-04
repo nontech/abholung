@@ -162,6 +162,11 @@ export default function Home() {
 
   const [isItemPaidAlready, setIsItemPaidAlready] = useState(true);
 
+  // Add state for the costs
+  const [vehicleCost, setVehicleCost] = useState<number>(0);
+  const [helperCost, setHelperCost] = useState<number>(0);
+  const [urgencySurcharge, setUrgencySurcharge] = useState<number>(0);
+
   // Calculate total price whenever dependencies change
   useEffect(() => {
     let total = basePrice;
@@ -181,20 +186,7 @@ export default function Home() {
       total += productPriceFloat * 0.1;
     }
 
-    // Add urgency surcharge
-    if (selectedDate) {
-      const daysFromNow = Math.ceil(
-        (selectedDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      if (daysFromNow === 2) {
-        total += 2;
-      } else if (daysFromNow === 1) {
-        total += 5;
-      }
-    }
-
-    // Add vehicle cost
+    // Calculate and set vehicle cost
     if (duration && transportMode.mode) {
       const timeSavedHours = calculateTimeSaved(duration) / 60;
       const vehicleCosts = {
@@ -204,13 +196,35 @@ export default function Home() {
       };
       const hourlyRate =
         vehicleCosts[transportMode.mode as keyof typeof vehicleCosts] || 0;
-      total += hourlyRate * timeSavedHours;
+      const calculatedVehicleCost = hourlyRate * timeSavedHours;
+      setVehicleCost(calculatedVehicleCost);
+      total += calculatedVehicleCost;
 
-      // Add helper cost if needed
+      // Calculate and set helper cost
       if (transportMode.needsExtraHelper) {
         const HELPER_RATE = 15;
-        total += HELPER_RATE * timeSavedHours;
+        const calculatedHelperCost = HELPER_RATE * timeSavedHours;
+        setHelperCost(calculatedHelperCost);
+        total += calculatedHelperCost;
+      } else {
+        setHelperCost(0);
       }
+    }
+
+    // Calculate and set urgency surcharge
+    let calculatedUrgencySurcharge = 0;
+    if (selectedDate) {
+      const daysFromNow = Math.ceil(
+        (selectedDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysFromNow === 2) {
+        calculatedUrgencySurcharge = 2;
+      } else if (daysFromNow === 1) {
+        calculatedUrgencySurcharge = 5;
+      }
+      setUrgencySurcharge(calculatedUrgencySurcharge);
+      total += calculatedUrgencySurcharge;
     }
 
     setTotalPrice(total);
@@ -255,7 +269,12 @@ export default function Home() {
         selectedTime,
         serviceType,
         totalPrice,
-        paymentDone
+        false, // paymentDone
+        isItemPaidAlready,
+        isItemPaidAlready ? parseGermanPrice(productData!.price!) : null,
+        vehicleCost,
+        helperCost,
+        urgencySurcharge
       );
       return orderId;
     }
@@ -584,6 +603,9 @@ export default function Home() {
                       isItemPaidAlready={isItemPaidAlready}
                       transportMode={transportMode.mode}
                       needsExtraHelper={transportMode.needsExtraHelper}
+                      vehicleCost={vehicleCost}
+                      helperCost={helperCost}
+                      urgencySurcharge={urgencySurcharge}
                     />
                   </div>
                 </div>
@@ -671,6 +693,9 @@ export default function Home() {
                 isItemPaidAlready={isItemPaidAlready}
                 transportMode={transportMode.mode}
                 needsExtraHelper={transportMode.needsExtraHelper}
+                vehicleCost={vehicleCost}
+                helperCost={helperCost}
+                urgencySurcharge={urgencySurcharge}
               />
             </div>
             {/* Open the modal using document.getElementById('ID').showModal() method */}

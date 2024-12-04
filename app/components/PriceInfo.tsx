@@ -9,6 +9,9 @@ interface PriceInfoProps {
   isItemPaidAlready?: boolean;
   transportMode?: string;
   needsExtraHelper?: boolean;
+  vehicleCost: number;
+  helperCost: number;
+  urgencySurcharge: number;
 }
 
 interface PriceDetailProps {
@@ -88,52 +91,13 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
   isItemPaidAlready = true,
   transportMode,
   needsExtraHelper = false,
+  vehicleCost,
+  helperCost,
+  urgencySurcharge,
 }) => {
   const productPriceFloat = productPrice ? parseGermanPrice(productPrice) : 0;
-
   const productSurcharge =
     productPriceFloat > 120 ? productPriceFloat * 0.1 : 0;
-
-  const getUrgencySurcharge = (): number => {
-    if (!deliveryDate) return 0;
-    const today = new Date();
-    const daysFromNow = Math.ceil(
-      (deliveryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    if (daysFromNow === 2) return 2;
-    if (daysFromNow === 1) return 5;
-    return 0;
-  };
-
-  const urgencySurcharge = getUrgencySurcharge();
-
-  const getVehicleCost = (): number => {
-    if (!duration || !transportMode) return 0;
-
-    const timeSavedHours = calculateTimeSaved(duration) / 60;
-
-    switch (transportMode) {
-      case "car":
-        return 30 * timeSavedHours;
-      case "truck":
-        return 50 * timeSavedHours;
-      case "cargo bike":
-        return 10 * timeSavedHours;
-      default:
-        return 0;
-    }
-  };
-
-  const getHelperCost = (): number => {
-    if (!duration || !needsExtraHelper) return 0;
-    const HELPER_RATE = 15;
-    const timeSavedHours = calculateTimeSaved(duration) / 60;
-    return HELPER_RATE * timeSavedHours;
-  };
-
-  const vehicleCost = getVehicleCost();
-  const helperCost = getHelperCost();
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">

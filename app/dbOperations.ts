@@ -7,19 +7,6 @@ import {
 } from "@/types/common";
 import { supabase } from "./supabaseClient";
 
-export const fetchDeliveryPeople = async () => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("id, full_name, ratings")
-    .eq("type", "Delivery Person");
-  if (error) {
-    console.error("Error fetching delivery people:", error);
-    return [];
-  } else {
-    return data;
-  }
-};
-
 const upsertUser = async (name: string, email: string, phoneNumber: string) => {
   // Check whether the user email already exists
   const { data: existingUser, error: fetchError } = await supabase
@@ -180,7 +167,12 @@ export const saveOrderToDatabase = async (
   selectedTime: string,
   serviceType: "buying" | "selling",
   totalPrice: number,
-  paymentDone: boolean
+  paymentDone: boolean,
+  is_item_paid: boolean | null,
+  included_item_price: number | null,
+  vehicle_cost: number | null,
+  helper_cost: number | null,
+  urgency_surcharge: number | null
 ) => {
   //Determine placed_by based on the service type
   const placedBy = serviceType === "buying" ? deliverUserId : pickupUserId;
@@ -203,6 +195,11 @@ export const saveOrderToDatabase = async (
         pickup_between: selectedTime,
         status: "order_pending_payment",
         total: totalPrice.toFixed(2).toString(),
+        is_item_paid: is_item_paid,
+        included_item_price: included_item_price?.toFixed(2).toString(),
+        vehicle_cost: vehicle_cost?.toFixed(2).toString(),
+        helper_cost: helper_cost?.toFixed(2).toString(),
+        urgency_surcharge: urgency_surcharge?.toFixed(2).toString(),
       },
     ])
     .select();
