@@ -128,28 +128,27 @@ export const saveLogisticsToDatabase = async (
   additionalDeliveryInstructions: string,
   transportMode: TransportModeData
 ) => {
-  try {
-    const { data, error } = await supabase
-      .from("logistics")
-      .insert([
-        {
-          from: mapData.from,
-          to: mapData.to,
-          distance: mapData.distance,
-          duration: mapData.duration,
-          pickup_instructions: additionalPickupInstructions,
-          delivery_instructions: additionalDeliveryInstructions,
-          transport_mode: transportMode.mode,
-          needs_extra_helper: transportMode.needsExtraHelper,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data.id;
-  } catch (error) {
-    console.error("Error saving logistics:", error);
+  const { data, error } = await supabase
+    .from("logistics")
+    .insert([
+      {
+        from: mapData?.from,
+        to: mapData?.to,
+        from_additional_instructions: additionalPickupInstructions,
+        to_additional_instructions: additionalDeliveryInstructions,
+        mode_of_transport: transportMode.mode,
+        needs_extra_helper: transportMode.needsExtraHelper,
+      },
+    ])
+    .select();
+  if (error) {
+    console.error("Error saving to database:", error);
+    return null;
+  } else {
+    if (data && data.length > 0) {
+      const logisticId = data[0].id;
+      return logisticId;
+    }
     return null;
   }
 };

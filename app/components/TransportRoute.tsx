@@ -176,8 +176,6 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
       onMapDataChange({
         from: origin.address,
         to: destination.address,
-        distance: distance || "",
-        duration: duration || "",
       });
 
       // Calculate base price from time saved
@@ -196,8 +194,6 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
     destination.address,
     fetchDirections,
     onMapDataChange,
-    duration,
-    distance,
   ]);
 
   useEffect(() => {

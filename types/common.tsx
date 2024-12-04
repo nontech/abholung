@@ -37,8 +37,6 @@ export interface DateInputProps {
 export interface MapData {
   from: string;
   to: string;
-  distance: string;
-  duration: string;
 }
 
 export interface DeliveryDetails {
