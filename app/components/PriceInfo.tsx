@@ -126,7 +126,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
 
         {!isItemPaidAlready && (
           <PriceDetail
-            label="Product Price"
+            label="Item Price"
             amount={productPriceFloat}
             className="pb-2 border-b border-gray-200"
           />
@@ -153,7 +153,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
         <PriceDetail
           label="Total Price"
           amount={totalPrice}
-          className="pt-2 border-t border-gray-200 font-bold"
+          className="pt-2 border-t border-gray-200 font-bold text-lg"
         />
       </div>
     </div>

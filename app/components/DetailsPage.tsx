@@ -426,7 +426,8 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
               {deliveryPerson?.full_name || "N/A"}
             </p>
             <p className="text-gray-700">
-              <strong>Total Price:</strong> EUR {totalPrice || "N/A"}
+              <strong>Total Price:</strong>{" "}
+              {totalPrice ? totalPrice.toFixed(2) + "€" : "N/A"}
             </p>
           </div>
         </div>
