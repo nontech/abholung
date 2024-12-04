@@ -82,6 +82,15 @@ const Confetti = dynamic(() => import("react-confetti"), {
 // Add AlertCircle to the imports at the top
 import { AlertCircle } from "lucide-react";
 
+// Add a helper function to parse German price format
+const parseGermanPrice = (price: string): number => {
+  // Remove currency symbol and any whitespace
+  const cleanPrice = price.replace("€", "").trim();
+  // Replace dots (thousand separators) with nothing and comma with dot
+  const standardizedPrice = cleanPrice.replace(".", "").replace(",", ".");
+  return parseFloat(standardizedPrice);
+};
+
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [url, setUrl] = useState<string>("");
@@ -159,7 +168,7 @@ export default function Home() {
 
     // Add product value surcharge
     const productPriceFloat = productData?.price
-      ? parseFloat(productData.price.replace("€", "").trim())
+      ? parseGermanPrice(productData.price)
       : 0;
 
     // Add product price if KK is handling payment AND it's a buying service

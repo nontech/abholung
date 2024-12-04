@@ -17,6 +17,15 @@ interface PriceDetailProps {
   className?: string;
 }
 
+const formatGermanPrice = (price: number): string => {
+  return (
+    price.toLocaleString("de-DE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }) + " €"
+  );
+};
+
 const PriceDetail: React.FC<PriceDetailProps> = ({
   label,
   amount,
@@ -24,9 +33,15 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
 }) => (
   <div className={`flex justify-between items-center ${className || ""}`}>
     <span className="text-gray-600">{label}:</span>
-    <span className="font-medium">{amount.toFixed(2)} €</span>
+    <span className="font-medium">{formatGermanPrice(amount)}</span>
   </div>
 );
+
+const parseGermanPrice = (price: string): number => {
+  const cleanPrice = price.replace("€", "").trim();
+  const standardizedPrice = cleanPrice.replace(".", "").replace(",", ".");
+  return parseFloat(standardizedPrice);
+};
 
 export const formatTimeSaved = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -74,9 +89,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
   transportMode,
   needsExtraHelper = false,
 }) => {
-  const productPriceFloat = productPrice
-    ? parseFloat(productPrice.replace("€", "").trim())
-    : 0;
+  const productPriceFloat = productPrice ? parseGermanPrice(productPrice) : 0;
 
   const productSurcharge =
     productPriceFloat > 120 ? productPriceFloat * 0.1 : 0;
