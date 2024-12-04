@@ -162,8 +162,8 @@ export default function Home() {
       ? parseFloat(productData.price.replace("€", "").trim())
       : 0;
 
-    // Add product price if KK is handling payment
-    if (!isItemPaidAlready) {
+    // Add product price if KK is handling payment AND it's a buying service
+    if (!isItemPaidAlready && serviceType === "buying") {
       total += productPriceFloat;
     }
 
@@ -213,6 +213,7 @@ export default function Home() {
     duration,
     transportMode.mode,
     transportMode.needsExtraHelper,
+    serviceType,
   ]);
 
   const saveOrderToDb = async () => {
@@ -483,6 +484,14 @@ export default function Home() {
     setIsItemPaidAlready(isPaid);
   };
 
+  const handleServiceTypeChange = (type: "buying" | "selling") => {
+    setServiceType(type);
+    // When selling is selected, always set to prepaid and don't allow changes
+    if (type === "selling") {
+      setIsItemPaidAlready(true);
+    }
+  };
+
   return (
     <div className="bg-gray-100 p-5 min-h-screen">
       <Header />
@@ -550,7 +559,7 @@ export default function Home() {
                     </p>
                     <div className="mt-3 lg:mt-4">
                       <TypeOfService
-                        onServiceChange={setServiceType}
+                        onServiceChange={handleServiceTypeChange}
                         serviceType={serviceType}
                       />
                     </div>

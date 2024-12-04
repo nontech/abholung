@@ -72,8 +72,10 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
   const [errors, setErrors] = useState({
     pickupFromName: "",
     pickupFromEmail: "",
+    pickupFromPhone: "",
     deliverToName: "",
     deliverToEmail: "",
+    deliverToPhone: "",
   });
 
   const handlePickupFromNameChange = (name: string) => {
@@ -94,6 +96,16 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
   const handleDeliverToEmailChange = (email: string) => {
     onDeliverToEmailChange(email);
     setErrors((prevErrors) => ({ ...prevErrors, deliverToEmail: "" }));
+  };
+
+  const handlePickupFromPhoneChange = (phone: string) => {
+    onPickupFromPhoneNumberChange(phone);
+    setErrors((prevErrors) => ({ ...prevErrors, pickupFromPhone: "" }));
+  };
+
+  const handleDeliverToPhoneChange = (phone: string) => {
+    onDeliverToPhoneNumberChange(phone);
+    setErrors((prevErrors) => ({ ...prevErrors, deliverToPhone: "" }));
   };
 
   const handleContinue = () => {
@@ -121,29 +133,39 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
     const newErrors = {
       pickupFromName: "",
       pickupFromEmail: "",
+      pickupFromPhone: "",
       deliverToName: "",
       deliverToEmail: "",
+      deliverToPhone: "",
     };
 
     if (!pickupFromName.trim()) {
-      newErrors.pickupFromName = "Pickup name is required";
+      newErrors.pickupFromName = "Seller's name is required";
     }
 
     if (!deliverToName.trim()) {
-      newErrors.deliverToName = "Delivery name is required";
+      newErrors.deliverToName = "Buyer's name is required";
     }
 
     if (serviceType === "selling") {
       if (!pickupFromEmail.trim()) {
-        newErrors.pickupFromEmail = "Pickup email is required";
+        newErrors.pickupFromEmail = "Seller's email is required";
       } else if (!/\S+@\S+\.\S+/.test(pickupFromEmail)) {
         newErrors.pickupFromEmail = "Invalid email format";
       }
+
+      if (!pickupFromPhoneNumber.trim()) {
+        newErrors.pickupFromPhone = "Seller's phone number is required";
+      }
     } else if (serviceType === "buying") {
       if (!deliverToEmail.trim()) {
-        newErrors.deliverToEmail = "Delivery email is required";
+        newErrors.deliverToEmail = "Buyer's email is required";
       } else if (!/\S+@\S+\.\S+/.test(deliverToEmail)) {
         newErrors.deliverToEmail = "Invalid email format";
+      }
+
+      if (!deliverToPhoneNumber.trim()) {
+        newErrors.deliverToPhone = "Buyer's phone number is required";
       }
     }
 
@@ -237,7 +259,11 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
           )}
 
           {/* Pickup Phone Number */}
-          <label className="input input-bordered flex items-center gap-2 mt-4">
+          <label
+            className={`input input-bordered flex items-center gap-2 mt-4 ${
+              errors.pickupFromPhone ? "input-error" : ""
+            }`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -251,14 +277,14 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
               className="grow"
               placeholder="+49 - Phone Number"
               value={pickupFromPhoneNumber}
-              onChange={(e) => onPickupFromPhoneNumberChange(e.target.value)}
+              onChange={(e) => handlePickupFromPhoneChange(e.target.value)}
             />
           </label>
-          {/* Note for user */}
-          <p className="mt-2 text-xs text-gray-500">
-            Please provide the number so we can call/text when picking up the
-            item
-          </p>
+          {errors.pickupFromPhone && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.pickupFromPhone}
+            </p>
+          )}
 
           {/* Extra Pickup Instructions toggle */}
           <div className="mt-2">
@@ -362,7 +388,11 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
           )}
 
           {/* Deliver To Phone Number */}
-          <label className="input input-bordered flex items-center gap-2 mt-4">
+          <label
+            className={`input input-bordered flex items-center gap-2 mt-4 ${
+              errors.deliverToPhone ? "input-error" : ""
+            }`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -376,12 +406,12 @@ const DetailsPage: React.FC<DetailsPageProps> = ({
               className="grow"
               placeholder="+49 - Phone Number"
               value={deliverToPhoneNumber}
-              onChange={(e) => onDeliverToPhoneNumberChange(e.target.value)}
+              onChange={(e) => handleDeliverToPhoneChange(e.target.value)}
             />
           </label>
-          <p className="mt-2 text-xs text-gray-500">
-            Number only for emergency purposes
-          </p>
+          {errors.deliverToPhone && (
+            <p className="text-red-500 text-sm mt-1">{errors.deliverToPhone}</p>
+          )}
 
           {/* Extra Delivery Instructions toggle */}
           <div className="mt-2">
