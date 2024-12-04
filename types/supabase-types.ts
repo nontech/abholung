@@ -38,6 +38,10 @@ export type Database = {
           from: string
           from_additional_instructions: string | null
           id: number
+          mode_of_transport:
+            | Database["public"]["Enums"]["mode_of_transport"]
+            | null
+          needs_extra_helper: boolean | null
           to: string
           to_additional_instructions: string | null
         }
@@ -48,6 +52,10 @@ export type Database = {
           from: string
           from_additional_instructions?: string | null
           id?: number
+          mode_of_transport?:
+            | Database["public"]["Enums"]["mode_of_transport"]
+            | null
+          needs_extra_helper?: boolean | null
           to: string
           to_additional_instructions?: string | null
         }
@@ -58,6 +66,10 @@ export type Database = {
           from?: string
           from_additional_instructions?: string | null
           id?: number
+          mode_of_transport?:
+            | Database["public"]["Enums"]["mode_of_transport"]
+            | null
+          needs_extra_helper?: boolean | null
           to?: string
           to_additional_instructions?: string | null
         }
@@ -166,7 +178,7 @@ export type Database = {
             foreignKeyName: "order_delivered_by_fkey"
             columns: ["delivered_by"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "messengers"
             referencedColumns: ["id"]
           },
           {
@@ -277,7 +289,7 @@ export type Database = {
     }
     Enums: {
       mode_of_transport:
-        | "bike"
+        | "bicycle"
         | "car"
         | "public transport"
         | "truck"
