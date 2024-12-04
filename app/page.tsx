@@ -43,7 +43,7 @@ import ProductInfo from "./components/ProductInfo";
 import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
 import PaymentOptionSelector from "./components/PaymentArrangementSelector";
-import PriceInfo from "./components/PriceInfo";
+import PriceInfo, { calculateTimeSaved } from "./components/PriceInfo";
 import TimePicker from "./components/TimePicker";
 import TransportModeSelector from "./components/TransportModeSelector";
 import TransportRoute from "./components/TransportRoute";
@@ -168,9 +168,8 @@ export default function Home() {
 
     // Add urgency surcharge
     if (selectedDate) {
-      const today = new Date();
       const daysFromNow = Math.ceil(
-        (selectedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        (selectedDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
       );
 
       if (daysFromNow === 2) {
@@ -180,8 +179,28 @@ export default function Home() {
       }
     }
 
+    // Add vehicle cost
+    if (duration && transportMode.mode) {
+      const timeSavedHours = calculateTimeSaved(duration) / 60;
+      const vehicleCosts = {
+        car: 30,
+        truck: 50,
+        "cargo bike": 10,
+      };
+      const hourlyRate =
+        vehicleCosts[transportMode.mode as keyof typeof vehicleCosts] || 0;
+      total += hourlyRate * timeSavedHours;
+    }
+
     setTotalPrice(total);
-  }, [basePrice, productData?.price, selectedDate, isItemPaidAlready]);
+  }, [
+    basePrice,
+    productData?.price,
+    selectedDate,
+    isItemPaidAlready,
+    duration,
+    transportMode.mode,
+  ]);
 
   const saveOrderToDb = async () => {
     const pickupUserId = await savePickupUserToDatabase(
@@ -534,6 +553,7 @@ export default function Home() {
                       deliveryDate={selectedDate}
                       duration={duration}
                       isItemPaidAlready={isItemPaidAlready}
+                      transportMode={transportMode.mode}
                     />
                   </div>
                 </div>
@@ -604,6 +624,7 @@ export default function Home() {
                 deliveryDate={selectedDate}
                 duration={duration}
                 isItemPaidAlready={isItemPaidAlready}
+                transportMode={transportMode.mode}
               />
             </div>
             {/* Open the modal using document.getElementById('ID').showModal() method */}

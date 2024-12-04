@@ -7,6 +7,7 @@ interface PriceInfoProps {
   basePrice: number;
   deliveryDate: Date | null;
   isItemPaidAlready?: boolean;
+  transportMode?: string;
 }
 
 interface PriceDetailProps {
@@ -69,6 +70,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
   basePrice,
   deliveryDate,
   isItemPaidAlready = true,
+  transportMode,
 }) => {
   const productPriceFloat = productPrice
     ? parseFloat(productPrice.replace("€", "").trim())
@@ -90,6 +92,25 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
   };
 
   const urgencySurcharge = getUrgencySurcharge();
+
+  const getVehicleCost = (): number => {
+    if (!duration || !transportMode) return 0;
+
+    const timeSavedHours = calculateTimeSaved(duration) / 60;
+
+    switch (transportMode) {
+      case "car":
+        return 30 * timeSavedHours;
+      case "truck":
+        return 50 * timeSavedHours;
+      case "cargo bike":
+        return 10 * timeSavedHours;
+      default:
+        return 0;
+    }
+  };
+
+  const vehicleCost = getVehicleCost();
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">
@@ -120,6 +141,13 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
 
         {urgencySurcharge > 0 && (
           <PriceDetail label="Urgency Surcharge" amount={urgencySurcharge} />
+        )}
+
+        {vehicleCost > 0 && (
+          <PriceDetail
+            label={`Vehicle Cost (${transportMode})`}
+            amount={vehicleCost}
+          />
         )}
 
         <PriceDetail
