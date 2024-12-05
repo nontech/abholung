@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
-import type { ProductData } from "../../types/common";
+import { ChangeEvent, useState } from "react";
 import { Tooltip } from "react-tooltip";
+import type { ProductData } from "../../types/common";
 
 interface ProductInfoProps {
   onProductFetched: (product: ProductData) => void;
@@ -90,7 +90,7 @@ export default function ProductInfo({
   return (
     <div>
       <div className="flex items-center mb-4">
-        <h1 className="text-xl font-bold text-gray-800">
+        <h1 className="text-lg font-semibold text-gray-800">
           Kleinanzeigen Product Link
         </h1>
         {/* Help Icon */}

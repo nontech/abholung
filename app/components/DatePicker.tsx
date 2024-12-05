@@ -39,8 +39,14 @@ export default function DatePicker({
               !date && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "EEE, d MMM yyyy") : <span>Pick a date</span>}
+            <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+            {date ? (
+              <span className="truncate">
+                {format(date, "EEE, d MMM yyyy")}
+              </span>
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">

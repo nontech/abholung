@@ -97,7 +97,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">
-      <h2 className="text-l font-semibold text-gray-700 mb-4">
+      <h2 className="text-lg font-semibold text-gray-700 mb-4">
         Price Information
       </h2>
       <div className="space-y-3">
@@ -110,14 +110,14 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
             vehicleCost +
             helperCost
           }
-          className="pb-2 border-b border-gray-200"
+          className="pb-2 order-gray-200"
         />
 
         {!isItemPaidAlready && (
           <PriceDetail
             label="Item Price"
             amount={productPriceFloat}
-            className="pb-2 border-b border-gray-200"
+            className="pb-2 border-gray-200"
           />
         )}
 

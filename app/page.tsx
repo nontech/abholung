@@ -539,23 +539,26 @@ export default function Home() {
       {stage === 1 && (
         <div className="flex flex-col lg:flex-row w-full max-w-4xl mx-auto">
           <div className="w-full lg:w-2/3 lg:pr-4">
-            <ProductInfo
-              onProductFetched={setProductData}
-              url={url}
-              onUrlChange={(newUrl) => {
-                setUrl(newUrl);
-                setSearchFormErrors((prevErrors) => ({
-                  ...prevErrors,
-                  product: "",
-                }));
-              }}
-              productError={SearchFormErrors.product}
-            />
-            {/* Updated right container */}
+            {/* Wrap ProductInfo in a card */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <ProductInfo
+                onProductFetched={setProductData}
+                url={url}
+                onUrlChange={(newUrl) => {
+                  setUrl(newUrl);
+                  setSearchFormErrors((prevErrors) => ({
+                    ...prevErrors,
+                    product: "",
+                  }));
+                }}
+                productError={SearchFormErrors.product}
+              />
+            </div>
+
             {productData && (
               <div className="w-full lg:w-1/3 mt-6 lg:mt-0">
                 <div className="lg:fixed lg:bottom-5 lg:right-12 w-full lg:w-1/4 bg-white p-3 lg:p-4 rounded-lg shadow-md overflow-y-auto lg:max-h-[calc(100vh-100px)]">
-                  <h2 className="text-lg lg:text-xl font-semibold mb-3 lg:mb-4">
+                  <h2 className="text-lg font-semibold mb-3 lg:mb-4">
                     Order Summary
                   </h2>
 
@@ -637,29 +640,33 @@ export default function Home() {
               setDuration={setDuration}
               setTotalPrice={setBasePrice}
             />
-            <div className="flex mb-4">
-              <div className="w-1/2 p-2">
-                <DatePicker
-                  date={selectedDate || undefined}
-                  setSelectedDate={handleDateChange}
-                />
-              </div>
-              <div className="w-1/2 p-2">
-                <TimePicker
-                  selectedTime={selectedTime}
-                  onTimeChange={(time) => {
-                    setSelectedTime(time);
-                    setSearchFormErrors((prevErrors) => ({
-                      ...prevErrors,
-                      pickupBetween: "",
-                    }));
-                  }}
-                  pickupBetweenError={SearchFormErrors.pickupBetween}
-                />
+
+            {/* Wrap just the date/time pickers in a card */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 className="text-lg font-semibold mb-6">Pickup Schedule</h2>
+              <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-2 w-full gap-4">
+                <div className="sm:pr-2">
+                  <DatePicker
+                    date={selectedDate || undefined}
+                    setSelectedDate={handleDateChange}
+                  />
+                </div>
+                <div className="sm:pl-2">
+                  <TimePicker
+                    selectedTime={selectedTime}
+                    onTimeChange={(time) => {
+                      setSelectedTime(time);
+                      setSearchFormErrors((prevErrors) => ({
+                        ...prevErrors,
+                        pickupBetween: "",
+                      }));
+                    }}
+                    pickupBetweenError={SearchFormErrors.pickupBetween}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Transport Mode Selector */}
             <TransportModeSelector
               selectedMode={transportMode.mode}
               needsExtraHelper={transportMode.needsExtraHelper}

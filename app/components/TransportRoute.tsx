@@ -215,52 +215,58 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
 
   return (
     <div>
-      <div className="mb-4">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6 sm:mt-6">
+        <h2 className="text-lg font-semibold mb-6">
+          Pickup and Delivery Locations
+        </h2>
+
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
-            Pickup From
-          </label>
-          <Autocomplete
-            onLoad={onOriginLoad}
-            onPlaceChanged={onOriginPlaceChanged}
-            options={autocompleteOptions}
-          >
-            <input
-              type="text"
-              placeholder="From"
-              value={origin.address}
-              onChange={(e) =>
-                setOrigin({ ...origin, address: e.target.value })
-              }
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </Autocomplete>
-          {pickupFromError && (
-            <p className="text-red-500 text-sm mt-1">{pickupFromError}</p>
-          )}
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
-            Deliver To
-          </label>
-          <Autocomplete
-            onLoad={onDestinationLoad}
-            onPlaceChanged={onDestinationPlaceChanged}
-            options={autocompleteOptions}
-          >
-            <input
-              type="text"
-              placeholder="To"
-              value={destination.address}
-              onChange={(e) =>
-                setDestination({ ...destination, address: e.target.value })
-              }
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </Autocomplete>
-          {deliverToError && (
-            <p className="text-red-500 text-sm mt-1">{deliverToError}</p>
-          )}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">
+              Pickup From
+            </label>
+            <Autocomplete
+              onLoad={onOriginLoad}
+              onPlaceChanged={onOriginPlaceChanged}
+              options={autocompleteOptions}
+            >
+              <input
+                type="text"
+                placeholder="From"
+                value={origin.address}
+                onChange={(e) =>
+                  setOrigin({ ...origin, address: e.target.value })
+                }
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </Autocomplete>
+            {pickupFromError && (
+              <p className="text-red-500 text-sm mt-1">{pickupFromError}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">
+              Deliver To
+            </label>
+            <Autocomplete
+              onLoad={onDestinationLoad}
+              onPlaceChanged={onDestinationPlaceChanged}
+              options={autocompleteOptions}
+            >
+              <input
+                type="text"
+                placeholder="To"
+                value={destination.address}
+                onChange={(e) =>
+                  setDestination({ ...destination, address: e.target.value })
+                }
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </Autocomplete>
+            {deliverToError && (
+              <p className="text-red-500 text-sm mt-1">{deliverToError}</p>
+            )}
+          </div>
         </div>
       </div>
 

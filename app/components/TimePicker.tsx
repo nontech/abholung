@@ -1,23 +1,29 @@
-import React from 'react';
-import { TimeRangeProps } from '../../types/common';
+import React from "react";
+import { TimeRangeProps } from "../../types/common";
 
-const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange, pickupBetweenError }) => {
+const TimeRange: React.FC<TimeRangeProps> = ({
+  selectedTime,
+  onTimeChange,
+  pickupBetweenError,
+}) => {
   const timeOptions = [
-    { value: '9-12', label: ' (Morning) 9 am - 12 pm' },
-    { value: '12-15', label: '(Afternoon) 12 pm - 3 pm ' },
-    { value: '15-18', label: '(Evening) 3 pm - 6 pm ' },
-    { value: '18-21', label: '(Night)6 pm - 9 pm' },
+    { value: "9-12", label: " (Morning) 9 am - 12 pm" },
+    { value: "12-15", label: "(Afternoon) 12 pm - 3 pm " },
+    { value: "15-18", label: "(Evening) 3 pm - 6 pm " },
+    { value: "18-21", label: "(Night)6 pm - 9 pm" },
   ];
 
   return (
     <div>
-      <label htmlFor="time" className="block text-gray-600 font-bold mb-2">Pickup Between</label>
+      <label htmlFor="time" className="block text-gray-600 font-bold mb-2">
+        Pickup Between
+      </label>
       <select
         id="time"
         name="time"
         value={selectedTime}
         onChange={(e) => onTimeChange(e.target.value)}
-        className="w-full p-2 border rounded text-black text-md"
+        className="w-full p-2 border rounded font-normal"
         required
       >
         <option value="">Select a time range</option>
@@ -27,20 +33,29 @@ const TimeRange: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange, picku
           </option>
         ))}
       </select>
-      {pickupBetweenError && <p className="text-red-500 text-sm mt-1">{pickupBetweenError}</p>}
+      {pickupBetweenError && (
+        <p className="text-red-500 text-sm mt-1">{pickupBetweenError}</p>
+      )}
     </div>
   );
 };
 
-const TimePicker: React.FC<TimeRangeProps> = ({ selectedTime, onTimeChange, pickupBetweenError }) => {
-
+const TimePicker: React.FC<TimeRangeProps> = ({
+  selectedTime,
+  onTimeChange,
+  pickupBetweenError,
+}) => {
   const handleTimeChange = (time: string) => {
     onTimeChange(time);
   };
 
   return (
     <div>
-      <TimeRange selectedTime={selectedTime} onTimeChange={handleTimeChange} pickupBetweenError={pickupBetweenError} />
+      <TimeRange
+        selectedTime={selectedTime}
+        onTimeChange={handleTimeChange}
+        pickupBetweenError={pickupBetweenError}
+      />
     </div>
   );
 };
