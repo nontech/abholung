@@ -184,7 +184,7 @@ export default function Home() {
 
     // Add product value surcharge
     if (productPriceFloat > 120) {
-      total += productPriceFloat * 0.1;
+      total += Math.min(productPriceFloat * 0.1, 20);
     }
 
     // Calculate and set vehicle cost
