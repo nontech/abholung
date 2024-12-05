@@ -113,7 +113,8 @@ export const saveLogisticsToDatabase = async (
   mapData: MapData,
   additionalPickupInstructions: string,
   additionalDeliveryInstructions: string,
-  transportMode: TransportModeData
+  transportMode: TransportModeData,
+  other_mode: string | null
 ) => {
   const { data, error } = await supabase
     .from("logistics")
@@ -125,6 +126,7 @@ export const saveLogisticsToDatabase = async (
         to_additional_instructions: additionalDeliveryInstructions,
         mode_of_transport: transportMode.mode,
         needs_extra_helper: transportMode.needsExtraHelper,
+        other_mode: other_mode,
       },
     ])
     .select();

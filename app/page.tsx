@@ -158,6 +158,7 @@ export default function Home() {
   }>({
     mode: "public transport",
     needsExtraHelper: false,
+    otherModeText: undefined,
   });
 
   const [isItemPaidAlready, setIsItemPaidAlready] = useState(true);
@@ -255,7 +256,8 @@ export default function Home() {
       mapData!,
       additionalPickupInstructions,
       additionalDeliveryInstructions,
-      transportMode
+      transportMode,
+      transportMode.otherModeText || null
     );
     const paymentDone = false;
     if (pickupUserId && deliverUserId && productId && logisticId) {
@@ -271,7 +273,7 @@ export default function Home() {
         totalPrice,
         false, // paymentDone
         isItemPaidAlready,
-        isItemPaidAlready ? parseGermanPrice(productData!.price!) : null,
+        !isItemPaidAlready ? parseGermanPrice(productData!.price!) : null,
         vehicleCost,
         helperCost,
         urgencySurcharge
