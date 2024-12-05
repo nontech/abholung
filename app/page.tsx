@@ -574,6 +574,7 @@ export default function Home() {
                           width={120}
                           height={120}
                           className="rounded-md w-[120px] h-[120px] object-cover"
+                          unoptimized
                         />
                       </div>
                     )}
