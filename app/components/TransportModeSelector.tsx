@@ -133,11 +133,11 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                 }
                 className="form-radio h-4 w-4 text-blue-600 hidden"
               />
-              <div className="flex flex-col w-full">
-                <div className="flex items-center justify-between space-x-3">
-                  <div className="flex items-center space-x-3">
+              <div className="flex flex-col w-full min-w-0">
+                <div className="flex items-center justify-between space-x-2">
+                  <div className="flex items-center space-x-2 min-w-0">
                     <div
-                      className={`${
+                      className={`flex-shrink-0 ${
                         selectedMode === option.value
                           ? "text-blue-600"
                           : "text-gray-400"
@@ -147,28 +147,26 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                     </div>
                     <span
                       className={`
-                        font-medium
-                        ${
-                          selectedMode === option.value
-                            ? "text-blue-700"
-                            : "text-gray-700"
-                        }
-                      `}
+                      font-medium truncate
+                      ${
+                        selectedMode === option.value
+                          ? "text-blue-700"
+                          : "text-gray-700"
+                      }
+                    `}
                     >
                       {option.label}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="flex flex-col items-end">
-                      {vehicleCost && (
-                        <span className="text-sm font-medium text-green-600">
-                          {vehicleCost}
-                        </span>
-                      )}
-                    </div>
+                  <div className="flex items-center space-x-1 flex-shrink-0">
+                    {vehicleCost && (
+                      <span className="text-sm font-medium text-green-600 whitespace-nowrap">
+                        {vehicleCost}
+                      </span>
+                    )}
                     {selectedMode === option.value && (
                       <svg
-                        className="w-5 h-5 text-blue-500"
+                        className="w-5 h-5 text-blue-500 flex-shrink-0"
                         fill="none"
                         strokeLinecap="round"
                         strokeLinejoin="round"
