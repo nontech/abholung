@@ -28,7 +28,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
             relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
             ${
               isPrepaid
-                ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500 ring-opacity-50"
+                ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-400 ring-opacity-50"
                 : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
             }
           `}
@@ -38,7 +38,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
             value="prepaid"
             checked={isPrepaid}
             onChange={handleOptionChange}
-            className="form-radio h-4 w-4 text-indigo-600 hidden"
+            className="form-radio h-4 w-4 text-indigo-400 hidden"
           />
           <span className="font-medium text-gray-700">
             I&apos;ve already paid for the product. Please pickup & deliver it
@@ -47,7 +47,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
           {isPrepaid && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
               <svg
-                className="w-5 h-5 text-indigo-500"
+                className="w-5 h-5 text-indigo-400"
                 fill="none"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -67,7 +67,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
               relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
               ${
                 !isPrepaid
-                  ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-500 ring-opacity-50"
+                  ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-400 ring-opacity-50"
                   : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
               }
             `}
@@ -77,7 +77,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
               value="kk_payment"
               checked={!isPrepaid}
               onChange={handleOptionChange}
-              className="form-radio h-4 w-4 text-indigo-600 hidden"
+              className="form-radio h-4 w-4 text-indigo-400 hidden"
             />
             <span className="font-medium text-gray-700">
               I would like you to handle payment, including price of the item
@@ -85,7 +85,7 @@ const PaymentOptionSelector: React.FC<PaymentOptionSelectorProps> = ({
             {!isPrepaid && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2">
                 <svg
-                  className="w-5 h-5 text-indigo-500"
+                  className="w-5 h-5 text-indigo-400"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
