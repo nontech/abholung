@@ -96,7 +96,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
     productPriceFloat > 120 ? Math.min(productPriceFloat * 0.1, 20) : 0;
 
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-white">
+    <div className="p-4 border rounded-lg shadow-md bg-white mt-2">
       <h2 className="text-lg font-semibold text-gray-700 mb-4">
         Price Information
       </h2>
