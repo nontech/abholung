@@ -93,7 +93,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
 }) => {
   const productPriceFloat = productPrice ? parseGermanPrice(productPrice) : 0;
   const productSurcharge =
-    productPriceFloat > 120 ? productPriceFloat * 0.1 : 0;
+    productPriceFloat > 120 ? Math.min(productPriceFloat * 0.1, 20) : 0;
 
   return (
     <div className="p-4 border rounded-lg shadow-md bg-white">

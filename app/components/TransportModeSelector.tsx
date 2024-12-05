@@ -41,12 +41,14 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
   duration,
   otherModeText,
 }) => {
-  const calculateVehicleCost = (hourlyRate: number | null): string | null => {
-    if (!duration || !hourlyRate) return null;
+  const calculateVehicleCost = (hourlyRate: number | null): string => {
+    if (!duration) return "+0€";
 
     const timeSavedHours = calculateTimeSaved(duration) / 60;
-    const vehicleCost = Math.round(hourlyRate * timeSavedHours);
-    return vehicleCost > 0 ? `+${vehicleCost}€` : null;
+    const vehicleCost = hourlyRate
+      ? Math.round(hourlyRate * timeSavedHours)
+      : 0;
+    return `+${vehicleCost}€`;
   };
 
   const calculateHelperCost = (): string | null => {
@@ -159,11 +161,18 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                     </span>
                   </div>
                   <div className="flex items-center space-x-1 flex-shrink-0">
-                    {vehicleCost && (
-                      <span className="text-sm font-medium text-green-600 whitespace-nowrap">
-                        {vehicleCost}
-                      </span>
-                    )}
+                    <span
+                      className={`
+                        text-sm font-medium whitespace-nowrap
+                        ${
+                          selectedMode === option.value
+                            ? "text-green-600"
+                            : "text-gray-500"
+                        }
+                      `}
+                    >
+                      {vehicleCost}
+                    </span>
                     {selectedMode === option.value && (
                       <svg
                         className="w-5 h-5 text-blue-500 flex-shrink-0"
@@ -201,8 +210,14 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
       <div className="mt-8">
         <div className="flex flex-col items-center">
           <label
-            className="flex items-center p-4 rounded-lg border-2 cursor-pointer w-full max-w-md hover:bg-gray-50 transition-all duration-200
-            ${needsExtraHelper ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+            className={`
+              flex items-center p-4 rounded-lg border-2 cursor-pointer w-full max-w-md hover:bg-gray-50 transition-all duration-200
+              ${
+                needsExtraHelper
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200"
+              }
+            `}
           >
             <input
               type="checkbox"
@@ -222,7 +237,12 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                   </div>
                 </div>
                 {helperCost && (
-                  <span className="text-sm font-medium text-green-600 ml-2">
+                  <span
+                    className={`
+                    text-sm font-medium whitespace-nowrap ml-2
+                    ${needsExtraHelper ? "text-green-600" : "text-gray-500"}
+                  `}
+                  >
                     {helperCost}
                   </span>
                 )}

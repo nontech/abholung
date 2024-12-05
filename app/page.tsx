@@ -573,7 +573,7 @@ export default function Home() {
                           alt={productData.title}
                           width={120}
                           height={120}
-                          className="rounded-md w-[120px] h-[120px] lg:w-[100px] lg:h-[100px] object-cover"
+                          className="rounded-md w-[120px] h-[120px] object-cover"
                         />
                       </div>
                     )}
