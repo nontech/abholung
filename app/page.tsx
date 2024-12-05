@@ -259,7 +259,6 @@ export default function Home() {
       transportMode,
       transportMode.otherModeText || null
     );
-    const paymentDone = false;
     if (pickupUserId && deliverUserId && productId && logisticId) {
       const orderId: number | null = await saveOrderToDatabase(
         pickupUserId,

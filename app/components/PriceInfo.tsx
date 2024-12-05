@@ -83,14 +83,10 @@ export const calculateTimeSaved = (duration: string): number => {
 };
 
 const PriceInfo: React.FC<PriceInfoProps> = ({
-  duration,
   productPrice,
   totalPrice,
   basePrice,
-  deliveryDate,
   isItemPaidAlready = true,
-  transportMode,
-  needsExtraHelper = false,
   vehicleCost,
   helperCost,
   urgencySurcharge,
