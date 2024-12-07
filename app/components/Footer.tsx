@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Main Footer Content - Four Columns */}
         <div className="grid grid-cols-1 md:grid-cols-[1.5fr,1fr,1fr,1fr] gap-x-16 gap-y-8 mb-16">
           {/* Section A - Logo and Description */}
-          <div className="space-y-6 md:pr-8 border-r border-gray-100">
+          <div className="space-y-6 md:pr-8">
             <div className="flex items-center">
               <Image
                 src="/images/logo.svg"
@@ -36,7 +36,7 @@ const Footer = () => {
             <div className="space-y-4">
               <p>
                 <a
-                  href="mailto:info@kleinanzeigenkurier.de"
+                  href=""
                   className="hover:text-gray-800 transition-colors flex items-center gap-2"
                 >
                   <svg
@@ -88,7 +88,7 @@ const Footer = () => {
             <ul>
               <li>
                 <Link
-                  href="#"
+                  href=""
                   className="hover:text-gray-800 transition-colors"
                 >
                   About Us
@@ -105,7 +105,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="#"
+                  href=""
                   className="hover:text-gray-800 transition-colors"
                 >
                   Imprint
@@ -113,7 +113,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href=""
                   className="hover:text-gray-800 transition-colors"
                 >
                   Privacy Policy
@@ -121,7 +121,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href=""
                   className="hover:text-gray-800 transition-colors"
                 >
                   Terms & Conditions
