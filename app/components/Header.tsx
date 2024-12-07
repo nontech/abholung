@@ -19,6 +19,7 @@ const Header: React.FC = () => {
               width={120}
               height={120}
               className="h-auto w-auto"
+              unoptimized
             />
           </a>
 
