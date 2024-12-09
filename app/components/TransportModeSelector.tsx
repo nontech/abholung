@@ -64,7 +64,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
       value: "public transport" as TransportMode,
       label: "Public Transport",
       icon: <Train className="w-6 h-6" />,
-      color: "indigo",
+      color: "emerald",
       hourlyRate: null,
     },
     {
@@ -107,10 +107,13 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
   const helperCost = calculateHelperCost();
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md mb-6">
-      <h3 className="text-lg font-semibold mb-6 text-gray-800">
-        Choose your delivery method
-      </h3>
+    <div className="p-6 bg-white rounded-lg shadow-md mb-6 hover:shadow-lg transition-shadow duration-200 hover:border-emerald-100">
+      <div className="flex flex-row items-center gap-3 mb-6">
+        <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+        <h3 className="text-2xl font-semibold text-gray-800">
+          Delivery method
+        </h3>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {transportOptions.map((option) => {
           const vehicleCost = calculateVehicleCost(option.hourlyRate);
@@ -121,8 +124,8 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                 relative flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
                 ${
                   selectedMode === option.value
-                    ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-400 ring-opacity-50"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                    ? "border-emerald-400 bg-emerald-50 ring-2 ring-emerald-400 ring-opacity-50"
+                    : "border-gray-200 hover:border-emerald-200 hover:bg-emerald-50/50 hover:shadow-sm"
                 }
               `}
             >
@@ -133,7 +136,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                 onChange={() =>
                   onModeChange(option.value, needsExtraHelper, otherModeText)
                 }
-                className="form-radio h-4 w-4 text-indigo-400 hidden"
+                className="form-radio h-4 w-4 text-emerald-400 hidden"
               />
               <div className="flex flex-col w-full min-w-0">
                 <div className="flex items-center justify-between space-x-2">
@@ -141,7 +144,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                     <div
                       className={`flex-shrink-0 ${
                         selectedMode === option.value
-                          ? "text-indigo-400"
+                          ? "text-emerald-400"
                           : "text-gray-400"
                       }`}
                     >
@@ -152,7 +155,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                       font-medium truncate
                       ${
                         selectedMode === option.value
-                          ? "text-indigo-600"
+                          ? "text-emerald-600"
                           : "text-gray-700"
                       }
                     `}
@@ -163,10 +166,10 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                   <div className="flex items-center space-x-1 flex-shrink-0">
                     <span
                       className={`
-                        text-sm font-medium whitespace-nowrap
+                        text-lg font-medium whitespace-nowrap
                         ${
                           selectedMode === option.value
-                            ? "text-green-600"
+                            ? "bg-gradient-to-br from-emerald-400 to-teal-600 text-white rounded-md p-1"
                             : "text-gray-500"
                         }
                       `}
@@ -175,7 +178,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                     </span>
                     {selectedMode === option.value && (
                       <svg
-                        className="w-5 h-5 text-indigo-400 flex-shrink-0"
+                        className="w-5 h-5 text-emerald-400 flex-shrink-0"
                         fill="none"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -197,7 +200,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                         onModeChange("other", needsExtraHelper, e.target.value)
                       }
                       placeholder="Please specify transport mode"
-                      className="w-full p-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                      className="w-full p-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
                     />
                   </div>
                 )}
@@ -214,7 +217,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
               flex items-center p-4 rounded-lg border-2 cursor-pointer w-full max-w-md hover:bg-gray-50 transition-all duration-200
               ${
                 needsExtraHelper
-                  ? "border-indigo-400 bg-indigo-50"
+                  ? "border-emerald-400 bg-emerald-50"
                   : "border-gray-200"
               }
             `}
@@ -223,7 +226,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
               type="checkbox"
               checked={needsExtraHelper}
               onChange={(e) => onModeChange(selectedMode, e.target.checked)}
-              className="form-checkbox h-4 w-4 text-indigo-400 rounded border-gray-300 focus:ring-indigo-400"
+              className="form-checkbox h-4 w-4 text-emerald-400 rounded border-gray-300 focus:ring-emerald-400"
             />
             <div className="ml-3 flex-grow">
               <div className="flex items-center justify-between">

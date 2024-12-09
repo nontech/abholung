@@ -25,7 +25,7 @@ export default function TypeOfService({
               onChange={handleServiceChange}
               className="hidden peer"
             />
-            <div className="w-5 h-5 rounded-full border-2 border-indigo-400 flex items-center justify-center peer-checked:bg-indigo-400">
+            <div className="w-5 h-5 rounded-full border-2 border-emerald-400 flex items-center justify-center peer-checked:bg-emerald-400">
               <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
             </div>
             <span className="text-md text-gray-700">Buying</span>
@@ -38,7 +38,7 @@ export default function TypeOfService({
               onChange={handleServiceChange}
               className="hidden peer"
             />
-            <div className="w-5 h-5 rounded-full border-2 border-indigo-400 flex items-center justify-center peer-checked:bg-indigo-400">
+            <div className="w-5 h-5 rounded-full border-2 border-emerald-400 flex items-center justify-center peer-checked:bg-emerald-400">
               <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
             </div>
             <span className="text-md text-gray-700">Selling</span>
@@ -46,7 +46,7 @@ export default function TypeOfService({
         </div>
         <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md text-center">
           <p className="text-gray-800 text-md">
-            You are <strong className="text-indigo-400">{serviceType}</strong>{" "}
+            You are <strong className="text-emerald-400">{serviceType}</strong>{" "}
             this product
           </p>
         </div>

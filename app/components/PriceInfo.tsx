@@ -83,10 +83,14 @@ export const calculateTimeSaved = (duration: string): number => {
 };
 
 const PriceInfo: React.FC<PriceInfoProps> = ({
-  productPrice,
   totalPrice,
   basePrice,
-  isItemPaidAlready = true,
+  productPrice,
+  deliveryDate,
+  duration,
+  isItemPaidAlready,
+  transportMode,
+  needsExtraHelper,
   vehicleCost,
   helperCost,
   urgencySurcharge,
@@ -96,11 +100,13 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
     productPriceFloat > 120 ? Math.min(productPriceFloat * 0.1, 20) : 0;
 
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-white mt-2">
-      <h2 className="text-lg font-semibold text-gray-700 mb-4">
-        Price Information
-      </h2>
-      <div className="space-y-3">
+    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 hover:border-emerald-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+        <h2 className="text-xl font-semibold text-gray-800">Price Breakdown</h2>
+      </div>
+
+      <div className="space-y-4">
         <PriceDetail
           label="Delivery Price"
           amount={
@@ -110,22 +116,25 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
             vehicleCost +
             helperCost
           }
-          className="pb-2 order-gray-200"
+          className="border-b border-gray-100 pb-3"
         />
 
-        {!isItemPaidAlready && (
+        {!isItemPaidAlready && productPrice && (
           <PriceDetail
-            label="Item Price"
-            amount={productPriceFloat}
-            className="pb-2 border-gray-200"
+            label="Product Price"
+            amount={parseGermanPrice(productPrice)}
+            className="border-b border-gray-100 pb-3"
           />
         )}
 
-        <PriceDetail
-          label="Total Price"
-          amount={totalPrice}
-          className="pt-2 border-t border-gray-200 font-bold text-lg"
-        />
+        <div className="mt-6 p-4 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl text-white">
+          <div className="flex justify-between items-center">
+            <span className="font-medium">Total Price</span>
+            <span className="text-2xl font-bold">
+              {formatGermanPrice(totalPrice)}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

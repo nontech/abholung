@@ -88,11 +88,12 @@ export default function ProductInfo({
   };
 
   return (
-    <div>
-      <div className="flex items-center mb-4">
-        <h1 className="text-lg font-semibold text-gray-800">
+    <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200 hover:border-emerald-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+        <h2 className="text-2xl font-semibold text-gray-800">
           Kleinanzeigen Product Link
-        </h1>
+        </h2>
         {/* Help Icon */}
         <div
           className="ml-2 text-gray-500 cursor-pointer"
@@ -122,48 +123,39 @@ export default function ProductInfo({
         </Tooltip>
       </div>
 
-      <div className="mb-4 relative">
+      <div className="relative">
         <input
-          type="text"
-          placeholder="Paste Kleinanzeigen product link here"
+          type="url"
           value={url}
           onChange={handleUrlChange}
-          className={`input input-bordered w-full ${
-            url ? "text-black font-medium" : "text-gray-500"
-          }`}
-          disabled={loading}
+          placeholder="Paste Kleinanzeigen product URL here"
+          className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:outline-emerald-500 "
         />
-        {productError && (
-          <p className="text-red-500 text-sm mt-1">{productError}</p>
-        )}
-        {url && (
-          // Clear X Button
-          <button
-            onClick={clearUrl}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none bg-white z-10"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+        {loading && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent" />
+          </div>
         )}
       </div>
 
-      {loading && (
-        <p className="text-blue-500 mt-4 pl-4">
-          Fetching product information...
-        </p>
+      {(error || productError) && (
+        <div className="mt-3 flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-lg">
+          <svg
+            className="w-5 h-5 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span className="text-sm">{error || productError}</span>
+        </div>
       )}
-      {error && <p className="text-red-500 mt-4 pl-4">{error}</p>}
     </div>
   );
 }

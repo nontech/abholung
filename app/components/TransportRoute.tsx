@@ -214,17 +214,21 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
   }, [duration, setTotalPrice]);
 
   return (
-    <div>
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6 sm:mt-6 max-sm:mt-6">
-        <h2 className="text-lg font-semibold mb-6">
-          Pickup and Delivery Locations
-        </h2>
+    <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="flex flex-col w-full gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+          <h2 className="text-2xl font-semibold">
+            Pickup and Delivery Locations
+          </h2>
+        </div>
 
         <div className="mb-4">
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">
               Pickup From
             </label>
+
             <Autocomplete
               onLoad={onOriginLoad}
               onPlaceChanged={onOriginPlaceChanged}
@@ -237,17 +241,18 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
                 onChange={(e) =>
                   setOrigin({ ...origin, address: e.target.value })
                 }
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-emerald-500 focus:shadow-outline"
               />
             </Autocomplete>
             {pickupFromError && (
               <p className="text-red-500 text-sm mt-1">{pickupFromError}</p>
             )}
           </div>
-          <div className="mb-4">
+          <div>
             <label className="block text-gray-700 font-bold mb-2">
               Deliver To
             </label>
+
             <Autocomplete
               onLoad={onDestinationLoad}
               onPlaceChanged={onDestinationPlaceChanged}
@@ -260,7 +265,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
                 onChange={(e) =>
                   setDestination({ ...destination, address: e.target.value })
                 }
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-emerald-500 focus:shadow-outline"
               />
             </Autocomplete>
             {deliverToError && (

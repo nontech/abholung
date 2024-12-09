@@ -522,7 +522,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-gray-100 p-5 min-h-screen">
+    <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50 p-5 min-h-screen">
       <Header />
       <div className="ml-64 mb-5">
         {/* Back Navigation */}
@@ -531,16 +531,16 @@ export default function Home() {
 
       {/* Progress Bar */}
       {stage <= 3 && (
-        <div className="w-full h-full max-w-4xl mx-auto p-4 mb-10">
+        <div className="h-full max-w-2xl p-4 mb-10 mx-10">
           <ProgressBar currentStep={stage} />
         </div>
       )}
 
       {stage === 1 && (
-        <div className="flex flex-col lg:flex-row w-full max-w-4xl mx-auto">
+        <div className="flex flex-col lg:flex-row w-full max-w-4xl mx-10">
           <div className="w-full lg:w-2/3 lg:pr-4">
             {/* Wrap ProductInfo in a card */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="bg-white rounded-lg shadow-md mb-6">
               <ProductInfo
                 onProductFetched={setProductData}
                 url={url}
@@ -556,15 +556,19 @@ export default function Home() {
             </div>
 
             {productData && (
-              <div className="w-full lg:w-1/3 mt-6 lg:mt-0">
-                <div className="lg:fixed lg:bottom-5 lg:right-12 w-full lg:w-1/4 bg-white p-3 lg:p-4 rounded-lg shadow-md overflow-y-auto lg:max-h-[calc(100vh-100px)]">
-                  <h2 className="text-lg font-semibold mb-3 lg:mb-4">
+              <div className="w-full lg:w-1/3 mt-6 rounded-lg lg:mt-0">
+                <div className="lg:fixed lg:top-5 lg:bottom-5 lg:right-4 w-full lg:w-1/4 bg-white p-3 lg:p-6 rounded-lg shadow-md overflow-y-auto lg:max-h-100vh">
+                  <h2 className="text-2xl font-semibold mb-3 lg:mb-4">
                     Order Summary
                   </h2>
 
                   <div className="mt-3 lg:mt-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                      <h2 className="text-xl font-semibold"> Product info</h2>
+                    </div>
                     <h3
-                      className="text-sm lg:text-md font-semibold mb-2 truncate"
+                      className="text-lg font-semibold mb-2 truncate"
                       title={productData.title}
                     >
                       {productData.title}
@@ -581,13 +585,13 @@ export default function Home() {
                         />
                       </div>
                     )}
-                    <p className="text-base lg:text-lg font-medium text-green-600 mb-2">
-                      {productData.price}
+                    <p className="text-base text-gray-700 mb-1">
+                      <strong>Item price:</strong> {productData.price}
                     </p>
-                    <p className="text-sm lg:text-base text-gray-700 mb-1">
+                    <p className="text-base text-gray-700 mb-1">
                       <strong>Listed by:</strong> {productData.listed_by}
                     </p>
-                    <p className="text-sm lg:text-base text-gray-700">
+                    <p className="text-base text-gray-700">
                       <strong>Pickup Address:</strong> {productData.address}
                     </p>
                     <div className="mt-3 lg:mt-4">
@@ -597,7 +601,6 @@ export default function Home() {
                       />
                     </div>
                   </div>
-
                   <div className="hidden lg:block">
                     <PriceInfo
                       totalPrice={totalPrice}
@@ -642,16 +645,19 @@ export default function Home() {
             />
 
             {/* Wrap just the date/time pickers in a card */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-lg font-semibold mb-6">Pickup Schedule</h2>
-              <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-2 w-full gap-4">
-                <div className="sm:pr-2">
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6 mt-6">
+              <div className="flex flex-row items-center gap-3 mb-6">
+                <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                <h2 className="text-2xl font-semibold ">Pickup Schedule</h2>
+              </div>
+              <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-1 w-full gap-6">
+                <div>
                   <DatePicker
                     date={selectedDate || undefined}
                     setSelectedDate={handleDateChange}
                   />
                 </div>
-                <div className="sm:pl-2">
+                <div>
                   <TimePicker
                     selectedTime={selectedTime}
                     onTimeChange={(time) => {

@@ -10,9 +10,15 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
       {/* Step 1 */}
       <div className="flex-1 text-center">
         <div
-          className={`h-1 ${currentStep >= 1 ? "bg-indigo-600" : "bg-gray-300"}`}
+          className={`h-1 ${
+            currentStep >= 1 ? "bg-emerald-600" : "bg-gray-300"
+          }`}
         ></div>
-        <p className={`mt-2 ${currentStep >= 1 ? "text-indigo-600" : "text-gray-500"} font-medium`}>
+        <p
+          className={`mt-2 ${
+            currentStep >= 1 ? "text-emerald-600" : "text-gray-500"
+          } font-medium`}
+        >
           Step 1 - Search
         </p>
       </div>
@@ -23,9 +29,15 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
       {/* Step 2 */}
       <div className="flex-1 text-center">
         <div
-          className={`h-1 ${currentStep >= 2 ? "bg-indigo-600" : "bg-gray-300"}`}
+          className={`h-1 ${
+            currentStep >= 2 ? "bg-emerald-600" : "bg-gray-300"
+          }`}
         ></div>
-        <p className={`mt-2 ${currentStep >= 2 ? "text-indigo-600" : "text-gray-500"} font-medium`}>
+        <p
+          className={`mt-2 ${
+            currentStep >= 2 ? "text-emerald-600" : "text-gray-500"
+          } font-medium`}
+        >
           Step 2 - Details
         </p>
       </div>
@@ -36,9 +48,15 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
       {/* Step 3 */}
       <div className="flex-1 text-center">
         <div
-          className={`h-1 ${currentStep >= 3 ? "bg-indigo-600" : "bg-gray-300"}`}
+          className={`h-1 ${
+            currentStep >= 3 ? "bg-emerald-600" : "bg-gray-300"
+          }`}
         ></div>
-        <p className={`mt-2 ${currentStep >= 3 ? "text-indigo-600" : "text-gray-500"} font-medium`}>
+        <p
+          className={`mt-2 ${
+            currentStep >= 3 ? "text-emerald-600" : "text-gray-500"
+          } font-medium`}
+        >
           Step 3 - Payment
         </p>
       </div>
