@@ -169,7 +169,7 @@ const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
                         text-lg font-medium whitespace-nowrap
                         ${
                           selectedMode === option.value
-                            ? "bg-gradient-to-br from-emerald-400 to-teal-600 text-white rounded-md p-1"
+                            ? "text-emerald-600"
                             : "text-gray-500"
                         }
                       `}

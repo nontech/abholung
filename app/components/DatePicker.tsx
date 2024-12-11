@@ -28,8 +28,8 @@ export default function DatePicker({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200 hover:border-emerald-100">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">Pickup On</h2>
+    <div className="bg-white">
+      <div className="text-lg font-semibold text-gray-800 mb-4">Pickup On</div>
 
       <Popover>
         <PopoverTrigger asChild>

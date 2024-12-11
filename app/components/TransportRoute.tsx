@@ -225,7 +225,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
 
         <div className="mb-4">
           <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">
+            <label className="block text-lg text-gray-700 font-bold mb-2">
               Pickup From
             </label>
 
@@ -249,7 +249,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
             )}
           </div>
           <div>
-            <label className="block text-gray-700 font-bold mb-2">
+            <label className="block text-lg text-gray-700 font-bold mb-2">
               Deliver To
             </label>
 

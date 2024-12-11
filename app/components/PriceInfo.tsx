@@ -100,7 +100,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
     productPriceFloat > 120 ? Math.min(productPriceFloat * 0.1, 20) : 0;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 hover:border-emerald-100">
+    <div className="bg-white">
       <div className="flex items-center gap-3 mb-6">
         <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
         <h2 className="text-xl font-semibold text-gray-800">Price Breakdown</h2>
@@ -116,23 +116,25 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
             vehicleCost +
             helperCost
           }
-          className="border-b border-gray-100 pb-3"
+          className="pb-3"
         />
 
         {!isItemPaidAlready && productPrice && (
           <PriceDetail
             label="Product Price"
             amount={parseGermanPrice(productPrice)}
-            className="border-b border-gray-100 pb-3"
+            className="pb-3"
           />
         )}
 
-        <div className="mt-6 p-4 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl text-white">
+        <div className="mt-6 border-t border-gray-200 pt-4">
           <div className="flex justify-between items-center">
-            <span className="font-medium">Total Price</span>
-            <span className="text-2xl font-bold">
-              {formatGermanPrice(totalPrice)}
-            </span>
+            <span className="text-lg font-semibold text-gray-700">Total</span>
+            <div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                {formatGermanPrice(totalPrice)}
+              </span>
+            </div>
           </div>
         </div>
       </div>

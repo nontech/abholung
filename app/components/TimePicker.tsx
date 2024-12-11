@@ -13,10 +13,10 @@ const TimePicker = ({
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200 hover:border-emerald-100">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">
+    <div className="bg-white">
+      <div className="text-lg font-semibold text-gray-800 mb-4">
         Select Pickup Time
-      </h2>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         {timeSlots.map((time) => (

@@ -82,6 +82,9 @@ const Confetti = dynamic(() => import("react-confetti"), {
 // Add AlertCircle to the imports at the top
 import { AlertCircle } from "lucide-react";
 
+// Add this import at the top with other imports
+import { ChevronDown, ChevronUp } from "lucide-react";
+
 // Add a helper function to parse German price format
 const parseGermanPrice = (price: string): number => {
   // Remove currency symbol and any whitespace
@@ -90,6 +93,30 @@ const parseGermanPrice = (price: string): number => {
   const standardizedPrice = cleanPrice.replace(".", "").replace(",", ".");
   return parseFloat(standardizedPrice);
 };
+
+// Add this after the imports
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: "Find Your Item",
+    description: "Copy the Kleinanzeigen URL of your item",
+    icon: "🔍",
+  },
+  {
+    title: "Enter Details",
+    description: "Add pickup & delivery locations",
+    icon: "📝",
+  },
+  {
+    title: "Choose Transport",
+    description: "Select suitable transport mode",
+    icon: "🚚",
+  },
+  {
+    title: "Secure Payment",
+    description: "Pay securely and track order",
+    icon: "💳",
+  },
+];
 
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(null);
@@ -521,6 +548,18 @@ export default function Home() {
     }
   };
 
+  // First, update the initial state of isHowItWorksOpen to be true
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(true);
+
+  // Then, add/update the useEffect to close it when product is loaded
+  useEffect(() => {
+    if (productData) {
+      setIsHowItWorksOpen(false);
+    }
+  }, [productData]);
+
+  const [isProductDetailsOpen, setIsProductDetailsOpen] = useState(false);
+
   return (
     <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50 p-5 min-h-screen">
       <Header />
@@ -531,7 +570,11 @@ export default function Home() {
 
       {/* Progress Bar */}
       {stage <= 3 && (
-        <div className="h-full max-w-2xl p-4 mb-10 mx-10">
+        <div
+          className={`h-full p-4 mb-10 ${
+            stage === 1 ? "max-w-2xl mx-10" : "w-full px-10"
+          }`}
+        >
           <ProgressBar currentStep={stage} />
         </div>
       )}
@@ -540,7 +583,7 @@ export default function Home() {
         <div className="flex flex-col lg:flex-row w-full max-w-4xl mx-10">
           <div className="w-full lg:w-2/3 lg:pr-4">
             {/* Wrap ProductInfo in a card */}
-            <div className="bg-white rounded-lg shadow-md mb-6">
+            <div className="bg-white rounded-lg shadow-md mb-6 relative">
               <ProductInfo
                 onProductFetched={setProductData}
                 url={url}
@@ -555,66 +598,183 @@ export default function Home() {
               />
             </div>
 
-            {productData && (
-              <div className="w-full lg:w-1/3 mt-6 rounded-lg lg:mt-0">
-                <div className="lg:fixed lg:top-5 lg:bottom-5 lg:right-4 w-full lg:w-1/4 bg-white p-3 lg:p-6 rounded-lg shadow-md overflow-y-auto lg:max-h-100vh">
-                  <h2 className="text-2xl font-semibold mb-3 lg:mb-4">
-                    Order Summary
-                  </h2>
+            {!productData ? (
+              <div className="sm:fixed right-10 top-40 w-96 bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                  How It Works
+                </h2>
+                <div className="space-y-0">
+                  {HOW_IT_WORKS_STEPS.map((step, index) => (
+                    <div key={index} className="relative">
+                      <div className="flex gap-3">
+                        {/* Icon Circle */}
+                        <div className="relative z-10 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                          <span className="text-xl">{step.icon}</span>
+                        </div>
 
-                  <div className="mt-3 lg:mt-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                      <h2 className="text-xl font-semibold"> Product info</h2>
-                    </div>
-                    <h3
-                      className="text-lg font-semibold mb-2 truncate"
-                      title={productData.title}
-                    >
-                      {productData.title}
-                    </h3>
-                    {productData.pic_url && (
-                      <div className="flex justify-center items-center mb-3 lg:mb-4">
-                        <Image
-                          src={productData.pic_url}
-                          alt={productData.title}
-                          width={120}
-                          height={120}
-                          className="rounded-md w-[120px] h-[120px] object-cover"
-                          unoptimized
+                        {/* Content */}
+                        <div className="pb-8">
+                          <h3 className="font-bold text-xl text-gray-800 mb-1">
+                            {step.title}
+                          </h3>
+                          <p className="text-lg text-gray-600">
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Connecting Line */}
+                      {index < HOW_IT_WORKS_STEPS.length - 1 && (
+                        <div
+                          className="absolute left-[15px] top-8 w-[2px] h-[calc(100%-16px)] bg-emerald-200"
+                          aria-hidden="true"
                         />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="w-full mt-6 rounded-lg lg:mt-0">
+                <div className="lg:fixed lg:top-5 lg:bottom-5 lg:right-24 w-full lg:w-1/4 space-y-4">
+                  {/* Separate How It Works Card */}
+                  <div className="bg-white p-3 rounded-lg shadow-md">
+                    <button
+                      onClick={() => setIsHowItWorksOpen(!isHowItWorksOpen)}
+                      className="w-full p-4 flex justify-between items-center text-left"
+                    >
+                      <span className="text-lg font-medium">How It Works</span>
+                      {isHowItWorksOpen ? (
+                        <ChevronUp className="h-5 w-5" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5" />
+                      )}
+                    </button>
+
+                    {isHowItWorksOpen && (
+                      <div className="p-4 pt-0 space-y-0">
+                        {HOW_IT_WORKS_STEPS.map((step, index) => (
+                          <div key={index} className="relative">
+                            <div className="flex gap-3">
+                              {/* Icon Circle */}
+                              <div className="relative z-10 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                                <span className="text-sm">{step.icon}</span>
+                              </div>
+
+                              {/* Content */}
+                              <div className="pb-8">
+                                <h3 className="text-md text-gray-800">
+                                  {step.title}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                  {step.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Connecting Line */}
+                            {index < HOW_IT_WORKS_STEPS.length - 1 && (
+                              <div
+                                className="absolute left-[11px] top-6 w-[2px] h-[calc(100%-12px)] bg-emerald-200"
+                                aria-hidden="true"
+                              />
+                            )}
+                          </div>
+                        ))}
                       </div>
                     )}
-                    <p className="text-base text-gray-700 mb-1">
-                      <strong>Item price:</strong> {productData.price}
-                    </p>
-                    <p className="text-base text-gray-700 mb-1">
-                      <strong>Listed by:</strong> {productData.listed_by}
-                    </p>
-                    <p className="text-base text-gray-700">
-                      <strong>Pickup Address:</strong> {productData.address}
-                    </p>
+                  </div>
+
+                  {/* Order Summary Card */}
+                  <div
+                    className={`bg-white p-3 lg:p-6 rounded-lg shadow-md overflow-y-auto ${
+                      isHowItWorksOpen
+                        ? "lg:max-h-[calc(100vh-450px)]" // Less height when How It Works is expanded
+                        : "lg:max-h-[calc(100vh-200px)]" // More height when collapsed
+                    }`}
+                  >
+                    <h2 className="text-2xl font-semibold mb-3 lg:mb-4">
+                      Order Summary
+                    </h2>
+
                     <div className="mt-3 lg:mt-4">
-                      <TypeOfService
-                        onServiceChange={handleServiceTypeChange}
-                        serviceType={serviceType}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                        <h2 className="text-xl font-semibold"> Product info</h2>
+                      </div>
+                      <span className="text-md mb-2 truncate">
+                        <strong>Title:</strong> {productData.title}
+                      </span>
+                      {productData.pic_url && (
+                        <div className="flex justify-center items-center mb-3 lg:mb-4">
+                          <Image
+                            src={productData.pic_url}
+                            alt={productData.title}
+                            width={120}
+                            height={120}
+                            className="rounded-md w-[120px] h-[120px] object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      )}
+                      <div className="mt-3">
+                        <div
+                          onClick={() =>
+                            setIsProductDetailsOpen(!isProductDetailsOpen)
+                          }
+                          className="w-full cursor-pointer select-none"
+                        >
+                          <div className="flex items-center py-2 gap-3 text-left hover:bg-gray-50 rounded-lg transition-colors duration-150">
+                            <span className="font-bold text-gray-900">
+                              Product Details
+                            </span>
+                            {isProductDetailsOpen ? (
+                              <ChevronUp className="h-5 w-5 text-gray-500" />
+                            ) : (
+                              <ChevronDown className="h-5 w-5 text-gray-500" />
+                            )}
+                          </div>
+
+                          {isProductDetailsOpen && (
+                            <div className="pt-2 pb-3 space-y-2 text-gray-600">
+                              <p className="text-sm">
+                                <strong>Product price:</strong>{" "}
+                                {productData.price}
+                              </p>
+                              <p className="text-sm">
+                                <strong>Listed by:</strong>{" "}
+                                {productData.listed_by}
+                              </p>
+                              <p className="text-sm">
+                                <strong>Pickup Address:</strong>{" "}
+                                {productData.address}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mt-3 mb-3 lg:mt-4">
+                        <TypeOfService
+                          onServiceChange={handleServiceTypeChange}
+                          serviceType={serviceType}
+                        />
+                      </div>
+                    </div>
+                    <div className="hidden lg:block">
+                      <PriceInfo
+                        totalPrice={totalPrice}
+                        basePrice={basePrice}
+                        productPrice={productData?.price || ""}
+                        deliveryDate={selectedDate}
+                        duration={duration}
+                        isItemPaidAlready={isItemPaidAlready}
+                        transportMode={transportMode.mode}
+                        needsExtraHelper={transportMode.needsExtraHelper}
+                        vehicleCost={vehicleCost}
+                        helperCost={helperCost}
+                        urgencySurcharge={urgencySurcharge}
                       />
                     </div>
-                  </div>
-                  <div className="hidden lg:block">
-                    <PriceInfo
-                      totalPrice={totalPrice}
-                      basePrice={basePrice}
-                      productPrice={productData?.price || ""}
-                      deliveryDate={selectedDate}
-                      duration={duration}
-                      isItemPaidAlready={isItemPaidAlready}
-                      transportMode={transportMode.mode}
-                      needsExtraHelper={transportMode.needsExtraHelper}
-                      vehicleCost={vehicleCost}
-                      helperCost={helperCost}
-                      urgencySurcharge={urgencySurcharge}
-                    />
                   </div>
                 </div>
               </div>

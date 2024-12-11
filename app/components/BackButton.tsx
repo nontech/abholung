@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface BackButtonProps {
   onClick: () => void;
@@ -8,10 +8,10 @@ const BackButton: React.FC<BackButtonProps> = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 focus:outline-none"
+      className="inline-flex items-center text-emerald-600 hover:text-emerald-800 transition-colors duration-200 focus:outline-none"
     >
       <svg
-        className="w-4 h-4 mr-2"
+        className="w-6 h-6 mr-2"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -24,7 +24,7 @@ const BackButton: React.FC<BackButtonProps> = ({ onClick }) => {
           d="M10 19l-7-7m0 0l7-7m-7 7h18"
         />
       </svg>
-      <span className="text-sm font-medium">Back</span>
+      <span className="text-md font-medium">Back</span>
     </button>
   );
 };
