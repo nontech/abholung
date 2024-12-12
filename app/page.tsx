@@ -580,26 +580,10 @@ export default function Home() {
       )}
 
       {stage === 1 && (
-        <div className="flex flex-col lg:flex-row w-full max-w-4xl mx-10">
+        <div className="flex flex-col lg:flex-row w-full lg:max-w-4xl lg:mx-10">
           <div className="w-full lg:w-2/3 lg:pr-4">
-            {/* Wrap ProductInfo in a card */}
-            <div className="bg-white rounded-lg shadow-md mb-6 relative">
-              <ProductInfo
-                onProductFetched={setProductData}
-                url={url}
-                onUrlChange={(newUrl) => {
-                  setUrl(newUrl);
-                  setSearchFormErrors((prevErrors) => ({
-                    ...prevErrors,
-                    product: "",
-                  }));
-                }}
-                productError={SearchFormErrors.product}
-              />
-            </div>
-
             {!productData ? (
-              <div className="sm:fixed right-10 top-40 w-96 bg-white rounded-lg shadow-md p-6">
+              <div className="sm:fixed right-10 top-40 w-full sm:w-96 bg-white rounded-lg shadow-md p-6 mb-4">
                 <h2 className="text-2xl font-semibold mb-6 text-gray-800">
                   How It Works
                 </h2>
@@ -690,14 +674,14 @@ export default function Home() {
                     className={`bg-white p-3 lg:p-6 rounded-lg shadow-md overflow-y-auto ${
                       isHowItWorksOpen
                         ? "lg:max-h-[calc(100vh-450px)]" // Less height when How It Works is expanded
-                        : "lg:max-h-[calc(100vh-200px)]" // More height when collapsed
+                        : "lg:max-h-[calc(100vh-170px)]" // More height when collapsed
                     }`}
                   >
                     <h2 className="text-2xl font-semibold mb-3 lg:mb-4">
                       Order Summary
                     </h2>
 
-                    <div className="mt-3 lg:mt-4">
+                    <div className="mt-3 p-2 lg:mt-4">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
                         <h2 className="text-xl font-semibold"> Product info</h2>
@@ -779,6 +763,22 @@ export default function Home() {
                 </div>
               </div>
             )}
+            {/* Wrap ProductInfo in a card */}
+            <div className="bg-white rounded-lg shadow-md mb-6 relative">
+              <ProductInfo
+                onProductFetched={setProductData}
+                url={url}
+                onUrlChange={(newUrl) => {
+                  setUrl(newUrl);
+                  setSearchFormErrors((prevErrors) => ({
+                    ...prevErrors,
+                    product: "",
+                  }));
+                }}
+                productError={SearchFormErrors.product}
+              />
+            </div>
+
             <TransportRoute
               origin={origin}
               destination={destination}

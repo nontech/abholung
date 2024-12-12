@@ -214,7 +214,7 @@ const TransportRoute: React.FC<TransportRouteProps> = ({
   }, [duration, setTotalPrice]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white rounded-xl shadow-sm p-6 mt-4">
       <div className="flex flex-col w-full gap-3 mb-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />

@@ -96,7 +96,7 @@ const PriceInfo: React.FC<PriceInfoProps> = ({
     productPriceFloat > 120 ? Math.min(productPriceFloat * 0.1, 20) : 0;
 
   return (
-    <div className="bg-white">
+    <div className="bg-white p-2">
       <div className="flex items-center gap-3 mb-6">
         <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
         <h2 className="text-xl font-semibold text-gray-800">Price Breakdown</h2>
