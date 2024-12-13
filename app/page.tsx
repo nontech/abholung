@@ -51,6 +51,7 @@ import TransportRoute from "./components/TransportRoute";
 import TypeOfService from "./components/TypeOfService";
 import Footer from "./components/Footer";
 import HowItWorks from "./components/HowItWorks";
+import OrderSummaryProductInfo from "./components/OrderSummaryProductInfo";
 
 // Import pages
 import DetailsPage from "./components/DetailsPage";
@@ -583,20 +584,18 @@ export default function Home() {
 
       {/* Progress Bar */}
       {stage <= 3 && (
-        <div
-          className={`h-full p-4 mb-10 ${
-            stage === 1 ? "max-w-2xl mx-10" : "w-full px-10"
-          }`}
-        >
+        <div className="h-full p-4 mb-10 max-w-4xl mx-auto">
           <ProgressBar currentStep={stage} />
         </div>
       )}
-
+      {/*  */}
       {stage === 1 && (
-        <div className="flex flex-col lg:flex-row w-full lg:max-w-4xl lg:mx-10">
-          <div className="w-full lg:w-2/3 lg:pr-4">
-            <div className="w-full mt-6 rounded-lg lg:mt-0">
-              <div className="sm:fixed right-10 top-40 w-full sm:w-96 space-y-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-col lg:flex-row">
+            {/* Left Column - Forms */}
+            <div className="w-full lg:max-w-2xl">
+              {/* Mobile How It Works - Only visible on mobile */}
+              <div className="lg:hidden mb-6">
                 <HowItWorks
                   isOpen={isHowItWorksOpen}
                   onToggle={() =>
@@ -604,146 +603,63 @@ export default function Home() {
                   }
                   showCollapse={true}
                 />
-                {/* Order Summary - Only shown when product exists */}
-                {productData && (
-                  <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[calc(100vh-600px)]">
-                    <h2 className="text-2xl font-semibold mb-3">
-                      Order Summary
-                    </h2>
-                    <div className="mt-3 p-2">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                        <h2 className="text-xl font-semibold">
-                          Product info
-                        </h2>
-                      </div>
-                      <span className="text-md mb-2 truncate">
-                        <strong>Title:</strong> {productData.title}
-                      </span>
-                      {productData.pic_url && (
-                        <div className="flex justify-center items-center mb-3 lg:mb-4">
-                          <Image
-                            src={productData.pic_url}
-                            alt={productData.title}
-                            width={120}
-                            height={120}
-                            className="rounded-md w-[120px] h-[120px] object-cover"
-                            unoptimized
-                          />
-                        </div>
-                      )}
-                      <div className="mt-3">
-                        <div
-                          onClick={() =>
-                            setIsProductDetailsOpen(
-                              !isProductDetailsOpen
-                            )
-                          }
-                          className="w-full cursor-pointer select-none"
-                        >
-                          <div className="flex items-center py-2 gap-3 text-left hover:bg-gray-50 rounded-lg transition-colors duration-150">
-                            <span className="font-bold text-gray-900">
-                              Product Details
-                            </span>
-                            {isProductDetailsOpen ? (
-                              <ChevronUp className="h-5 w-5 text-gray-500" />
-                            ) : (
-                              <ChevronDown className="h-5 w-5 text-gray-500" />
-                            )}
-                          </div>
-
-                          {isProductDetailsOpen && (
-                            <div className="pt-2 pb-3 space-y-2 text-gray-600">
-                              <p className="text-sm">
-                                <strong>Product price:</strong>{" "}
-                                {productData.price}
-                              </p>
-                              <p className="text-sm">
-                                <strong>Listed by:</strong>{" "}
-                                {productData.listed_by}
-                              </p>
-                              <p className="text-sm">
-                                <strong>Pickup Address:</strong>{" "}
-                                {productData.address}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="mt-3 mb-3 lg:mt-4">
-                        <TypeOfService
-                          onServiceChange={handleServiceTypeChange}
-                          serviceType={serviceType}
-                        />
-                      </div>
-                    </div>
-                    <div className="hidden lg:block">
-                      <PriceInfo
-                        totalPrice={totalPrice}
-                        basePrice={basePrice}
-                        productPrice={productData?.price || ""}
-                        deliveryDate={selectedDate}
-                        duration={duration}
-                        isItemPaidAlready={isItemPaidAlready}
-                        transportMode={transportMode.mode}
-                        needsExtraHelper={
-                          transportMode.needsExtraHelper
-                        }
-                        vehicleCost={vehicleCost}
-                        helperCost={helperCost}
-                        urgencySurcharge={urgencySurcharge}
-                      />
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
-            {/* Wrap ProductInfo in a card */}
-            <div className="bg-white rounded-lg shadow-md mb-6 relative">
-              <ProductInfo
-                onProductFetched={setProductData}
-                url={url}
-                onUrlChange={(newUrl) => {
-                  setUrl(newUrl);
+
+              {/* Wrap ProductInfo in a card */}
+              <div className="bg-white rounded-lg shadow-md mb-6">
+                <ProductInfo
+                  onProductFetched={setProductData}
+                  url={url}
+                  onUrlChange={(newUrl) => {
+                    setUrl(newUrl);
+                    setSearchFormErrors((prevErrors) => ({
+                      ...prevErrors,
+                      product: "",
+                    }));
+                  }}
+                  productError={SearchFormErrors.product}
+                />
+              </div>
+
+              {/* Mobile Product Info - Only visible on mobile */}
+              {productData && (
+                <div className="lg:hidden bg-white rounded-lg shadow-md mb-6">
+                  <OrderSummaryProductInfo
+                    productData={productData}
+                    isProductDetailsOpen={isProductDetailsOpen}
+                    setIsProductDetailsOpen={setIsProductDetailsOpen}
+                    serviceType={serviceType}
+                    handleServiceTypeChange={handleServiceTypeChange}
+                  />
+                </div>
+              )}
+
+              {/* Rest of the forms */}
+              <TransportRoute
+                origin={origin}
+                destination={destination}
+                setOrigin={(newOrigin) => {
+                  setOrigin(newOrigin);
                   setSearchFormErrors((prevErrors) => ({
                     ...prevErrors,
-                    product: "",
+                    pickupFrom: "",
                   }));
                 }}
-                productError={SearchFormErrors.product}
+                setDestination={(newDestination) => {
+                  setDestination(newDestination);
+                  setSearchFormErrors((prevErrors) => ({
+                    ...prevErrors,
+                    deliverTo: "",
+                  }));
+                }}
+                onMapDataChange={setMapData}
+                pickupFromError={SearchFormErrors.pickupFrom}
+                deliverToError={SearchFormErrors.deliverTo}
+                duration={duration}
+                setDuration={setDuration}
+                setTotalPrice={setBasePrice}
               />
-            </div>
 
-            <TransportRoute
-              origin={origin}
-              destination={destination}
-              setOrigin={(newOrigin) => {
-                setOrigin(newOrigin);
-                setSearchFormErrors((prevErrors) => ({
-                  ...prevErrors,
-                  pickupFrom: "",
-                }));
-              }}
-              setDestination={(newDestination) => {
-                setDestination(newDestination);
-                setSearchFormErrors((prevErrors) => ({
-                  ...prevErrors,
-                  deliverTo: "",
-                }));
-              }}
-              onMapDataChange={setMapData}
-              pickupFromError={SearchFormErrors.pickupFrom}
-              deliverToError={SearchFormErrors.deliverTo}
-              duration={duration}
-              setDuration={setDuration}
-              setTotalPrice={setBasePrice}
-            />
-
-            {/* Wrap just the date/time pickers in a card */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-lg font-semibold mb-6">
-                Pickup Schedule
-              </h2>
               <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-2 w-full gap-4">
                 <div className="sm:pr-2">
                   <DatePicker
@@ -767,91 +683,147 @@ export default function Home() {
                   />
                 </div>
               </div>
-            </div>
 
-            <TransportModeSelector
-              selectedMode={transportMode.mode}
-              needsExtraHelper={transportMode.needsExtraHelper}
-              onModeChange={handleModeChange}
-              duration={duration}
-              otherModeText={transportMode.otherModeText}
-            />
-            {/* Payment Option Selector or Disclaimer */}
-            {serviceType === "buying" ? (
-              <PaymentOptionSelector
-                onPaymentOptionChange={handlePaymentOptionChange}
-                initialValue={isItemPaidAlready}
-              />
-            ) : (
-              <div className="p-6 bg-white rounded-lg shadow-md mb-6">
-                <div className="flex items-center space-x-2 text-amber-600">
-                  <AlertCircle className="h-5 w-5" />
-                  <span className="font-medium">
-                    Payment Reminder
-                  </span>
-                </div>
-                <p className="mt-2 text-gray-600">
-                  Make sure the payment for item has been done by the
-                  buyer
-                </p>
-              </div>
-            )}
-
-            <div className="mt-4 lg:hidden">
-              <PriceInfo
-                totalPrice={totalPrice}
-                basePrice={basePrice}
-                productPrice={productData?.price || ""}
-                deliveryDate={selectedDate}
-                duration={duration}
-                isItemPaidAlready={isItemPaidAlready}
-                transportMode={transportMode.mode}
+              <TransportModeSelector
+                selectedMode={transportMode.mode}
                 needsExtraHelper={transportMode.needsExtraHelper}
-                vehicleCost={vehicleCost}
-                helperCost={helperCost}
-                urgencySurcharge={urgencySurcharge}
+                onModeChange={handleModeChange}
+                duration={duration}
+                otherModeText={transportMode.otherModeText}
               />
-            </div>
-            {/* Open the modal using document.getElementById('ID').showModal() method */}
-            <dialog id="info_modal" className="modal">
-              <div className="modal-box">
-                <h3 className="font-bold text-center text-md">
-                  We are currently only available in Berlin.
-                  <br />
-                  <br />
-                  Coming to rest of Germany soon!
-                </h3>
-              </div>
-              <form method="dialog" className="modal-backdrop">
-                <button>close</button>
-              </form>
-            </dialog>
-            {/* Show form errors above Continue button */}
-            <div
-              id="continue-section"
-              className="flex flex-col items-center my-8 py-4"
-            >
-              {Object.values(SearchFormErrors).some(
-                (error) => error !== ""
-              ) && (
-                <div className="mb-4">
-                  {Object.values(SearchFormErrors).map(
-                    (error, index) =>
-                      error && (
-                        <p
-                          key={index}
-                          className="text-red-500 text-sm"
-                        >
-                          {error}
-                        </p>
-                      )
-                  )}
+              {/* Payment Option Selector or Disclaimer */}
+              {serviceType === "buying" ? (
+                <PaymentOptionSelector
+                  onPaymentOptionChange={handlePaymentOptionChange}
+                  initialValue={isItemPaidAlready}
+                />
+              ) : (
+                <div className="p-6 bg-white rounded-lg shadow-md mb-6">
+                  <div className="flex items-center space-x-2 text-amber-600">
+                    <AlertCircle className="h-5 w-5" />
+                    <span className="font-medium">
+                      Payment Reminder
+                    </span>
+                  </div>
+                  <p className="mt-2 text-gray-600">
+                    Make sure the payment for item has been done by
+                    the buyer
+                  </p>
                 </div>
               )}
-              <ContinueButton
-                onClick={handleContinue}
-                isEnabled={true}
-              />
+
+              <div className="mt-4 lg:hidden">
+                <PriceInfo
+                  totalPrice={totalPrice}
+                  basePrice={basePrice}
+                  productPrice={productData?.price || ""}
+                  deliveryDate={selectedDate}
+                  duration={duration}
+                  isItemPaidAlready={isItemPaidAlready}
+                  transportMode={transportMode.mode}
+                  needsExtraHelper={transportMode.needsExtraHelper}
+                  vehicleCost={vehicleCost}
+                  helperCost={helperCost}
+                  urgencySurcharge={urgencySurcharge}
+                />
+              </div>
+              {/* Open the modal using document.getElementById('ID').showModal() method */}
+              <dialog id="info_modal" className="modal">
+                <div className="modal-box">
+                  <h3 className="font-bold text-center text-md">
+                    We are currently only available in Berlin.
+                    <br />
+                    <br />
+                    Coming to rest of Germany soon!
+                  </h3>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+              {/* Show form errors above Continue button */}
+              <div
+                id="continue-section"
+                className="flex flex-col items-center my-8 py-4"
+              >
+                {Object.values(SearchFormErrors).some(
+                  (error) => error !== ""
+                ) && (
+                  <div className="mb-4">
+                    {Object.values(SearchFormErrors).map(
+                      (error, index) =>
+                        error && (
+                          <p
+                            key={index}
+                            className="text-red-500 text-sm"
+                          >
+                            {error}
+                          </p>
+                        )
+                    )}
+                  </div>
+                )}
+                <ContinueButton
+                  onClick={handleContinue}
+                  isEnabled={true}
+                />
+              </div>
+            </div>
+
+            {/* Right Column - How It Works & Order Summary - Only visible on desktop */}
+            <div className="hidden lg:block w-full lg:w-[500px] lg:fixed lg:right-20 lg:top-42">
+              <div className="space-y-4">
+                <HowItWorks
+                  isOpen={isHowItWorksOpen}
+                  onToggle={() =>
+                    setIsHowItWorksOpen(!isHowItWorksOpen)
+                  }
+                  showCollapse={true}
+                />
+
+                {/* Order Summary - Only shown when product exists */}
+                {productData && (
+                  <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[calc(100vh-400px)]">
+                    <h2 className="text-2xl font-semibold mb-3">
+                      Order Summary
+                    </h2>
+
+                    {/* Product Info Component - Only visible on desktop */}
+                    <div className="hidden lg:block">
+                      <OrderSummaryProductInfo
+                        productData={productData}
+                        isProductDetailsOpen={isProductDetailsOpen}
+                        setIsProductDetailsOpen={
+                          setIsProductDetailsOpen
+                        }
+                        serviceType={serviceType}
+                        handleServiceTypeChange={
+                          handleServiceTypeChange
+                        }
+                      />
+                    </div>
+
+                    {/* Price Info */}
+                    <div className="hidden lg:block">
+                      <PriceInfo
+                        totalPrice={totalPrice}
+                        basePrice={basePrice}
+                        productPrice={productData?.price || ""}
+                        deliveryDate={selectedDate}
+                        duration={duration}
+                        isItemPaidAlready={isItemPaidAlready}
+                        transportMode={transportMode.mode}
+                        needsExtraHelper={
+                          transportMode.needsExtraHelper
+                        }
+                        vehicleCost={vehicleCost}
+                        helperCost={helperCost}
+                        urgencySurcharge={urgencySurcharge}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
