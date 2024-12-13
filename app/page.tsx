@@ -660,27 +660,37 @@ export default function Home() {
                 setTotalPrice={setBasePrice}
               />
 
-              <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-2 w-full gap-4">
-                <div className="sm:pr-2">
-                  <DatePicker
-                    date={selectedDate || undefined}
-                    setSelectedDate={handleDateChange}
-                  />
+              {/* Pickup Date & Time Card */}
+              <div className="bg-white rounded-lg shadow-md mb-6 mt-6 p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                  <h2 className="text-2xl font-semibold">
+                    Pickup Date & Time
+                  </h2>
                 </div>
-                <div>
-                  <TimePicker
-                    selectedTime={selectedTime}
-                    onTimeChange={(time) => {
-                      setSelectedTime(time);
-                      setSearchFormErrors((prevErrors) => ({
-                        ...prevErrors,
-                        pickupBetween: "",
-                      }));
-                    }}
-                    pickupBetweenError={
-                      SearchFormErrors.pickupBetween
-                    }
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <DatePicker
+                      date={selectedDate || undefined}
+                      setSelectedDate={handleDateChange}
+                    />
+                  </div>
+                  <div>
+                    <TimePicker
+                      selectedTime={selectedTime}
+                      onTimeChange={(time) => {
+                        setSelectedTime(time);
+                        setSearchFormErrors((prevErrors) => ({
+                          ...prevErrors,
+                          pickupBetween: "",
+                        }));
+                      }}
+                      pickupBetweenError={
+                        SearchFormErrors.pickupBetween
+                      }
+                    />
+                  </div>
                 </div>
               </div>
 
