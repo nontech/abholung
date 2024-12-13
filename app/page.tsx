@@ -50,6 +50,7 @@ import TransportModeSelector from "./components/TransportModeSelector";
 import TransportRoute from "./components/TransportRoute";
 import TypeOfService from "./components/TypeOfService";
 import Footer from "./components/Footer";
+import HowItWorks from "./components/HowItWorks";
 
 // Import pages
 import DetailsPage from "./components/DetailsPage";
@@ -98,30 +99,6 @@ const parseGermanPrice = (price: string): number => {
     .replace(",", ".");
   return parseFloat(standardizedPrice);
 };
-
-// Add this after the imports
-const HOW_IT_WORKS_STEPS = [
-  {
-    title: "Find Your Item",
-    description: "Copy the Kleinanzeigen URL of your item",
-    icon: "🔍",
-  },
-  {
-    title: "Enter Details",
-    description: "Add pickup & delivery locations",
-    icon: "📝",
-  },
-  {
-    title: "Choose Transport",
-    description: "Select suitable transport mode",
-    icon: "🚚",
-  },
-  {
-    title: "Secure Payment",
-    description: "Pay securely and track order",
-    icon: "💳",
-  },
-];
 
 export default function Home() {
   const [productData, setProductData] = useState<ProductData | null>(
@@ -618,117 +595,25 @@ export default function Home() {
       {stage === 1 && (
         <div className="flex flex-col lg:flex-row w-full lg:max-w-4xl lg:mx-10">
           <div className="w-full lg:w-2/3 lg:pr-4">
-            {!productData ? (
-              <div className="sm:fixed right-10 top-40 w-full sm:w-96 bg-white rounded-lg shadow-md p-6 mb-4">
-                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-                  How It Works
-                </h2>
-                <div className="space-y-0">
-                  {HOW_IT_WORKS_STEPS.map((step, index) => (
-                    <div key={index} className="relative">
-                      <div className="flex gap-3">
-                        {/* Icon Circle */}
-                        <div className="relative z-10 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                          <span className="text-xl">{step.icon}</span>
-                        </div>
-
-                        {/* Content */}
-                        <div className="pb-8">
-                          <h3 className="font-bold text-xl text-gray-800 mb-1">
-                            {step.title}
-                          </h3>
-                          <p className="text-lg text-gray-600">
-                            {step.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Connecting Line */}
-                      {index < HOW_IT_WORKS_STEPS.length - 1 && (
-                        <div
-                          className="absolute left-[15px] top-8 w-[2px] h-[calc(100%-16px)] bg-emerald-200"
-                          aria-hidden="true"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="w-full mt-6 rounded-lg lg:mt-0">
-                <div className="lg:fixed lg:top-5 lg:bottom-5 lg:right-24 w-full lg:w-1/4 space-y-4">
-                  {/* Separate How It Works Card */}
-                  <div className="bg-white p-3 rounded-lg shadow-md">
-                    <button
-                      onClick={() =>
-                        setIsHowItWorksOpen(!isHowItWorksOpen)
-                      }
-                      className="w-full p-4 flex justify-between items-center text-left"
-                    >
-                      <span className="text-lg font-medium">
-                        How It Works
-                      </span>
-                      {isHowItWorksOpen ? (
-                        <ChevronUp className="h-5 w-5" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5" />
-                      )}
-                    </button>
-
-                    {isHowItWorksOpen && (
-                      <div className="p-4 pt-0 space-y-0">
-                        {HOW_IT_WORKS_STEPS.map((step, index) => (
-                          <div key={index} className="relative">
-                            <div className="flex gap-3">
-                              {/* Icon Circle */}
-                              <div className="relative z-10 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                                <span className="text-sm">
-                                  {step.icon}
-                                </span>
-                              </div>
-
-                              {/* Content */}
-                              <div className="pb-8">
-                                <h3 className="text-md text-gray-800">
-                                  {step.title}
-                                </h3>
-                                <p className="text-sm text-gray-600">
-                                  {step.description}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Connecting Line */}
-                            {index <
-                              HOW_IT_WORKS_STEPS.length - 1 && (
-                              <div
-                                className="absolute left-[11px] top-6 w-[2px] h-[calc(100%-12px)] bg-emerald-200"
-                                aria-hidden="true"
-                              />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Order Summary Card */}
-                  <div
-                    className={`bg-white p-3 lg:p-6 rounded-lg shadow-md overflow-y-auto ${
-                      isHowItWorksOpen
-                        ? "lg:max-h-[calc(100vh-450px)]" // Less height when How It Works is expanded
-                        : "lg:max-h-[calc(100vh-170px)]" // More height when collapsed
-                    }`}
-                  >
-                    <h2 className="text-2xl font-semibold mb-3 lg:mb-4">
+            <div className="w-full mt-6 rounded-lg lg:mt-0">
+              <div className="sm:fixed right-10 top-40 w-full sm:w-96 space-y-4">
+                <HowItWorks
+                  isOpen={isHowItWorksOpen}
+                  onToggle={() =>
+                    setIsHowItWorksOpen(!isHowItWorksOpen)
+                  }
+                  showCollapse={true}
+                />
+                {/* Order Summary - Only shown when product exists */}
+                {productData && (
+                  <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[calc(100vh-600px)]">
+                    <h2 className="text-2xl font-semibold mb-3">
                       Order Summary
                     </h2>
-
-                    <div className="mt-3 p-2 lg:mt-4">
+                    <div className="mt-3 p-2">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
                         <h2 className="text-xl font-semibold">
-                          {" "}
                           Product info
                         </h2>
                       </div>
@@ -810,9 +695,9 @@ export default function Home() {
                       />
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            )}
+            </div>
             {/* Wrap ProductInfo in a card */}
             <div className="bg-white rounded-lg shadow-md mb-6 relative">
               <ProductInfo
@@ -829,71 +714,6 @@ export default function Home() {
               />
             </div>
 
-            {productData && (
-              <div className="w-full lg:w-1/3 mt-6 lg:mt-0">
-                <div className="lg:fixed lg:bottom-5 lg:right-12 w-full lg:w-1/4 bg-white p-3 lg:p-4 rounded-lg shadow-md overflow-y-auto lg:max-h-[calc(100vh-100px)]">
-                  <h2 className="text-lg font-semibold mb-3 lg:mb-4">
-                    Order Summary
-                  </h2>
-
-                  <div className="mt-3 lg:mt-4">
-                    <h3
-                      className="text-sm lg:text-md font-semibold mb-2 truncate"
-                      title={productData.title}
-                    >
-                      {productData.title}
-                    </h3>
-                    {productData.pic_url && (
-                      <div className="flex justify-center items-center mb-3 lg:mb-4">
-                        <Image
-                          src={productData.pic_url}
-                          alt={productData.title}
-                          width={120}
-                          height={120}
-                          className="rounded-md w-[120px] h-[120px] object-cover"
-                          unoptimized
-                        />
-                      </div>
-                    )}
-                    <p className="text-base lg:text-lg font-medium text-green-600 mb-2">
-                      {productData.price}
-                    </p>
-                    <p className="text-sm lg:text-base text-gray-700 mb-1">
-                      <strong>Listed by:</strong>{" "}
-                      {productData.listed_by}
-                    </p>
-                    <p className="text-sm lg:text-base text-gray-700">
-                      <strong>Pickup Address:</strong>{" "}
-                      {productData.address}
-                    </p>
-                    <div className="mt-3 lg:mt-4">
-                      <TypeOfService
-                        onServiceChange={handleServiceTypeChange}
-                        serviceType={serviceType}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="hidden lg:block">
-                    <PriceInfo
-                      totalPrice={totalPrice}
-                      basePrice={basePrice}
-                      productPrice={productData?.price || ""}
-                      deliveryDate={selectedDate}
-                      duration={duration}
-                      isItemPaidAlready={isItemPaidAlready}
-                      transportMode={transportMode.mode}
-                      needsExtraHelper={
-                        transportMode.needsExtraHelper
-                      }
-                      vehicleCost={vehicleCost}
-                      helperCost={helperCost}
-                      urgencySurcharge={urgencySurcharge}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
             <TransportRoute
               origin={origin}
               destination={destination}
