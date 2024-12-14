@@ -4,6 +4,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { PHProvider } from "./providers";
 import dynamic from "next/dynamic";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -40,7 +42,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
             strategy="beforeInteractive"
           />
           <PostHogPageView />
-          {children}
+          <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50">
+            <Header />
+            {children}
+            <Footer />
+          </div>
         </PHProvider>
       </body>
     </html>
@@ -49,5 +55,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
 export const metadata: Metadata = {
   title: "Kleinanzeigen Kurier",
-  description: "Get your kleinanzeigen products delivered fast and cheap",
+  description:
+    "Get your kleinanzeigen products delivered fast and cheap",
 };

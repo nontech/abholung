@@ -2,7 +2,6 @@
 
 // Import React & Next stuff
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 // Import types
@@ -29,7 +28,7 @@ import {
 } from "./dbOperations";
 
 // Import common components on every page
-import Header from "./components/Header";
+// import Header from "./components/Header";
 import ProgressBar from "./components/ProgressBar";
 
 // Import buttons
@@ -42,11 +41,15 @@ import ProductInfo from "./components/ProductInfo";
 import CheckoutContent from "./components/CheckoutContent";
 import DatePicker from "./components/DatePicker";
 import PaymentOptionSelector from "./components/PaymentArrangementSelector";
-import PriceInfo, { calculateTimeSaved } from "./components/PriceInfo";
+import PriceInfo, {
+  calculateTimeSaved,
+} from "./components/PriceInfo";
 import TimePicker from "./components/TimePicker";
 import TransportModeSelector from "./components/TransportModeSelector";
 import TransportRoute from "./components/TransportRoute";
-import TypeOfService from "./components/TypeOfService";
+// import Footer from "./components/Footer";
+import HowItWorks from "./components/HowItWorks";
+import OrderSummaryProductInfo from "./components/OrderSummaryProductInfo";
 
 // Import pages
 import DetailsPage from "./components/DetailsPage";
@@ -82,51 +85,30 @@ const Confetti = dynamic(() => import("react-confetti"), {
 // Add AlertCircle to the imports at the top
 import { AlertCircle } from "lucide-react";
 
-// Add this import at the top with other imports
-import { ChevronDown, ChevronUp } from "lucide-react";
-
 // Add a helper function to parse German price format
 const parseGermanPrice = (price: string): number => {
   // Remove currency symbol and any whitespace
   const cleanPrice = price.replace("€", "").trim();
   // Replace dots (thousand separators) with nothing and comma with dot
-  const standardizedPrice = cleanPrice.replace(".", "").replace(",", ".");
+  const standardizedPrice = cleanPrice
+    .replace(".", "")
+    .replace(",", ".");
   return parseFloat(standardizedPrice);
 };
 
-// Add this after the imports
-const HOW_IT_WORKS_STEPS = [
-  {
-    title: "Find Your Item",
-    description: "Copy the Kleinanzeigen URL of your item",
-    icon: "🔍",
-  },
-  {
-    title: "Enter Details",
-    description: "Add pickup & delivery locations",
-    icon: "📝",
-  },
-  {
-    title: "Choose Transport",
-    description: "Select suitable transport mode",
-    icon: "🚚",
-  },
-  {
-    title: "Secure Payment",
-    description: "Pay securely and track order",
-    icon: "💳",
-  },
-];
-
 export default function Home() {
-  const [productData, setProductData] = useState<ProductData | null>(null);
+  const [productData, setProductData] = useState<ProductData | null>(
+    null
+  );
   const [url, setUrl] = useState<string>("");
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
-    const initialDate = new Date();
-    initialDate.setDate(initialDate.getDate() + 3);
-    return initialDate;
-  });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    () => {
+      const initialDate = new Date();
+      initialDate.setDate(initialDate.getDate() + 3);
+      return initialDate;
+    }
+  );
   const [selectedTime, setSelectedTime] = useState<string>("");
 
   // Pickup from details
@@ -134,20 +116,24 @@ export default function Home() {
   const [pickupFromEmail, setPickupFromEmail] = useState<string>("");
   const [pickupFromPhoneNumber, setPickupFromPhoneNumber] =
     useState<string>("");
-  const [additionalPickupInstructions, setAdditionalPickupInstructions] =
-    useState<string>("");
+  const [
+    additionalPickupInstructions,
+    setAdditionalPickupInstructions,
+  ] = useState<string>("");
 
   // Deliver to details
   const [deliverToName, setdeliverToName] = useState<string>("");
   const [deliverToEmail, setdeliverToEmail] = useState<string>("");
-  const [deliverPhoneNumber, setdeliverPhoneNumber] = useState<string>("");
-  const [additionalDeliveryInstructions, setAdditionaldeliveryInstructions] =
+  const [deliverPhoneNumber, setdeliverPhoneNumber] =
     useState<string>("");
+  const [
+    additionalDeliveryInstructions,
+    setAdditionaldeliveryInstructions,
+  ] = useState<string>("");
 
   // Set Messenger
-  const [deliveryPerson, setDeliveryPerson] = useState<DeliveryPerson | null>(
-    null
-  );
+  const [deliveryPerson, setDeliveryPerson] =
+    useState<DeliveryPerson | null>(null);
 
   // Transport route details
   const [origin, setOrigin] = useState<Place>({
@@ -159,9 +145,9 @@ export default function Home() {
     latLng: null,
   });
   const [duration, setDuration] = useState<string | null>(null);
-  const [serviceType, setServiceType] = useState<"buying" | "selling">(
-    "buying"
-  );
+  const [serviceType, setServiceType] = useState<
+    "buying" | "selling"
+  >("buying");
   const [isConfettiActive, setIsConfettiActive] = useState(false);
   const [SearchFormErrors, setSearchFormErrors] = useState({
     product: "",
@@ -223,7 +209,9 @@ export default function Home() {
         "cargo bike": 10,
       };
       const hourlyRate =
-        vehicleCosts[transportMode.mode as keyof typeof vehicleCosts] || 0;
+        vehicleCosts[
+          transportMode.mode as keyof typeof vehicleCosts
+        ] || 0;
       const calculatedVehicleCost = hourlyRate * timeSavedHours;
       setVehicleCost(calculatedVehicleCost);
       total += calculatedVehicleCost;
@@ -243,7 +231,8 @@ export default function Home() {
     let calculatedUrgencySurcharge = 0;
     if (selectedDate) {
       const daysFromNow = Math.ceil(
-        (selectedDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+        (selectedDate.getTime() - new Date().getTime()) /
+          (1000 * 60 * 60 * 24)
       );
 
       if (daysFromNow === 2) {
@@ -299,7 +288,9 @@ export default function Home() {
         totalPrice,
         false, // paymentDone
         isItemPaidAlready,
-        !isItemPaidAlready ? parseGermanPrice(productData!.price!) : null,
+        !isItemPaidAlready
+          ? parseGermanPrice(productData!.price!)
+          : null,
         vehicleCost,
         helperCost,
         urgencySurcharge
@@ -335,7 +326,10 @@ export default function Home() {
     }
   };
 
-  const handlePaymentError = async (payment_method: string, error: string) => {
+  const handlePaymentError = async (
+    payment_method: string,
+    error: string
+  ) => {
     console.error("Payment failed:", error);
     await updateOrderPaymentDetails(false, payment_method, error);
   };
@@ -343,7 +337,9 @@ export default function Home() {
   const handleSuccessfulPayment = async (payment_method: string) => {
     setStage(4);
     setIsConfettiActive(true);
-    console.log("paymentDone is done, sending emails & saving to database");
+    console.log(
+      "paymentDone is done, sending emails & saving to database"
+    );
     const sendEmail = async (orderData: OrderAll) => {
       try {
         const emailSend =
@@ -435,7 +431,8 @@ export default function Home() {
     onPickupFromNameChange: setPickupFromName,
     onPickupFromEmailChange: setPickupFromEmail,
     onPickupFromPhoneNumberChange: setPickupFromPhoneNumber,
-    onAdditionalPickupInstructionsChange: setAdditionalPickupInstructions,
+    onAdditionalPickupInstructionsChange:
+      setAdditionalPickupInstructions,
     deliverToName: deliverToName,
     deliverToEmail: deliverToEmail,
     deliverToPhoneNumber: deliverPhoneNumber,
@@ -443,7 +440,8 @@ export default function Home() {
     onDeliverToNameChange: setdeliverToName,
     onDeliverToEmailChange: setdeliverToEmail,
     onDeliverToPhoneNumberChange: setdeliverPhoneNumber,
-    onAdditionalDeliveryInstructionsChange: setAdditionaldeliveryInstructions,
+    onAdditionalDeliveryInstructionsChange:
+      setAdditionaldeliveryInstructions,
     productData: productData!,
     totalPrice: totalPrice,
     onEdit: setStage,
@@ -454,10 +452,16 @@ export default function Home() {
       product: !productData?.newUrl?.trim()
         ? "Please paste a valid Kleinanzeigen product link"
         : "",
-      pickupFrom: !mapData?.from?.trim() ? "Pickup From is required" : "",
-      deliverTo: !mapData?.to?.trim() ? "Delivery To is required" : "",
+      pickupFrom: !mapData?.from?.trim()
+        ? "Pickup From is required"
+        : "",
+      deliverTo: !mapData?.to?.trim()
+        ? "Delivery To is required"
+        : "",
       pickupOn: !selectedDate ? "Pickup On is required" : "",
-      pickupBetween: !selectedTime ? "Pickup Between is required" : "",
+      pickupBetween: !selectedTime
+        ? "Pickup Between is required"
+        : "",
     };
 
     setSearchFormErrors(newErrors);
@@ -493,7 +497,9 @@ export default function Home() {
       setStage(2);
     } else {
       setTimeout(() => {
-        const continueButton = document.getElementById("continue-section");
+        const continueButton = document.getElementById(
+          "continue-section"
+        );
         if (continueButton) {
           continueButton.scrollIntoView({
             behavior: "smooth",
@@ -558,192 +564,242 @@ export default function Home() {
     }
   }, [productData]);
 
-  const [isProductDetailsOpen, setIsProductDetailsOpen] = useState(false);
-
   return (
     <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50 p-5 min-h-screen">
-      <Header />
+      {/* <Header /> */}
       <div className="ml-64 mb-5">
         {/* Back Navigation */}
-        {stage > 1 && stage < 4 && <BackButton onClick={handleBack} />}
+        {stage > 1 && stage < 4 && (
+          <BackButton onClick={handleBack} />
+        )}
       </div>
 
       {/* Progress Bar */}
       {stage <= 3 && (
-        <div
-          className={`h-full p-4 mb-10 ${
-            stage === 1 ? "max-w-2xl mx-10" : "w-full px-10"
-          }`}
-        >
+        <div className="h-full p-4 mb-10 max-w-4xl mx-auto">
           <ProgressBar currentStep={stage} />
         </div>
       )}
-
+      {/*  */}
       {stage === 1 && (
-        <div className="flex flex-col lg:flex-row w-full lg:max-w-4xl lg:mx-10">
-          <div className="w-full lg:w-2/3 lg:pr-4">
-            {!productData ? (
-              <div className="sm:fixed right-10 top-40 w-full sm:w-96 bg-white rounded-lg shadow-md p-6 mb-4">
-                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-                  How It Works
-                </h2>
-                <div className="space-y-0">
-                  {HOW_IT_WORKS_STEPS.map((step, index) => (
-                    <div key={index} className="relative">
-                      <div className="flex gap-3">
-                        {/* Icon Circle */}
-                        <div className="relative z-10 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                          <span className="text-xl">{step.icon}</span>
-                        </div>
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col lg:flex-row gap-48">
+            {/* Left Column */}
+            <div className="w-full lg:w-[60%]">
+              {/* Mobile How It Works - Only visible on mobile */}
+              <div className="lg:hidden mb-6">
+                <HowItWorks
+                  isOpen={isHowItWorksOpen}
+                  onToggle={() =>
+                    setIsHowItWorksOpen(!isHowItWorksOpen)
+                  }
+                  showCollapse={true}
+                />
+              </div>
 
-                        {/* Content */}
-                        <div className="pb-8">
-                          <h3 className="font-bold text-xl text-gray-800 mb-1">
-                            {step.title}
-                          </h3>
-                          <p className="text-lg text-gray-600">
-                            {step.description}
-                          </p>
-                        </div>
-                      </div>
+              {/* Wrap ProductInfo in a card */}
+              <div className="bg-white rounded-lg shadow-md mb-6">
+                <ProductInfo
+                  onProductFetched={setProductData}
+                  url={url}
+                  onUrlChange={(newUrl) => {
+                    setUrl(newUrl);
+                    setSearchFormErrors((prevErrors) => ({
+                      ...prevErrors,
+                      product: "",
+                    }));
+                  }}
+                  productError={SearchFormErrors.product}
+                />
+              </div>
 
-                      {/* Connecting Line */}
-                      {index < HOW_IT_WORKS_STEPS.length - 1 && (
-                        <div
-                          className="absolute left-[15px] top-8 w-[2px] h-[calc(100%-16px)] bg-emerald-200"
-                          aria-hidden="true"
-                        />
-                      )}
-                    </div>
-                  ))}
+              {/* Mobile Product Info - Only visible on mobile */}
+              {productData && (
+                <div className="lg:hidden bg-white rounded-lg shadow-md mb-6">
+                  <OrderSummaryProductInfo
+                    productData={productData}
+                    serviceType={serviceType}
+                    handleServiceTypeChange={handleServiceTypeChange}
+                  />
+                </div>
+              )}
+
+              {/* Rest of the forms */}
+              <TransportRoute
+                origin={origin}
+                destination={destination}
+                setOrigin={(newOrigin) => {
+                  setOrigin(newOrigin);
+                  setSearchFormErrors((prevErrors) => ({
+                    ...prevErrors,
+                    pickupFrom: "",
+                  }));
+                }}
+                setDestination={(newDestination) => {
+                  setDestination(newDestination);
+                  setSearchFormErrors((prevErrors) => ({
+                    ...prevErrors,
+                    deliverTo: "",
+                  }));
+                }}
+                onMapDataChange={setMapData}
+                pickupFromError={SearchFormErrors.pickupFrom}
+                deliverToError={SearchFormErrors.deliverTo}
+                duration={duration}
+                setDuration={setDuration}
+                setTotalPrice={setBasePrice}
+              />
+
+              {/* Pickup Date & Time Card */}
+              <div className="bg-white rounded-lg shadow-md mb-6 mt-6 p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                  <h2 className="text-2xl font-semibold">
+                    Pickup Date & Time
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <DatePicker
+                      date={selectedDate || undefined}
+                      setSelectedDate={handleDateChange}
+                    />
+                  </div>
+                  <div>
+                    <TimePicker
+                      selectedTime={selectedTime}
+                      onTimeChange={(time) => {
+                        setSelectedTime(time);
+                        setSearchFormErrors((prevErrors) => ({
+                          ...prevErrors,
+                          pickupBetween: "",
+                        }));
+                      }}
+                      pickupBetweenError={
+                        SearchFormErrors.pickupBetween
+                      }
+                    />
+                  </div>
                 </div>
               </div>
-            ) : (
-              <div className="w-full mt-6 rounded-lg lg:mt-0">
-                <div className="lg:fixed lg:top-5 lg:bottom-5 lg:right-24 w-full lg:w-1/4 space-y-4">
-                  {/* Separate How It Works Card */}
-                  <div className="bg-white p-3 rounded-lg shadow-md">
-                    <button
-                      onClick={() => setIsHowItWorksOpen(!isHowItWorksOpen)}
-                      className="w-full p-4 flex justify-between items-center text-left"
-                    >
-                      <span className="text-lg font-medium">How It Works</span>
-                      {isHowItWorksOpen ? (
-                        <ChevronUp className="h-5 w-5" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5" />
-                      )}
-                    </button>
 
-                    {isHowItWorksOpen && (
-                      <div className="p-4 pt-0 space-y-0">
-                        {HOW_IT_WORKS_STEPS.map((step, index) => (
-                          <div key={index} className="relative">
-                            <div className="flex gap-3">
-                              {/* Icon Circle */}
-                              <div className="relative z-10 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                                <span className="text-sm">{step.icon}</span>
-                              </div>
+              <TransportModeSelector
+                selectedMode={transportMode.mode}
+                needsExtraHelper={transportMode.needsExtraHelper}
+                onModeChange={handleModeChange}
+                duration={duration}
+                otherModeText={transportMode.otherModeText}
+              />
+              {/* Payment Option Selector or Disclaimer */}
+              {serviceType === "buying" ? (
+                <PaymentOptionSelector
+                  onPaymentOptionChange={handlePaymentOptionChange}
+                  initialValue={isItemPaidAlready}
+                />
+              ) : (
+                <div className="p-6 bg-white rounded-lg shadow-md mb-6">
+                  <div className="flex items-center space-x-2 text-amber-600">
+                    <AlertCircle className="h-5 w-5" />
+                    <span className="font-medium">
+                      Payment Reminder
+                    </span>
+                  </div>
+                  <p className="mt-2 text-gray-600">
+                    Make sure the payment for item has been done by
+                    the buyer
+                  </p>
+                </div>
+              )}
 
-                              {/* Content */}
-                              <div className="pb-8">
-                                <h3 className="text-md text-gray-800">
-                                  {step.title}
-                                </h3>
-                                <p className="text-sm text-gray-600">
-                                  {step.description}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Connecting Line */}
-                            {index < HOW_IT_WORKS_STEPS.length - 1 && (
-                              <div
-                                className="absolute left-[11px] top-6 w-[2px] h-[calc(100%-12px)] bg-emerald-200"
-                                aria-hidden="true"
-                              />
-                            )}
-                          </div>
-                        ))}
-                      </div>
+              <div className="mt-4 lg:hidden">
+                <PriceInfo
+                  totalPrice={totalPrice}
+                  basePrice={basePrice}
+                  productPrice={productData?.price || ""}
+                  deliveryDate={selectedDate}
+                  duration={duration}
+                  isItemPaidAlready={isItemPaidAlready}
+                  transportMode={transportMode.mode}
+                  needsExtraHelper={transportMode.needsExtraHelper}
+                  vehicleCost={vehicleCost}
+                  helperCost={helperCost}
+                  urgencySurcharge={urgencySurcharge}
+                />
+              </div>
+              {/* Open the modal using document.getElementById('ID').showModal() method */}
+              <dialog id="info_modal" className="modal">
+                <div className="modal-box">
+                  <h3 className="font-bold text-center text-md">
+                    We are currently only available in Berlin.
+                    <br />
+                    <br />
+                    Coming to rest of Germany soon!
+                  </h3>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+              {/* Show form errors above Continue button */}
+              <div
+                id="continue-section"
+                className="flex flex-col items-center my-8 py-4"
+              >
+                {Object.values(SearchFormErrors).some(
+                  (error) => error !== ""
+                ) && (
+                  <div className="mb-4">
+                    {Object.values(SearchFormErrors).map(
+                      (error, index) =>
+                        error && (
+                          <p
+                            key={index}
+                            className="text-red-500 text-sm"
+                          >
+                            {error}
+                          </p>
+                        )
                     )}
                   </div>
+                )}
+                <ContinueButton
+                  onClick={handleContinue}
+                  isEnabled={true}
+                />
+              </div>
+            </div>
 
-                  {/* Order Summary Card */}
-                  <div
-                    className={`bg-white p-3 lg:p-6 rounded-lg shadow-md overflow-y-auto ${
-                      isHowItWorksOpen
-                        ? "lg:max-h-[calc(100vh-450px)]" // Less height when How It Works is expanded
-                        : "lg:max-h-[calc(100vh-170px)]" // More height when collapsed
-                    }`}
-                  >
-                    <h2 className="text-2xl font-semibold mb-3 lg:mb-4">
+            {/* Right Column */}
+            <div className="hidden lg:block w-[400px]">
+              <div>
+                <HowItWorks
+                  isOpen={isHowItWorksOpen}
+                  onToggle={() =>
+                    setIsHowItWorksOpen(!isHowItWorksOpen)
+                  }
+                  showCollapse={true}
+                />
+
+                {/* Order Summary - Only shown when product exists */}
+                {productData && (
+                  <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                    <h2 className="text-2xl font-semibold mb-3">
                       Order Summary
                     </h2>
 
-                    <div className="mt-3 p-2 lg:mt-4">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                        <h2 className="text-xl font-semibold"> Product info</h2>
-                      </div>
-                      <span className="text-md mb-2 truncate">
-                        <strong>Title:</strong> {productData.title}
-                      </span>
-                      {productData.pic_url && (
-                        <div className="flex justify-center items-center mb-3 lg:mb-4">
-                          <Image
-                            src={productData.pic_url}
-                            alt={productData.title}
-                            width={120}
-                            height={120}
-                            className="rounded-md w-[120px] h-[120px] object-cover"
-                            unoptimized
-                          />
-                        </div>
-                      )}
-                      <div className="mt-3">
-                        <div
-                          onClick={() =>
-                            setIsProductDetailsOpen(!isProductDetailsOpen)
-                          }
-                          className="w-full cursor-pointer select-none"
-                        >
-                          <div className="flex items-center py-2 gap-3 text-left hover:bg-gray-50 rounded-lg transition-colors duration-150">
-                            <span className="font-bold text-gray-900">
-                              Product Details
-                            </span>
-                            {isProductDetailsOpen ? (
-                              <ChevronUp className="h-5 w-5 text-gray-500" />
-                            ) : (
-                              <ChevronDown className="h-5 w-5 text-gray-500" />
-                            )}
-                          </div>
-
-                          {isProductDetailsOpen && (
-                            <div className="pt-2 pb-3 space-y-2 text-gray-600">
-                              <p className="text-sm">
-                                <strong>Product price:</strong>{" "}
-                                {productData.price}
-                              </p>
-                              <p className="text-sm">
-                                <strong>Listed by:</strong>{" "}
-                                {productData.listed_by}
-                              </p>
-                              <p className="text-sm">
-                                <strong>Pickup Address:</strong>{" "}
-                                {productData.address}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="mt-3 mb-3 lg:mt-4">
-                        <TypeOfService
-                          onServiceChange={handleServiceTypeChange}
-                          serviceType={serviceType}
-                        />
-                      </div>
+                    {/* Product Info Component - Only visible on desktop */}
+                    <div className="hidden lg:block">
+                      <OrderSummaryProductInfo
+                        productData={productData}
+                        serviceType={serviceType}
+                        handleServiceTypeChange={
+                          handleServiceTypeChange
+                        }
+                      />
                     </div>
+
+                    {/* Price Info */}
                     <div className="hidden lg:block">
                       <PriceInfo
                         totalPrice={totalPrice}
@@ -753,160 +809,17 @@ export default function Home() {
                         duration={duration}
                         isItemPaidAlready={isItemPaidAlready}
                         transportMode={transportMode.mode}
-                        needsExtraHelper={transportMode.needsExtraHelper}
+                        needsExtraHelper={
+                          transportMode.needsExtraHelper
+                        }
                         vehicleCost={vehicleCost}
                         helperCost={helperCost}
                         urgencySurcharge={urgencySurcharge}
                       />
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            )}
-            {/* Wrap ProductInfo in a card */}
-            <div className="bg-white rounded-lg shadow-md mb-6 relative">
-              <ProductInfo
-                onProductFetched={setProductData}
-                url={url}
-                onUrlChange={(newUrl) => {
-                  setUrl(newUrl);
-                  setSearchFormErrors((prevErrors) => ({
-                    ...prevErrors,
-                    product: "",
-                  }));
-                }}
-                productError={SearchFormErrors.product}
-              />
-            </div>
-
-            <TransportRoute
-              origin={origin}
-              destination={destination}
-              setOrigin={(newOrigin) => {
-                setOrigin(newOrigin);
-                setSearchFormErrors((prevErrors) => ({
-                  ...prevErrors,
-                  pickupFrom: "",
-                }));
-              }}
-              setDestination={(newDestination) => {
-                setDestination(newDestination);
-                setSearchFormErrors((prevErrors) => ({
-                  ...prevErrors,
-                  deliverTo: "",
-                }));
-              }}
-              onMapDataChange={setMapData}
-              pickupFromError={SearchFormErrors.pickupFrom}
-              deliverToError={SearchFormErrors.deliverTo}
-              duration={duration}
-              setDuration={setDuration}
-              setTotalPrice={setBasePrice}
-            />
-
-            {/* Wrap just the date/time pickers in a card */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6 mt-6">
-              <div className="flex flex-row items-center gap-3 mb-6">
-                <div className="h-10 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                <h2 className="text-2xl font-semibold ">Pickup Schedule</h2>
-              </div>
-              <div className="flex mb-4 grid grid-cols-1 sm:grid-cols-1 w-full gap-6">
-                <div>
-                  <DatePicker
-                    date={selectedDate || undefined}
-                    setSelectedDate={handleDateChange}
-                  />
-                </div>
-                <div>
-                  <TimePicker
-                    selectedTime={selectedTime}
-                    onTimeChange={(time) => {
-                      setSelectedTime(time);
-                      setSearchFormErrors((prevErrors) => ({
-                        ...prevErrors,
-                        pickupBetween: "",
-                      }));
-                    }}
-                    pickupBetweenError={SearchFormErrors.pickupBetween}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <TransportModeSelector
-              selectedMode={transportMode.mode}
-              needsExtraHelper={transportMode.needsExtraHelper}
-              onModeChange={handleModeChange}
-              duration={duration}
-              otherModeText={transportMode.otherModeText}
-            />
-            {/* Payment Option Selector or Disclaimer */}
-            {serviceType === "buying" ? (
-              <PaymentOptionSelector
-                onPaymentOptionChange={handlePaymentOptionChange}
-                initialValue={isItemPaidAlready}
-              />
-            ) : (
-              <div className="p-6 bg-white rounded-lg shadow-md mb-6">
-                <div className="flex items-center space-x-2 text-amber-600">
-                  <AlertCircle className="h-5 w-5" />
-                  <span className="font-medium">Payment Reminder</span>
-                </div>
-                <p className="mt-2 text-gray-600">
-                  Make sure the payment for item has been done by the buyer
-                </p>
-              </div>
-            )}
-
-            <div className="mt-4 lg:hidden">
-              <PriceInfo
-                totalPrice={totalPrice}
-                basePrice={basePrice}
-                productPrice={productData?.price || ""}
-                deliveryDate={selectedDate}
-                duration={duration}
-                isItemPaidAlready={isItemPaidAlready}
-                transportMode={transportMode.mode}
-                needsExtraHelper={transportMode.needsExtraHelper}
-                vehicleCost={vehicleCost}
-                helperCost={helperCost}
-                urgencySurcharge={urgencySurcharge}
-              />
-            </div>
-            {/* Open the modal using document.getElementById('ID').showModal() method */}
-            <dialog id="info_modal" className="modal">
-              <div className="modal-box">
-                <h3 className="font-bold text-center text-md">
-                  We are currently only available in Berlin.
-                  <br />
-                  <br />
-                  Coming to rest of Germany soon!
-                </h3>
-              </div>
-              <form method="dialog" className="modal-backdrop">
-                <button>close</button>
-              </form>
-            </dialog>
-            {/* Show form errors above Continue button */}
-            <div
-              id="continue-section"
-              className="flex flex-col items-center my-8 py-4"
-            >
-              {Object.values(SearchFormErrors).some(
-                (error) => error !== ""
-              ) && (
-                <div className="mb-4">
-                  {Object.values(SearchFormErrors).map(
-                    (error, index) =>
-                      error && (
-                        <p key={index} className="text-red-500 text-sm">
-                          {error}
-                        </p>
-                      )
-                  )}
-                </div>
-              )}
-              <ContinueButton onClick={handleContinue} isEnabled={true} />
             </div>
           </div>
         </div>
@@ -936,6 +849,9 @@ export default function Home() {
           deliveryDetails={deliveryDetails}
         />
       )}
+
+      {/* Add Footer at the bottom */}
+      {/* <Footer /> */}
 
       {/* Confetti Animation */}
       {isConfettiActive && (
