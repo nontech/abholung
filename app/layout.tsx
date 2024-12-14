@@ -4,6 +4,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { PHProvider } from "./providers";
 import dynamic from "next/dynamic";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -40,7 +42,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
             strategy="beforeInteractive"
           />
           <PostHogPageView />
-          {children}
+          <Header />
+            {children}
+          <Footer />
         </PHProvider>
       </body>
     </html>

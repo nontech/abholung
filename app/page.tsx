@@ -29,7 +29,7 @@ import {
 } from "./dbOperations";
 
 // Import common components on every page
-import Header from "./components/Header";
+// import Header from "./components/Header";
 import ProgressBar from "./components/ProgressBar";
 
 // Import buttons
@@ -49,7 +49,7 @@ import TimePicker from "./components/TimePicker";
 import TransportModeSelector from "./components/TransportModeSelector";
 import TransportRoute from "./components/TransportRoute";
 import TypeOfService from "./components/TypeOfService";
-import Footer from "./components/Footer";
+// import Footer from "./components/Footer";
 import HowItWorks from "./components/HowItWorks";
 import OrderSummaryProductInfo from "./components/OrderSummaryProductInfo";
 
@@ -574,7 +574,7 @@ export default function Home() {
 
   return (
     <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50 p-5 min-h-screen">
-      <Header />
+      {/* <Header /> */}
       <div className="ml-64 mb-5">
         {/* Back Navigation */}
         {stage > 1 && stage < 4 && (
@@ -865,7 +865,7 @@ export default function Home() {
       )}
 
       {/* Add Footer at the bottom */}
-      <Footer />
+      {/* <Footer /> */}
 
       {/* Confetti Animation */}
       {isConfettiActive && (

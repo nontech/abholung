@@ -85,13 +85,21 @@ const Footer = () => {
             <h3 className="font-semibold text-gray-800 text-lg mb-6">
               Company
             </h3>
-            <ul>
+            <ul className="space-y-3">
               <li>
                 <Link
-                  href=""
+                  href="/about"
                   className="hover:text-gray-800 transition-colors"
                 >
                   About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/what-we-do"
+                  className="hover:text-gray-800 transition-colors"
+                >
+                  What we do
                 </Link>
               </li>
             </ul>
@@ -105,15 +113,15 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href=""
+                  href="/impressum"
                   className="hover:text-gray-800 transition-colors"
                 >
-                  Imprint
+                  Impressum
                 </Link>
               </li>
               <li>
                 <Link
-                  href=""
+                  href="/privacy-policy"
                   className="hover:text-gray-800 transition-colors"
                 >
                   Privacy Policy
@@ -121,7 +129,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href=""
+                  href="/terms"
                   className="hover:text-gray-800 transition-colors"
                 >
                   Terms & Conditions
