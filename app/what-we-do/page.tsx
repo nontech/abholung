@@ -13,8 +13,8 @@ export default function WhatWeDo() {
               Kleinanzeigen Kurier
             </span>
             , we simplify the logistics of buying and selling goods
-            online. Whether you're purchasing a second-hand sofa from
-            a marketplace or selling a vintage bicycle to a local
+            online. Whether you&apos;re purchasing a second-hand sofa
+            from a marketplace or selling a vintage bicycle to a local
             buyer, we ensure your items are transported quickly,
             safely, and affordably.
           </p>
@@ -33,9 +33,10 @@ export default function WhatWeDo() {
               </h3>
               <p className="text-gray-600">
                 Bought or sold furniture and appliances on a
-                classified platform? We've got you covered. From small
-                tables to washing machines, we handle your items with
-                care and ensure they reach their destination intact.
+                classified platform? We&apos;ve got you covered. From
+                small tables to washing machines, we handle your items
+                with care and ensure they reach their destination
+                intact.
               </p>
             </div>
 
@@ -58,7 +59,7 @@ export default function WhatWeDo() {
                 We specialize in bridging the gap between buyers and
                 sellers on popular platforms like eBay Kleinanzeigen
                 or Kleinanzeigen. Just tell us the pickup and delivery
-                addresses, and we'll handle the rest.
+                addresses, and we&apos;ll handle the rest.
               </p>
             </div>
 
@@ -96,7 +97,7 @@ export default function WhatWeDo() {
               {
                 number: "1",
                 title: "Book Your Service",
-                desc: "Use our website to enter your transport details. Whether it's a quick delivery or a large item that requires special handling, our booking process is straightforward and transparent.",
+                desc: "Use our website to enter your transport details. Whether it&apos;s a quick delivery or a large item that requires special handling, our booking process is straightforward and transparent.",
               },
               {
                 number: "2",
@@ -143,7 +144,7 @@ export default function WhatWeDo() {
               },
               {
                 title: "Flexibility",
-                desc: "Whether it's a one-time delivery or ongoing needs, we've got you covered.",
+                desc: "Whether it&apos;s a one-time delivery or ongoing needs, we&apos;ve got you covered.",
               },
             ].map((item, index) => (
               <li key={index} className="flex items-start">

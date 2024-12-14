@@ -18,7 +18,7 @@ export default function TermsAndConditions() {
             expenses at the time of contract conclusion must also be
             compensated. This includes services requested by the
             sender after the contract has been finalized. The
-            company's duties may encompass furniture
+            company&apos;s duties may encompass furniture
             assembly/disassembly and packing of moving goods.
           </p>
         </section>
@@ -40,8 +40,8 @@ export default function TermsAndConditions() {
             §3. Gratuities
           </h2>
           <p className="text-gray-600">
-            Tips are voluntary and are not included in the company's
-            invoice.
+            Tips are voluntary and are not included in the
+            company&apos;s invoice.
           </p>
         </section>
 
@@ -70,9 +70,9 @@ export default function TermsAndConditions() {
             Cancellations must be in writing. The company may
             terminate the contract immediately if the sender violates
             its terms. The company also reserves the right to withdraw
-            if doubts arise about the sender's ownership or financial
-            capacity or if conditions on moving day make transport
-            unsafe. The sender bears any resulting costs.
+            if doubts arise about the sender&apos;s ownership or
+            financial capacity or if conditions on moving day make
+            transport unsafe. The sender bears any resulting costs.
           </p>
         </section>
 
@@ -92,8 +92,8 @@ export default function TermsAndConditions() {
             </p>
             <p>
               If payment is not made, the company may withhold or
-              store the goods at the sender's expense in accordance
-              with Section 419 HGB.
+              store the goods at the sender&apos;s expense in
+              accordance with Section 419 HGB.
             </p>
           </div>
         </section>

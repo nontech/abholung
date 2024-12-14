@@ -107,8 +107,8 @@ export default function PrivacyPolicy() {
               We use cookies to improve your experience. These cookies
               do not store personal data, including IP addresses. You
               can disable cookies in your browser settings if you
-              prefer. Instructions can be found in your browser's help
-              section. Note: Some website functions may not work
+              prefer. Instructions can be found in your browser&apos;s
+              help section. Note: Some website functions may not work
               properly without cookies.
             </p>
             <p>

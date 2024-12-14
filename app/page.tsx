@@ -2,7 +2,6 @@
 
 // Import React & Next stuff
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 // Import types
@@ -48,7 +47,6 @@ import PriceInfo, {
 import TimePicker from "./components/TimePicker";
 import TransportModeSelector from "./components/TransportModeSelector";
 import TransportRoute from "./components/TransportRoute";
-import TypeOfService from "./components/TypeOfService";
 // import Footer from "./components/Footer";
 import HowItWorks from "./components/HowItWorks";
 import OrderSummaryProductInfo from "./components/OrderSummaryProductInfo";
@@ -86,9 +84,6 @@ const Confetti = dynamic(() => import("react-confetti"), {
 
 // Add AlertCircle to the imports at the top
 import { AlertCircle } from "lucide-react";
-
-// Add this import at the top with other imports
-import { ChevronDown, ChevronUp } from "lucide-react";
 
 // Add a helper function to parse German price format
 const parseGermanPrice = (price: string): number => {
