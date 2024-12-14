@@ -564,9 +564,6 @@ export default function Home() {
     }
   }, [productData]);
 
-  const [isProductDetailsOpen, setIsProductDetailsOpen] =
-    useState(false);
-
   return (
     <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50 p-5 min-h-screen">
       {/* <Header /> */}
@@ -585,10 +582,10 @@ export default function Home() {
       )}
       {/*  */}
       {stage === 1 && (
-        <div className="max-w-4xl mx-auto">
-          <div className="flex flex-col lg:flex-row">
-            {/* Left Column - Forms */}
-            <div className="w-full lg:max-w-2xl">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col lg:flex-row gap-48">
+            {/* Left Column */}
+            <div className="w-full lg:w-[60%]">
               {/* Mobile How It Works - Only visible on mobile */}
               <div className="lg:hidden mb-6">
                 <HowItWorks
@@ -621,8 +618,6 @@ export default function Home() {
                 <div className="lg:hidden bg-white rounded-lg shadow-md mb-6">
                   <OrderSummaryProductInfo
                     productData={productData}
-                    isProductDetailsOpen={isProductDetailsOpen}
-                    setIsProductDetailsOpen={setIsProductDetailsOpen}
                     serviceType={serviceType}
                     handleServiceTypeChange={handleServiceTypeChange}
                   />
@@ -775,9 +770,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column - How It Works & Order Summary - Only visible on desktop */}
-            <div className="hidden lg:block w-full lg:w-[500px] lg:fixed lg:right-20 lg:top-42">
-              <div className="space-y-4">
+            {/* Right Column */}
+            <div className="hidden lg:block w-[400px]">
+              <div>
                 <HowItWorks
                   isOpen={isHowItWorksOpen}
                   onToggle={() =>
@@ -788,7 +783,7 @@ export default function Home() {
 
                 {/* Order Summary - Only shown when product exists */}
                 {productData && (
-                  <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[calc(100vh-400px)]">
+                  <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                     <h2 className="text-2xl font-semibold mb-3">
                       Order Summary
                     </h2>
@@ -797,10 +792,6 @@ export default function Home() {
                     <div className="hidden lg:block">
                       <OrderSummaryProductInfo
                         productData={productData}
-                        isProductDetailsOpen={isProductDetailsOpen}
-                        setIsProductDetailsOpen={
-                          setIsProductDetailsOpen
-                        }
                         serviceType={serviceType}
                         handleServiceTypeChange={
                           handleServiceTypeChange

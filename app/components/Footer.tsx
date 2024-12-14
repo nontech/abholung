@@ -1,9 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 
+const logoPath = "/images/Logo.svg";
+
 const Footer = () => {
   return (
-    <footer className="bg-white text-gray-600 py-12 mt-16 border-t border-gray-100">
+    <footer className="py-12">
       <div className="max-w-7xl mx-auto px-4">
         {/* Main Footer Content - Four Columns */}
         <div className="grid grid-cols-1 md:grid-cols-[1.5fr,1fr,1fr,1fr] gap-x-16 gap-y-8 mb-16">
@@ -11,7 +13,7 @@ const Footer = () => {
           <div className="space-y-6 md:pr-8">
             <div className="flex items-center">
               <Image
-                src="/images/logo.svg"
+                src={logoPath}
                 alt="Kleinanzeigen Kurier"
                 width={140}
                 height={32}

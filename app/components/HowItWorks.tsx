@@ -13,14 +13,14 @@ const HOW_IT_WORKS_STEPS = [
     icon: "🔍",
   },
   {
-    title: "Enter Details",
-    description: "Add pickup & delivery locations",
-    icon: "📝",
+    title: "Enter Logistics",
+    description: "Select locations, date & time, transport mode",
+    icon: "🚚",
   },
   {
-    title: "Choose Transport",
-    description: "Select suitable transport mode",
-    icon: "🚚",
+    title: "Enter Details",
+    description: "Add buyer & seller details",
+    icon: "📝",
   },
   {
     title: "Secure Payment",

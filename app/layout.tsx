@@ -42,9 +42,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
             strategy="beforeInteractive"
           />
           <PostHogPageView />
-          <Header />
+          <div className="bg-gradient-to-br from-emerald-50 via-gray-50 to-teal-50">
+            <Header />
             {children}
-          <Footer />
+            <Footer />
+          </div>
         </PHProvider>
       </body>
     </html>
@@ -53,5 +55,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
 export const metadata: Metadata = {
   title: "Kleinanzeigen Kurier",
-  description: "Get your kleinanzeigen products delivered fast and cheap",
+  description:
+    "Get your kleinanzeigen products delivered fast and cheap",
 };
